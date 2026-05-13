@@ -41,11 +41,19 @@ const DailyExam = ({ type }) => {
     }
   };
 
-  // Auto-start for contest
+  // Auto-start for specific exam types
   useEffect(() => {
-    if (type === 'contest' && step === 'config') {
-      setConfig({ qCount: 20, timeLimit: 30 });
-      startExam();
+    if (step === 'config') {
+      if (type === 'contest') {
+        setConfig({ qCount: 20, timeLimit: 30 });
+        startExam();
+      } else if (type === 'full-mock') {
+        setConfig({ qCount: 150, timeLimit: 150 });
+        startExam();
+      } else if (type === 'important') {
+        setConfig({ qCount: 30, timeLimit: 30 });
+        startExam();
+      }
     }
   }, [type]);
 
