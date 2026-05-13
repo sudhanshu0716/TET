@@ -7,11 +7,13 @@ const Question = require('../models/Question');
 const User = require('../models/User');
 const { v4: uuidv4 } = require('uuid');
 
-// Helper to get today's contest date (at 00:00:00 for uniqueness)
+// Helper to get today's contest date in IST (at 00:00:00 for uniqueness)
 const getContestDate = () => {
   const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
+  const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30
+  const istDate = new Date(d.getTime() + (d.getTimezoneOffset() * 60000) + istOffset);
+  istDate.setHours(0, 0, 0, 0);
+  return istDate;
 };
 
 // @desc    Register for today's contest
@@ -33,13 +35,17 @@ router.get('/status', auth, async (req, res) => {
     const contestDate = getContestDate();
     const registered = await ContestRegistration.findOne({ user_id: req.user.id, contest_date: contestDate });
     
-    const now = new Date();
-    const start = new Date(); start.setHours(20, 30, 0, 0); // 8:30 PM
-    const end = new Date(); end.setHours(21, 0, 0, 0);   // 9:00 PM
+    // Get current time in IST
+    const d = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(d.getTime() + (d.getTimezoneOffset() * 60000) + istOffset);
 
-    let status = 'upcoming'; // upcoming, live, ended
-    if (now >= start && now <= end) status = 'live';
-    else if (now > end) status = 'ended';
+    const start = new Date(nowIST); start.setHours(20, 30, 0, 0); // 8:30 PM IST
+    const end = new Date(nowIST); end.setHours(21, 0, 0, 0);      // 9:00 PM IST
+
+    let status = 'upcoming'; 
+    if (nowIST >= start && nowIST <= end) status = 'live';
+    else if (nowIST > end) status = 'ended';
 
     res.json({ 
       status, 
@@ -50,14 +56,17 @@ router.get('/status', auth, async (req, res) => {
   } catch (err) { res.status(500).send('Server Error'); }
 });
 
-// @desc    Start/Join the live contest (Only 8:30-9:00 PM)
+// @desc    Start/Join the live contest (Only 8:30-9:00 PM IST)
 router.get('/join', auth, async (req, res) => {
   try {
-    const now = new Date();
-    const start = new Date(); start.setHours(20, 30, 0, 0);
-    const end = new Date(); end.setHours(21, 0, 0, 0);
+    const d = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(d.getTime() + (d.getTimezoneOffset() * 60000) + istOffset);
 
-    if (now < start || now > end) return res.status(403).json({ message: 'Contest is only live between 8:30 PM and 9:00 PM.' });
+    const start = new Date(nowIST); start.setHours(20, 30, 0, 0);
+    const end = new Date(nowIST); end.setHours(21, 0, 0, 0);
+
+    if (nowIST < start || nowIST > end) return res.status(403).json({ message: 'Contest is only live between 8:30 PM and 9:00 PM IST.' });
 
     const contestDate = getContestDate();
     const registered = await ContestRegistration.findOne({ user_id: req.user.id, contest_date: contestDate });
