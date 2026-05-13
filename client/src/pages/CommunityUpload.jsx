@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import axios from 'axios';
+import api from '../services/api';
 
 const CommunityUpload = () => {
   const [file, setFile] = useState(null);
@@ -33,7 +33,7 @@ const CommunityUpload = () => {
     try {
       const token = localStorage.getItem('token');
       // In a real app, this endpoint would handle the PDF parsing
-      // await axios.post('/api/questions/upload', formData, {
+      // await api.post('/api/questions/upload', formData, {
       //   headers: { 
       //     'Content-Type': 'multipart/form-data',
       //     'x-auth-token': token 

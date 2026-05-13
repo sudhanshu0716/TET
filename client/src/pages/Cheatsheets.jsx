@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import translations from '../translations';
 
 const Cheatsheets = () => {
@@ -14,7 +14,7 @@ const Cheatsheets = () => {
     const fetchNotes = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('/api/cheatsheets', {
+        const res = await api.get('/api/cheatsheets', {
           headers: { 'x-auth-token': token }
         });
         setNotes(res.data);

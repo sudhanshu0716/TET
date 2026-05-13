@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import translations from '../translations';
 
 const Dashboard = () => {
@@ -14,7 +14,7 @@ const Dashboard = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('/api/profile', {
+        const res = await api.get('/api/profile', {
           headers: { 'x-auth-token': token }
         });
         setUser(res.data);
@@ -29,7 +29,7 @@ const Dashboard = () => {
     const fetchStatus = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('/api/contests/status', { headers: { 'x-auth-token': token } });
+        const res = await api.get('/api/contests/status', { headers: { 'x-auth-token': token } });
         setContestStatus(res.data);
       } catch (err) { console.error(err); }
     };
@@ -39,7 +39,7 @@ const Dashboard = () => {
   const handleRegister = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('/api/contests/register', {}, { headers: { 'x-auth-token': token } });
+      await api.post('/api/contests/register', {}, { headers: { 'x-auth-token': token } });
       setContestStatus({ ...contestStatus, registered: true });
       alert('Registered successfully! Join at 8:30 PM.');
     } catch (err) { alert(err.response?.data?.message || 'Registration failed'); }

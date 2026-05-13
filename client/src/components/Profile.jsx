@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const Profile = () => {
   const [profile, setProfile] = useState({
@@ -18,7 +18,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('/api/profile', {
+        const res = await api.get('/api/profile', {
           headers: { 'x-auth-token': token }
         });
         setProfile(res.data);
@@ -34,7 +34,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.put('/api/profile/settings', profile, {
+      await api.put('/api/profile/settings', profile, {
         headers: { 'x-auth-token': token }
       });
       setMessage('Settings updated successfully!');

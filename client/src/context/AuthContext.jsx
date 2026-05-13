@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const AuthContext = createContext();
 
@@ -12,8 +12,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      // For now, just set the user from local storage
-      // In a real app, you'd verify the token with the backend
       const savedUser = JSON.parse(localStorage.getItem('user'));
       if (savedUser) setUser(savedUser);
     }
@@ -21,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const res = await axios.post('/api/auth/login', { email, password });
+    const res = await api.post('/api/auth/login', { email, password });
     localStorage.setItem('token', res.data.token);
     localStorage.setItem('user', JSON.stringify(res.data.user));
     setUser(res.data.user);
@@ -29,7 +27,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
-    const res = await axios.post('/api/auth/register', userData);
+    const res = await api.post('/api/auth/register', userData);
     localStorage.setItem('token', res.data.token);
     localStorage.setItem('user', JSON.stringify(res.data.user));
     setUser(res.data.user);

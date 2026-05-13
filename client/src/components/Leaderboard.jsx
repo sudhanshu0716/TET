@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const Leaderboard = () => {
   const [rankings, setRankings] = useState([]);
@@ -8,7 +8,7 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchRankings = async () => {
       try {
-        const res = await axios.get('/api/profile/ranking');
+        const res = await api.get('/api/profile/ranking');
         setRankings(res.data);
         setLoading(false);
       } catch (err) {

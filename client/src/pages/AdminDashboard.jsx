@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import { motion } from 'framer-motion';
 import { Users, FilePlus, Database, ShieldCheck, Activity, BarChart2 } from 'lucide-react';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 
 const ProfileSetup = () => {
   const [formData, setFormData] = useState({
@@ -15,7 +15,7 @@ const ProfileSetup = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await axios.put('/api/profile/settings', formData, {
+      await api.put('/api/profile/settings', formData, {
         headers: { 'x-auth-token': token }
       });
       navigate('/dashboard');

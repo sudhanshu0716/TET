@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import translations from '../translations';
 
 const DailyExam = ({ type }) => {
@@ -27,10 +27,10 @@ const DailyExam = ({ type }) => {
       if (type === 'important') url = '/api/exams/important';
       if (type === 'contest') url = '/api/contests/join';
 
-      const res = await axios.get(url, { headers: { 'x-auth-token': token } });
+      const res = await api.get(url, { headers: { 'x-auth-token': token } });
       const examData = res.data;
       
-      const detailRes = await axios.get(`/api/exams/${examData.exam_id}`, { headers: { 'x-auth-token': token } });
+      const detailRes = await api.get(`/api/exams/${examData.exam_id}`, { headers: { 'x-auth-token': token } });
       setExam(detailRes.data.exam);
       setQuestions(detailRes.data.questions);
       setTimeLeft(detailRes.data.exam.duration * 60);
@@ -89,7 +89,7 @@ const DailyExam = ({ type }) => {
     try {
       const token = localStorage.getItem('token');
       const formattedAnswers = Object.entries(answers).map(([qid, opt]) => ({ question_id: qid, selected_option: opt }));
-      const res = await axios.post(`/api/exams/submit/${exam.exam_id}`, { answers: formattedAnswers }, { headers: { 'x-auth-token': token } });
+      const res = await api.post(`/api/exams/submit/${exam.exam_id}`, { answers: formattedAnswers }, { headers: { 'x-auth-token': token } });
       setResult(res.data.exam);
       setStep('result');
     } catch (err) { console.error(err); }
