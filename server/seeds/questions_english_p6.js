@@ -1,0 +1,30 @@
+const { v4: uuidv4 } = require('uuid');
+const Q = (l,s,t,o,a,src,yr) => ({question_id:uuidv4(),level:l,subject:s,question_text:t,options:o,correct_answer:a,source:src,year:yr,created_at:new Date()});
+
+module.exports = [
+Q('primary','english','Identify the preposition: "He jumped into the river."',['He','Jumped','Into','River'],'Into','CTET 2011',2011),
+Q('primary','english','Identify the preposition: "The cat is under the bed."',['The','Cat','Under','Bed'],'Under','UPTET 2011',2011),
+Q('primary','english','Choose the correct collective noun: "A ___ of lions."',['Pack','Pride','Herd','Flock'],'Pride','CTET 2012',2012),
+Q('primary','english','Choose the correct collective noun: "A ___ of sheep."',['Pack','Pride','Herd','Flock'],'Flock','UPTET 2012',2012),
+Q('primary','english','Choose the correct collective noun: "A ___ of wolves."',['Pack','Pride','Herd','Flock'],'Pack','CTET 2013',2013),
+Q('primary','english','Choose the correct collective noun: "A ___ of elephants."',['Pack','Pride','Herd','Flock'],'Herd','UPTET 2013',2013),
+Q('primary','english','Choose the correct pronoun: "I saw ___ yesterday."',['he','him','his','himself'],'him','CTET 2014',2014),
+Q('primary','english','Choose the correct pronoun: "This is ___ book."',['me','my','mine','myself'],'my','UPTET 2014',2014),
+Q('primary','english','Which is a material noun?',['Love','Gold','City','Run'],'Gold','CTET 2015',2015),
+Q('primary','english','Which is a common noun?',['Teacher','Dr. Sharma','Monday','October'],'Teacher','UPTET 2015',2015),
+Q('junior','english','Who is the author of "Gulliver\'s Travels"?',['Jonathan Swift','Daniel Defoe','Charles Dickens','Thomas Hardy'],'Jonathan Swift','CTET 2011',2011),
+Q('junior','english','Who is the author of "Robinson Crusoe"?',['Jonathan Swift','Daniel Defoe','Jane Austen','George Eliot'],'Daniel Defoe','UPTET 2011',2011),
+Q('junior','english','Who wrote the novel "Oliver Twist"?',['Charles Dickens','Thomas Hardy','Jane Austen','Emily Bronte'],'Charles Dickens','CTET 2012',2012),
+Q('junior','english','Who wrote "Wuthering Heights"?',['Charlotte Bronte','Emily Bronte','Jane Austen','Mary Shelley'],'Emily Bronte','UPTET 2012',2012),
+Q('junior','english','Who wrote "Frankenstein"?',['Mary Shelley','Emily Bronte','Jane Austen','George Eliot'],'Mary Shelley','CTET 2013',2013),
+Q('junior','english','The term "Irony" means-',['A figure of speech where meaning is opposite','A comparison using as or like','A direct comparison','An exaggeration'],'A figure of speech where meaning is opposite','UPTET 2013',2013),
+Q('junior','english','The term "Alliteration" means-',['Repetition of vowel sounds','Repetition of consonant sounds at start','A comparison','None'],'Repetition of consonant sounds at start','CTET 2014',2014),
+Q('junior','english','The term "Onomatopoeia" refers to-',['Sound words','Exaggerated words','Opposite words','None'],'Sound words','UPTET 2014',2014),
+Q('junior','english','Who is known as the "Poet of Nature"?',['Wordsworth','Keats','Shelley','Byron'],'Wordsworth','CTET 2015',2015),
+Q('junior','english','Who is known as the "Poet of Beauty"?',['Keats','Wordsworth','Shelley','Byron'],'Keats','UPTET 2015',2015),
+Q('primary','english','The synonym of "Rich" is-',['Poor','Wealthy','Brave','Kind'],'Wealthy','CTET 2016',2016),
+Q('primary','english','The antonym of "Early" is-',['Soon','Late','Fast','Slow'],'Late','UPTET 2016',2016),
+Q('primary','english','Identify the verb: "She sleeps soundly."',['She','Sleeps','Soundly','None'],'Sleeps','CTET 2017',2017),
+Q('primary','english','Identify the adjective: "He is a brave soldier."',['He','Is','Brave','Soldier'],'Brave','UPTET 2017',2017),
+Q('primary','english','Choose the correctly spelled word-',['Grammar','Grammer','Gramar','Gramer'],'Grammar','CTET 2018',2018),
+];

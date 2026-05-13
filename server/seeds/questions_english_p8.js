@@ -1,0 +1,30 @@
+const { v4: uuidv4 } = require('uuid');
+const Q = (l,s,t,o,a,src,yr) => ({question_id:uuidv4(),level:l,subject:s,question_text:t,options:o,correct_answer:a,source:src,year:yr,created_at:new Date()});
+
+module.exports = [
+Q('primary','english','Identify the interjection: "Hurrah! We won the match."',['Hurrah','We','Won','Match'],'Hurrah','CTET 2011',2011),
+Q('primary','english','Identify the interjection: "Alas! He is no more."',['Alas','He','Is','No'],'Alas','UPTET 2011',2011),
+Q('primary','english','Choose the correct auxiliary verb: "He ___ playing football."',['is','am','are','have'],'is','CTET 2012',2012),
+Q('primary','english','Choose the correct auxiliary verb: "They ___ gone to school."',['has','have','is','am'],'have','UPTET 2012',2012),
+Q('primary','english','Choose the correct degree of adjective: "He is the ___ boy in the class."',['good','better','best','more good'],'best','CTET 2013',2013),
+Q('primary','english','Choose the correct degree: "Iron is ___ than gold."',['heavy','heavier','heaviest','more heavy'],'heavier','UPTET 2013',2013),
+Q('primary','english','Change into Passive Voice: "He eats an apple."',['An apple is eaten by him.','An apple was eaten by him.','An apple has eaten by him.','None'],'An apple is eaten by him.','CTET 2014',2014),
+Q('primary','english','Change into Passive Voice: "She wrote a letter."',['A letter is written by her.','A letter was written by her.','A letter has written by her.','None'],'A letter was written by her.','UPTET 2014',2014),
+Q('primary','english','Change into Direct Speech: "He says that he is ill."',['He says, "I am ill."','He says, "He is ill."','He said, "I am ill."','None'],'He says, "I am ill."','CTET 2015',2015),
+Q('primary','english','Change into Indirect Speech: "He said, \'I am playing.\'"',['He said that he was playing.','He said that he is playing.','He says that he was playing.','None'],'He said that he was playing.','UPTET 2015',2015),
+Q('junior','english','Who is the author of "The Adventures of Huckleberry Finn"?',['Mark Twain','Charles Dickens','Thomas Hardy','George Eliot'],'Mark Twain','CTET 2011',2011),
+Q('junior','english','Who wrote "Great Expectations"?',['Charles Dickens','Mark Twain','Thomas Hardy','Jane Austen'],'Charles Dickens','UPTET 2011',2011),
+Q('junior','english','Who wrote "Tess of the d\'Urbervilles"?',['Thomas Hardy','Charles Dickens','George Eliot','Jane Austen'],'Thomas Hardy','CTET 2012',2012),
+Q('junior','english','Who wrote "Middlemarch"?',['George Eliot','Jane Austen','Thomas Hardy','Charles Dickens'],'George Eliot','UPTET 2012',2012),
+Q('junior','english','Who wrote "A Tale of Two Cities"?',['Charles Dickens','Thomas Hardy','Jane Austen','George Eliot'],'Charles Dickens','CTET 2013',2013),
+Q('junior','english','The term "Simile" involves a comparison using-',['as or like','direct comparison','contradiction','None'],'as or like','UPTET 2013',2013),
+Q('junior','english','A "Metaphor" is an ___ comparison.',['Implied','Direct','Exaggerated','Contradictory'],'Implied','CTET 2014',2014),
+Q('junior','english','Identify the figure of speech: "Life is a dream."',['Simile','Metaphor','Personification','Hyperbole'],'Metaphor','UPTET 2014',2014),
+Q('junior','english','Identify the figure of speech: "He is as strong as an ox."',['Simile','Metaphor','Oxymoron','Pun'],'Simile','CTET 2015',2015),
+Q('junior','english','Who wrote the poem "The Rime of the Ancient Mariner"?',['S.T. Coleridge','Wordsworth','Keats','Shelley'],'S.T. Coleridge','UPTET 2015',2015),
+Q('primary','english','Identify the abstract noun:',['Childhood','Table','India','Army'],'Childhood','CTET 2016',2016),
+Q('primary','english','Identify the collective noun:',['Class','Teacher','Student','School'],'Class','UPTET 2016',2016),
+Q('primary','english','The synonym of "Begin" is-',['Start','End','Stop','Finish'],'Start','CTET 2017',2017),
+Q('primary','english','The antonym of "Safe" is-',['Danger','Dangerous','Unsafe','Security'],'Unsafe','UPTET 2017',2017),
+Q('primary','english','Choose the correct spelling:',['Vacuum','Vaccum','Vacum','Vacumm'],'Vacuum','CTET 2018',2018),
+];

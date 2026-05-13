@@ -1,0 +1,30 @@
+const { v4: uuidv4 } = require('uuid');
+const Q = (l,s,t,o,a,src,yr) => ({question_id:uuidv4(),level:l,subject:s,question_text:t,options:o,correct_answer:a,source:src,year:yr,created_at:new Date()});
+
+module.exports = [
+Q('primary','english','Identify the subject in: "The little boy ran fast."',['The little boy','Ran','Fast','Boy'],'The little boy','CTET 2011',2011),
+Q('primary','english','Identify the predicate in: "She loves her dog."',['She','Loves her dog','Loves','Dog'],'Loves her dog','UPTET 2011',2011),
+Q('primary','english','Change into Passive Voice: "People speak English all over the world."',['English is spoken all over the world.','English was spoken all over the world.','English has spoken all over the world.','None'],'English is spoken all over the world.','CTET 2012',2012),
+Q('primary','english','Change into Active Voice: "A song was sung by her."',['She sang a song.','She is singing a song.','She has sung a song.','She sings a song.'],'She sang a song.','UPTET 2012',2012),
+Q('primary','english','Which is a proper noun?',['City','India','Country','River'],'India','CTET 2013',2013),
+Q('primary','english','Which is a common noun?',['Ganga','Himalaya','River','Delhi'],'River','UPTET 2013',2013),
+Q('primary','english','Identify the adverb: "He drives carefully."',['He','Drives','Carefully','None'],'Carefully','CTET 2014',2014),
+Q('primary','english','Identify the adjective: "It was a dark night."',['It','Was','Dark','Night'],'Dark','UPTET 2014',2014),
+Q('primary','english','The plural of "leaf" is-',['Leafs','Leaves','Leafes','Leafi'],'Leaves','CTET 2015',2015),
+Q('primary','english','The plural of "knife" is-',['Knifes','Knives','Knifesi','Knifi'],'Knives','UPTET 2015',2015),
+Q('junior','english','Identify the figure of speech: "The moon smiled."',['Simile','Metaphor','Personification','Oxymoron'],'Personification','CTET 2011',2011),
+Q('junior','english','Identify the figure of speech: "The stars dance."',['Simile','Personification','Metaphor','Pun'],'Personification','UPTET 2011',2011),
+Q('junior','english','Identify the figure of speech: "O death! Where is thy sting?"',['Apostrophe','Simile','Metaphor','Hyperbole'],'Apostrophe','CTET 2012',2012),
+Q('junior','english','Identify the figure of speech: "He is as brave as a lion."',['Metaphor','Simile','Oxymoron','Onomatopoeia'],'Simile','UPTET 2012',2012),
+Q('junior','english','Who wrote "The Waste Land"?',['T.S. Eliot','W.B. Yeats','Ezra Pound','Robert Frost'],'T.S. Eliot','CTET 2013',2013),
+Q('junior','english','Who wrote "Arms and the Man"?',['George Bernard Shaw','Shakespeare','Milton','Keats'],'George Bernard Shaw','UPTET 2013',2013),
+Q('junior','english','Who wrote "The Guide"?',['R.K. Narayan','Mulk Raj Anand','Anita Desai','Vikram Seth'],'R.K. Narayan','CTET 2014',2014),
+Q('junior','english','Who is known as the "Bard of Avon"?',['Shakespeare','Milton','Wordsworth','Keats'],'Shakespeare','UPTET 2014',2014),
+Q('junior','english','The main goal of Communicative Language Teaching (CLT) is-',['Grammar accuracy','Fluency and communication','Memorization','Translation'],'Fluency and communication','CTET 2015',2015),
+Q('junior','english','Which skill is a "Receptive Skill"?',['Speaking','Writing','Listening','None'],'Listening','UPTET 2015',2015),
+Q('junior','english','Which skill is a "Productive Skill"?',['Reading','Listening','Writing','None'],'Writing','CTET 2016',2016),
+Q('junior','english','Continuous and Comprehensive Evaluation (CCE) was introduced by-',['NCERT','CBSE','UGC','NCTE'],'CBSE','UPTET 2016',2016),
+Q('junior','english','"The Solitary Reaper" is a poem by-',['Wordsworth','Keats','Shelley','Byron'],'Wordsworth','CTET 2017',2017),
+Q('junior','english','"The Road Not Taken" is a poem by-',['Robert Frost','John Milton','Shakespeare','Keats'],'Robert Frost','UPTET 2017',2017),
+Q('junior','english','Who wrote "Pride and Prejudice"?',['Jane Austen','Charles Dickens','Thomas Hardy','George Eliot'],'Jane Austen','CTET 2018',2018),
+];

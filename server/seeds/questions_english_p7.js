@@ -1,0 +1,30 @@
+const { v4: uuidv4 } = require('uuid');
+const Q = (l,s,t,o,a,src,yr) => ({question_id:uuidv4(),level:l,subject:s,question_text:t,options:o,correct_answer:a,source:src,year:yr,created_at:new Date()});
+
+module.exports = [
+Q('primary','english','Identify the conjunction: "He is poor but honest."',['He','Is','But','Honest'],'But','CTET 2011',2011),
+Q('primary','english','Identify the conjunction: "Wait here until I come back."',['Wait','Here','Until','Come'],'Until','UPTET 2011',2011),
+Q('primary','english','Choose the correct article: "___ sun rises in the east."',['A','An','The','None'],'The','CTET 2012',2012),
+Q('primary','english','Choose the correct article: "He is ___ honest man."',['A','An','The','None'],'An','UPTET 2012',2012),
+Q('primary','english','Choose the correct article: "She is ___ university student."',['A','An','The','None'],'A','CTET 2013',2013),
+Q('primary','english','Choose the correct article: "I saw ___ one-eyed man."',['A','An','The','None'],'A','UPTET 2013',2013),
+Q('primary','english','The feminine of "Actor" is-',['Actor','Actress','Actorin','Actora'],'Actress','CTET 2014',2014),
+Q('primary','english','The feminine of "Tiger" is-',['Tigeress','Tigress','Tigerin','Tiger'],'Tigress','UPTET 2014',2014),
+Q('primary','english','The masculine of "Bee" is-',['Drone','Bull','Buck','Stag'],'Drone','CTET 2015',2015),
+Q('primary','english','The masculine of "Duck" is-',['Drake','Gander','Stallion','Ram'],'Drake','UPTET 2015',2015),
+Q('junior','english','Who is the author of "Alice in Wonderland"?',['Lewis Carroll','Rudyard Kipling','Charles Dickens','R.L. Stevenson'],'Lewis Carroll','CTET 2011',2011),
+Q('junior','english','Who wrote "The Jungle Book"?',['Lewis Carroll','Rudyard Kipling','Charles Dickens','Mark Twain'],'Rudyard Kipling','UPTET 2011',2011),
+Q('junior','english','Who wrote "Treasure Island"?',['R.L. Stevenson','Mark Twain','H.G. Wells','Jules Verne'],'R.L. Stevenson','CTET 2012',2012),
+Q('junior','english','Who wrote "The Adventures of Tom Sawyer"?',['Mark Twain','Charles Dickens','Thomas Hardy','George Eliot'],'Mark Twain','UPTET 2012',2012),
+Q('junior','english','Who wrote "War and Peace"?',['Leo Tolstoy','Maxim Gorky','Dostoyevsky','Anton Chekhov'],'Leo Tolstoy','CTET 2013',2013),
+Q('junior','english','A "Sonnet" consists of ___ lines.',['10','12','14','16'],'14','UPTET 2013',2013),
+Q('junior','english','The "Shakespearean Sonnet" has ___ quatrains and a couplet.',['2','3','4','5'],'3','CTET 2014',2014),
+Q('junior','english','The "Petrarchan Sonnet" is divided into an octave and a ___.',['Sestet','Couplet','Quatrain','Quintet'],'Sestet','UPTET 2014',2014),
+Q('junior','english','An "Ode" is a ___ poem.',['Narrative','Lyric','Dramatic','Epic'],'Lyric','CTET 2015',2015),
+Q('junior','english','An "Elegy" is a poem of ___.',['Mourning','Joy','War','Love'],'Mourning','UPTET 2015',2015),
+Q('primary','english','Identify the type of sentence: "What a beautiful flower!"',['Assertive','Interrogative','Imperative','Exclamatory'],'Exclamatory','CTET 2016',2016),
+Q('primary','english','Identify the type of sentence: "Please sit down."',['Assertive','Interrogative','Imperative','Exclamatory'],'Imperative','UPTET 2016',2016),
+Q('primary','english','Identify the type of sentence: "Do you like tea?"',['Assertive','Interrogative','Imperative','Exclamatory'],'Interrogative','CTET 2017',2017),
+Q('primary','english','Identify the type of sentence: "The earth moves round the sun."',['Assertive','Interrogative','Imperative','Exclamatory'],'Assertive','UPTET 2017',2017),
+Q('primary','english','The plural of "Ox" is-',['Oxes','Oxen','Oxis','Oxi'],'Oxen','CTET 2018',2018),
+];

@@ -1,0 +1,30 @@
+const { v4: uuidv4 } = require('uuid');
+const Q = (l,s,t,o,a,src,yr) => ({question_id:uuidv4(),level:l,subject:s,question_text:t,options:o,correct_answer:a,source:src,year:yr,created_at:new Date()});
+
+module.exports = [
+Q('primary','english','Identify the silent letter in "Knife"-',['k','n','i','f'],'k','CTET 2011',2011),
+Q('primary','english','Identify the silent letter in "Honest"-',['h','o','n','e'],'h','UPTET 2011',2011),
+Q('primary','english','Choose the correct plural form of "Mouse"-',['Mouses','Mice','Mices','Micees'],'Mice','CTET 2012',2012),
+Q('primary','english','Choose the correct plural form of "Ox"-',['Oxes','Oxen','Oxens','Oxe'],'Oxen','UPTET 2012',2012),
+Q('primary','english','The feminine of "Bachelor" is-',['Bachelorette','Maid','Spinster','None'],'Spinster','CTET 2013',2013),
+Q('primary','english','Choose the correct article: "He is ___ heir to the throne."',['a','an','the','no article'],'an','UPTET 2013',2013),
+Q('primary','english','Which is a collective noun?',['Army','Brave','Run','Clearly'],'Army','CTET 2014',2014),
+Q('primary','english','Which is an abstract noun?',['Gold','Milk','Kindness','Table'],'Kindness','UPTET 2014',2014),
+Q('primary','english','Choose the synonym of "Abolish"-',['End','Start','Continue','Build'],'End','CTET 2015',2015),
+Q('primary','english','Choose the antonym of "Barren"-',['Dry','Fertile','Hard','Empty'],'Fertile','UPTET 2015',2015),
+Q('junior','english','Who is known as the "Father of English Poetry"?',['Shakespeare','Milton','Chaucer','Wordsworth'],'Chaucer','CTET 2011',2011),
+Q('junior','english','William Shakespeare was born in-',['1564','1616','1588','1600'],'1564','UPTET 2011',2011),
+Q('junior','english','How many sonnets did Shakespeare write?',['126','154','150','144'],'154','CTET 2012',2012),
+Q('junior','english','"Paradise Lost" was written by-',['John Milton','John Keats','Shelley','Byron'],'John Milton','UPTET 2012',2012),
+Q('junior','english','"Lyrical Ballads" was published in-',['1798','1800','1805','1790'],'1798','CTET 2013',2013),
+Q('junior','english','Choose the figure of speech: "The camel is the ship of the desert."',['Simile','Metaphor','Personification','Hyperbole'],'Metaphor','UPTET 2013',2013),
+Q('junior','english','The word "Lexical" is related to-',['Grammar','Vocabulary','Pronunciation','Writing'],'Vocabulary','CTET 2014',2014),
+Q('junior','english','Reading for information is known as-',['Scanning','Skimming','Intensive Reading','Extensive Reading'],'Scanning','UPTET 2014',2014),
+Q('junior','english','Reading for the general idea is known as-',['Scanning','Skimming','Intensive Reading','Extensive Reading'],'Skimming','CTET 2015',2015),
+Q('junior','english','The study of meaning in language is known as-',['Phonology','Morphology','Syntax','Semantics'],'Semantics','UPTET 2015',2015),
+Q('primary','english','Identify the adverb: "She sang sweetly."',['She','Sang','Sweetly','None'],'Sweetly','CTET 2016',2016),
+Q('primary','english','Identify the conjunction: "He is poor but honest."',['He','Is','But','Honest'],'But','UPTET 2016',2016),
+Q('primary','english','The plural of "Sheep" is-',['Sheeps','Sheepes','Sheep','Sheepi'],'Sheep','CTET 2017',2017),
+Q('primary','english','Identify the interjection: "Hurrah! We won."',['Hurrah','We','Won','None'],'Hurrah','UPTET 2017',2017),
+Q('primary','english','Choose the correctly spelled word-',['Committee','Comitee','Committe','Commettee'],'Committee','CTET 2018',2018),
+];
