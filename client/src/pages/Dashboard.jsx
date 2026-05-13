@@ -87,34 +87,34 @@ const Dashboard = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
           <div>
             <span style={{ fontSize: '0.7rem', color: contestStatus.status === 'live' ? '#10b981' : 'var(--primary)', fontWeight: 800 }}>
-              {contestStatus.status === 'live' ? '● LIVE CONTEST' : 'UPCOMING CONTEST'}
+              {contestStatus.status === 'live' ? t.liveContest : t.upcomingContest}
             </span>
-            <h3 style={{ fontSize: '1.2rem', margin: '4px 0' }}>Daily 8:30 PM Challenge</h3>
+            <h3 style={{ fontSize: '1.2rem', margin: '4px 0' }}>{t.contestTitle}</h3>
           </div>
           <div style={{ fontSize: '2rem' }}>🏆</div>
         </div>
         
         <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
-          {contestStatus.status === 'live' ? 'The contest is live! 20 Questions | 30 Mins.' : 'Join the elite battle tonight at 8:30 PM. Earn your global rank!'}
+          {contestStatus.status === 'live' ? t.contestDescLive : t.contestDescUpcoming}
         </p>
 
         <div style={{ display: 'flex', gap: '10px' }}>
           {contestStatus.status === 'live' ? (
             <button className="btn-primary" style={{ background: '#10b981' }} onClick={() => navigate('/contest-live')}>
-              Join Contest Now
+              {t.joinNow}
             </button>
           ) : contestStatus.status === 'ended' ? (
             <button className="btn-primary" onClick={() => navigate('/contest-leaderboard')}>
-              View Leaderboard
+              {t.viewLeaderboard}
             </button>
           ) : (
             <>
               {contestStatus.registered ? (
                 <div style={{ padding: '10px 16px', background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', borderRadius: '8px', fontSize: '0.9rem', fontWeight: 600, flex: 1, textAlign: 'center' }}>
-                  ✓ Registered
+                  {t.registered}
                 </div>
               ) : (
-                <button className="btn-primary" onClick={handleRegister}>Register for Today</button>
+                <button className="btn-primary" onClick={handleRegister}>{t.registerToday}</button>
               )}
             </>
           )}

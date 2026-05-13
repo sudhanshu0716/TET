@@ -33,7 +33,16 @@ const translations = {
     notesDesc: "Quick 'Must-Know' points for last-minute prep",
     backToNotes: "Back to Notes",
     rank: "Rank",
-    me: "Me"
+    me: "Me",
+    upcomingContest: "UPCOMING CONTEST",
+    liveContest: "● LIVE CONTEST",
+    contestTitle: "Daily 8:30 PM Challenge",
+    contestDescLive: "The contest is live! 20 Questions | 30 Mins.",
+    contestDescUpcoming: "Join the elite battle tonight at 8:30 PM. Earn your global rank!",
+    joinNow: "Join Contest Now",
+    viewLeaderboard: "View Leaderboard",
+    registerToday: "Register for Today",
+    registered: "✓ Registered"
   },
   HI: {
     hello: "नमस्ते",
@@ -69,7 +78,16 @@ const translations = {
     notesDesc: "अंतिम समय की तैयारी के लिए महत्वपूर्ण बिंदु",
     backToNotes: "नोट्स पर वापस जाएं",
     rank: "रैंक",
-    me: "मेरा प्रोफाइल"
+    me: "मेरा प्रोफाइल",
+    upcomingContest: "आगामी प्रतियोगिता",
+    liveContest: "● लाइव प्रतियोगिता",
+    contestTitle: "दैनिक रात 8:30 बजे की चुनौती",
+    contestDescLive: "प्रतियोगिता लाइव है! 20 प्रश्न | 30 मिनट।",
+    contestDescUpcoming: "आज रात 8:30 बजे कुलीन लड़ाई में शामिल हों। अपनी वैश्विक रैंक अर्जित करें!",
+    joinNow: "अभी शामिल हों",
+    viewLeaderboard: "लीडरबोर्ड देखें",
+    registerToday: "आज के लिए पंजीकरण करें",
+    registered: "✓ पंजीकृत"
   }
 };
 
