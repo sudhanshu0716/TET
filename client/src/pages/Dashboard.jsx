@@ -73,7 +73,7 @@ const Dashboard = () => {
         </div>
         <div className="streak-badge">
           <span>🔥</span>
-          <span>{user.streak || 3} {t.streak}</span>
+          <span>{user.streak || 0} {t.streak}</span>
         </div>
       </header>
 
@@ -132,16 +132,16 @@ const Dashboard = () => {
         <h4 style={{ marginBottom: '16px', fontSize: '0.9rem', opacity: 0.8 }}>{t.perf}</h4>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           <div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>{user.avgScore || 78}%</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>{user.avgScore || 0}%</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t.accuracy}</div>
           </div>
           <div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent)' }}>{user.examsTaken || 12}</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent)' }}>{user.examsTaken || 0}</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t.examsDone}</div>
           </div>
         </div>
         <div className="progress-bar-container" style={{ marginTop: '20px' }}>
-          <div className="progress-bar-fill" style={{ width: `${user.avgScore || 78}%` }}></div>
+          <div className="progress-bar-fill" style={{ width: `${user.avgScore || 0}%` }}></div>
         </div>
       </div>
 
