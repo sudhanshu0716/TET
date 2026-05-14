@@ -10,12 +10,23 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const savedUser = JSON.parse(localStorage.getItem('user'));
-      if (savedUser) setUser(savedUser);
-    }
-    setLoading(false);
+    const initAuth = () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const savedUser = localStorage.getItem('user');
+          if (savedUser && savedUser !== 'undefined') {
+            setUser(JSON.parse(savedUser));
+          }
+        }
+      } catch (err) {
+        console.error("Auth init error:", err);
+        localStorage.clear();
+      } finally {
+        setLoading(false);
+      }
+    };
+    initAuth();
   }, []);
 
   const login = async (email, password) => {

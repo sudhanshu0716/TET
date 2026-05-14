@@ -9,14 +9,11 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
-/*
+// Force uninstall old service workers that might be causing blank screens
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then(registration => {
-      console.log('SW registered: ', registration);
-    }).catch(registrationError => {
-      console.log('SW registration failed: ', registrationError);
-    });
-  });
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    for (let registration of registrations) {
+      registration.unregister();
+    }
+  }).catch(err => console.error("SW unregister error:", err));
 }
-*/
