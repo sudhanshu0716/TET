@@ -7,6 +7,7 @@ import TopicInsights from '../components/TopicInsights';
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
+  const [todaySolved, setTodaySolved] = useState(0);
   const [contestStatus, setContestStatus] = useState({ status: 'upcoming', registered: false });
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
@@ -44,6 +45,13 @@ const Dashboard = () => {
         const token = localStorage.getItem('token');
         const res = await api.get('/api/exams/history', { headers: { 'x-auth-token': token } });
         setHistory(res.data);
+        
+        // Calculate today's solved questions
+        const today = new Date().toLocaleDateString();
+        const count = res.data
+          .filter(ex => new Date(ex.date).toLocaleDateString() === today)
+          .reduce((sum, ex) => sum + (ex.answers?.length || 0), 0);
+        setTodaySolved(count);
       } catch (err) { console.error(err); }
     };
     fetchHistory();
@@ -86,16 +94,21 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Next Exam Countdown */}
-      <div className="glass-card !py-4 flex items-center justify-between bg-gradient-to-r from-rose-500/10 to-transparent border-l-4 border-l-rose-500">
-        <div>
-          <h5 className="text-[10px] font-black uppercase tracking-widest text-rose-400">Next Big Exam</h5>
-          <p className="text-sm font-bold text-[var(--text-primary)]">CTET July 2026</p>
+      {/* Daily Progress Goal */}
+      <div className="glass-card !py-4 space-y-3 bg-gradient-to-r from-emerald-500/10 to-transparent border-l-4 border-l-emerald-500">
+        <div className="flex justify-between items-center">
+          <h5 className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Today's Goal</h5>
+          <span className="text-xs font-bold text-slate-400">{todaySolved}/25 Qs</span>
         </div>
-        <div className="text-right">
-          <div className="text-xl font-black text-rose-400">45 Days</div>
-          <div className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Left to prepare</div>
+        <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)] transition-all duration-1000"
+            style={{ width: `${Math.min((todaySolved/25)*100, 100)}%` }}
+          />
         </div>
+        <p className="text-[10px] text-slate-500 font-medium italic">
+          {todaySolved >= 25 ? "Amazing! Goal reached. Keep it up! 🏆" : `Solve ${Math.max(0, 25 - todaySolved)} more to hit your daily goal!`}
+        </p>
       </div>
 
       {/* Daily Live Contest Card */}
