@@ -84,7 +84,7 @@ router.get('/join', auth, async (req, res) => {
     });
 
     await exam.save();
-    res.json({ exam_id: exam.exam_id, questions: questions.map(q => ({ ...q, correct_option: undefined })) });
+    res.json({ exam, questions: questions.map(q => ({ ...q, correct_option: undefined })) });
   } catch (err) { res.status(500).send('Server Error'); }
 });
 

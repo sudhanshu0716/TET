@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import api from '../services/api';
 
@@ -32,14 +31,6 @@ const CommunityUpload = () => {
 
     try {
       const token = localStorage.getItem('token');
-      // In a real app, this endpoint would handle the PDF parsing
-      // await api.post('/api/questions/upload', formData, {
-      //   headers: { 
-      //     'Content-Type': 'multipart/form-data',
-      //     'x-auth-token': token 
-      //   }
-      // });
-      
       // Mocking success for now
       setTimeout(() => {
         setSuccess(true);
@@ -53,15 +44,15 @@ const CommunityUpload = () => {
   };
 
   return (
-    <div className="flex flex-col gap-8">
-      <header>
-        <h1 className="text-2xl font-bold text-white">Community Uploads</h1>
-        <p className="text-slate-400 text-sm">Help others by sharing past year papers</p>
+    <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
+      <header className="space-y-1">
+        <h1 className="text-2xl font-black text-white tracking-tight">Community <span className="text-sky-400">Uploads</span></h1>
+        <p className="text-slate-400 text-sm font-medium">Help others by sharing past year papers</p>
       </header>
 
-      <div className="flex flex-col gap-6">
-        <div className={`relative flex flex-col items-center justify-center rounded-3xl border-2 border-dashed p-12 transition-all ${
-          file ? 'border-primary-500 bg-primary-500/5' : 'border-slate-800 bg-slate-900/50'
+      <div className="flex flex-col gap-5">
+        <div className={`relative flex flex-col items-center justify-center rounded-3xl border-2 border-dashed p-10 transition-all ${
+          file ? 'border-sky-500/40 bg-sky-500/5' : 'border-white/10 bg-white/[0.02]'
         }`}>
           <input
             type="file"
@@ -69,54 +60,54 @@ const CommunityUpload = () => {
             onChange={handleFileChange}
             className="absolute inset-0 z-10 cursor-pointer opacity-0"
           />
-          <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-2xl ${
-            file ? 'bg-primary-500 text-white' : 'bg-slate-800 text-slate-500'
+          <div className={`mb-4 flex h-16 w-16 items-center justify-center rounded-2xl transition-colors ${
+            file ? 'bg-sky-500 text-white' : 'bg-white/5 text-slate-500'
           }`}>
             <Upload size={32} />
           </div>
-          <h3 className="text-lg font-bold text-white">
+          <h3 className="text-sm font-black text-white text-center">
             {file ? file.name : 'Click or drag PDF to upload'}
           </h3>
-          <p className="mt-1 text-xs text-slate-500">Max size: 10MB (PDF only)</p>
+          <p className="mt-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Max 10MB · PDF only</p>
         </div>
 
         {error && (
-          <div className="flex items-center gap-2 rounded-xl bg-red-500/10 p-4 text-sm text-red-400">
-            <AlertCircle size={18} />
+          <div className="flex items-center gap-3 rounded-2xl bg-red-500/10 border border-red-500/20 p-4 text-sm text-red-400 font-bold">
+            <AlertCircle size={18} className="shrink-0" />
             {error}
           </div>
         )}
 
         {success && (
-          <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 p-4 text-sm text-emerald-400">
-            <CheckCircle size={18} />
-            Paper uploaded successfully! Our team will review and add it to the bank.
+          <div className="flex items-center gap-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-4 text-sm text-emerald-400 font-bold">
+            <CheckCircle size={18} className="shrink-0" />
+            Paper uploaded! Our team will review it.
           </div>
         )}
 
         <button
           disabled={!file || uploading}
           onClick={handleUpload}
-          className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-primary-500 font-bold text-white transition-all hover:bg-primary-600 active:scale-[0.98] disabled:opacity-30"
+          className="premium-button w-full py-5 rounded-2xl font-black text-white text-lg shadow-xl shadow-sky-500/20 disabled:opacity-30 disabled:cursor-not-allowed"
         >
           {uploading ? (
-            <>
+            <span className="flex items-center gap-3">
               <Loader2 className="animate-spin" size={20} /> Parsing Paper...
-            </>
+            </span>
           ) : (
-            <>
+            <span className="flex items-center gap-3">
               Upload Paper <FileText size={20} />
-            </>
+            </span>
           )}
         </button>
 
-        <div className="rounded-2xl bg-slate-900/80 p-6">
-          <h4 className="mb-3 font-bold text-white flex items-center gap-2 text-sm">
-            <CheckCircle size={16} className="text-primary-500" /> Upload Guidelines
+        <div className="glass-card space-y-3">
+          <h4 className="font-black text-white flex items-center gap-2 text-sm">
+            <CheckCircle size={16} className="text-sky-400" /> Upload Guidelines
           </h4>
-          <ul className="flex flex-col gap-2 text-xs text-slate-400 leading-relaxed">
+          <ul className="flex flex-col gap-2 text-xs text-slate-400 leading-relaxed font-medium">
             <li>• Ensure the PDF contains clear MCQ questions.</li>
-            <li>• Mention the Year and Paper Level in the PDF name if possible.</li>
+            <li>• Mention Year and Paper Level in the filename.</li>
             <li>• Avoid blurry or hand-written papers.</li>
           </ul>
         </div>

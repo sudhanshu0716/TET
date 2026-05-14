@@ -8,99 +8,98 @@ const Home = () => {
   const { user } = useAuth();
 
   return (
-    <div className="flex flex-col items-center gap-12 pt-8">
+    <div className="flex flex-col gap-12 pt-12 px-6 max-w-md mx-auto w-full animate-fade-in">
       {/* Hero Section */}
-      <section className="text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-500/10 text-primary-500 shadow-xl shadow-primary-500/10">
-            <GraduationCap size={40} />
-          </div>
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
-            Master the <span className="text-primary-500">TET Exams</span>
+      <section className="text-center space-y-6">
+        <div className="mx-auto w-20 h-20 bg-gradient-to-tr from-sky-500 to-indigo-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-sky-500/20 rotate-3 transition-transform hover:rotate-0 duration-500">
+          <GraduationCap size={44} className="text-white" />
+        </div>
+        
+        <div className="space-y-3">
+          <h1 className="text-5xl font-black text-white leading-[1.1] tracking-tight">
+            Master <br/>
+            <span className="text-gradient">TET Exams</span>
           </h1>
-          <p className="mx-auto max-w-xs text-lg text-slate-400">
-            Daily practice, curated cheatsheets, and personalized prep for UPTET & CTET.
+          <p className="text-slate-400 text-lg font-medium leading-relaxed px-4">
+            The ultimate preparation companion for UPTET & CTET success.
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-10 flex flex-col gap-4"
-        >
+        <div className="flex flex-col gap-4 pt-4">
           {user ? (
             <Link
               to="/dashboard"
-              className="flex items-center justify-center gap-2 rounded-xl bg-primary-500 px-8 py-4 font-bold text-white transition-all hover:bg-primary-600 hover:shadow-lg hover:shadow-primary-500/25 active:scale-95"
+              className="premium-button py-5 rounded-2xl font-black text-white shadow-xl group"
             >
-              Go to Dashboard <ArrowRight size={20} />
+              Enter Dashboard
+              <ArrowRight size={20} className="ml-2 transition-transform group-hover:translate-x-1" />
             </Link>
           ) : (
             <>
               <Link
                 to="/register"
-                className="flex items-center justify-center gap-2 rounded-xl bg-primary-500 px-8 py-4 font-bold text-white transition-all hover:bg-primary-600 hover:shadow-lg hover:shadow-primary-500/25 active:scale-95"
+                className="premium-button py-5 rounded-2xl font-black text-white shadow-xl"
               >
-                Start Free Preparation
+                Start Free Journey
               </Link>
               <Link
                 to="/login"
-                className="text-sm font-medium text-slate-400 hover:text-white"
+                className="text-sm font-bold text-slate-500 hover:text-sky-400 transition-colors uppercase tracking-widest"
               >
-                Already have an account? Login
+                Already a member? Sign In
               </Link>
             </>
           )}
-        </motion.div>
+        </div>
       </section>
 
       {/* Features Grid */}
-      <section className="grid w-full gap-4">
+      <section className="space-y-4">
+        <h2 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] text-center mb-6">Why TET Prep?</h2>
         {[
           {
             title: 'Daily Practice',
-            desc: '30 Fresh MCQs every day to keep you sharp.',
+            desc: '30 Fresh MCQs every day across all major subjects.',
             icon: CheckCircle,
-            color: 'text-emerald-500',
-            bg: 'bg-emerald-500/10',
+            color: 'text-emerald-400',
+            bg: 'bg-emerald-400/10',
           },
           {
-            title: 'Revision Cheatsheets',
-            desc: 'Quick revision notes after every exam.',
+            title: 'Revision Notes',
+            desc: 'AI-curated cheatsheets for rapid revision before exams.',
             icon: BookOpen,
-            color: 'text-amber-500',
-            bg: 'bg-amber-500/10',
+            color: 'text-amber-400',
+            bg: 'bg-amber-400/10',
           },
           {
-            title: 'Past Papers',
-            desc: 'Access huge repository of previous year papers.',
+            title: 'PYQ Repository',
+            desc: 'Unlimited access to 10+ years of solved past papers.',
             icon: GraduationCap,
-            color: 'text-primary-500',
-            bg: 'bg-primary-500/10',
+            color: 'text-sky-400',
+            bg: 'bg-sky-400/10',
           },
         ].map((feature, i) => (
-          <motion.div
+          <div
             key={i}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
-            className="flex items-start gap-4 rounded-2xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-sm"
+            className="glass-card p-6 flex items-start gap-5 group"
           >
-            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${feature.bg} ${feature.color}`}>
-              <feature.icon size={24} />
+            <div className={`w-14 h-14 shrink-0 rounded-2xl ${feature.bg} ${feature.color} flex items-center justify-center transition-transform group-hover:scale-110 duration-500`}>
+              <feature.icon size={28} />
             </div>
-            <div>
-              <h3 className="mb-1 font-bold text-white">{feature.title}</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">{feature.desc}</p>
+            <div className="space-y-1">
+              <h3 className="font-black text-white text-lg">{feature.title}</h3>
+              <p className="text-sm text-slate-400 font-medium leading-snug">{feature.desc}</p>
             </div>
-          </motion.div>
+          </div>
         ))}
       </section>
+
+      {/* Social Proof / Footer-ish */}
+      <footer className="text-center pb-20">
+        <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+          Join 5,000+ Aspirants Today
+        </p>
+      </footer>
     </div>
   );
 };

@@ -18,45 +18,49 @@ const Leaderboard = () => {
     fetchRankings();
   }, []);
 
-  if (loading) return <div className="app-container">Loading...</div>;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+      <div className="w-10 h-10 border-4 border-sky-500/20 border-t-sky-500 rounded-full animate-spin"></div>
+      <p className="text-slate-500 font-bold animate-pulse">Loading Rankings...</p>
+    </div>
+  );
 
   return (
-    <div className="app-container animate-fade">
-      <h2 style={{ marginBottom: '24px', fontWeight: 700 }}>Global Leaderboard</h2>
+    <div className="flex flex-col gap-8 pt-8 px-6 pb-24 max-w-md mx-auto w-full animate-fade-in">
+      <div className="space-y-2">
+        <h2 className="text-3xl font-black text-white tracking-tight">Top <span className="text-sky-400">Performers</span></h2>
+        <p className="text-slate-400 font-medium text-sm">Compete with the best and rise to the top</p>
+      </div>
       
-      <div className="glass-card" style={{ padding: '0' }}>
+      <div className="flex flex-col gap-3">
         {rankings.map((user, index) => (
           <div 
             key={index} 
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '16px', 
-              padding: '16px', 
-              borderBottom: index === rankings.length - 1 ? 'none' : '1px solid var(--glass-border)',
-              background: index === 0 ? 'rgba(99, 102, 241, 0.1)' : 'transparent'
-            }}
+            className={`
+              glass-card flex items-center gap-5 p-5 transition-all duration-300
+              ${index === 0 ? 'border-sky-500/30 bg-sky-500/5 ring-1 ring-sky-500/20' : 'hover:bg-white/5'}
+            `}
           >
-            <div style={{ 
-              width: '32px', 
-              height: '32px', 
-              borderRadius: '50%', 
-              background: index === 0 ? '#fbbf24' : index === 1 ? '#94a3b8' : index === 2 ? '#b45309' : 'rgba(255,255,255,0.1)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              fontWeight: 700,
-              fontSize: '0.9rem'
-            }}>
+            <div className={`
+              w-10 h-10 rounded-full flex items-center justify-center font-black text-sm shadow-inner
+              ${index === 0 ? 'bg-gradient-to-br from-amber-300 to-amber-600 text-amber-950 scale-110 shadow-amber-500/40' : 
+                index === 1 ? 'bg-slate-300 text-slate-800' : 
+                index === 2 ? 'bg-orange-400 text-orange-950' : 
+                'bg-slate-800 text-slate-400'}
+            `}>
               {index + 1}
             </div>
-            <div style={{ flex: 1 }}>
-              <h4 style={{ margin: 0 }}>{user.name}</h4>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{user.questions_solved} Questions Solved</p>
+
+            <div className="flex-1 min-w-0">
+              <h4 className="font-black text-white truncate">{user.name}</h4>
+              <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">
+                {user.questions_solved} Solved
+              </p>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontWeight: 700, color: 'var(--primary)' }}>{user.rank_points}</div>
-              <small style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Points</small>
+
+            <div className="text-right">
+              <div className="text-lg font-black text-sky-400 leading-none">{user.rank_points}</div>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Points</span>
             </div>
           </div>
         ))}

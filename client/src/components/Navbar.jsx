@@ -21,75 +21,34 @@ const Navbar = () => {
   };
 
   return (
-    <nav style={{ 
-      padding: '12px 20px', 
-      display: 'flex', 
-      justifyContent: 'space-between', 
-      alignItems: 'center', 
-      background: 'rgba(15, 23, 42, 0.8)', 
-      backdropFilter: 'blur(20px)', 
-      borderBottom: '1px solid var(--glass-border)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 1000
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{ 
-          width: '35px', 
-          height: '35px', 
-          background: 'linear-gradient(135deg, #6366f1, #a855f7)', 
-          borderRadius: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          fontWeight: 800,
-          fontSize: '1.2rem',
-          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
-        }}>T</div>
-        <h1 style={{ 
-          fontSize: '1.1rem', 
-          fontWeight: 800, 
-          letterSpacing: '-0.5px',
-          margin: 0
-        }}>
-          TET PREP
-        </h1>
-      </div>
+    <nav className="sticky top-0 z-[100] px-4 py-4 backdrop-blur-xl border-b border-white/5 bg-slate-950/80">
+      <div className="max-w-md mx-auto flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-gradient-to-br from-sky-400 to-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-sky-500/20">
+            T
+          </div>
+          <h1 className="text-lg font-black text-white tracking-tighter">
+            TET <span className="text-sky-400">PREP</span>
+          </h1>
+        </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <button 
-          onClick={toggleLang}
-          style={{ 
-            background: 'var(--glass)', 
-            border: '1px solid var(--glass-border)', 
-            color: 'white', 
-            padding: '4px 10px',
-            borderRadius: '6px',
-            fontSize: '0.75rem', 
-            fontWeight: 700,
-            cursor: 'pointer' 
-          }}
-        >
-          {lang === 'EN' ? 'हिंदी' : 'English'}
-        </button>
-        {token && (
+        <div className="flex items-center gap-3">
           <button 
-            onClick={handleLogout}
-            style={{ 
-              background: 'rgba(239, 68, 68, 0.1)', 
-              border: '1px solid rgba(239, 68, 68, 0.2)', 
-              color: '#f87171', 
-              padding: '6px 12px',
-              borderRadius: '8px',
-              fontSize: '0.8rem', 
-              fontWeight: 700,
-              cursor: 'pointer' 
-            }}
+            onClick={toggleLang}
+            className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors"
           >
-            Logout
+            {lang === 'EN' ? 'हिंदी' : 'English'}
           </button>
-        )}
+          
+          {token && (
+            <button 
+              onClick={handleLogout}
+              className="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-colors"
+            >
+              Logout
+            </button>
+          )}
+        </div>
       </div>
     </nav>
   );

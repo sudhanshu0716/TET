@@ -29,78 +29,76 @@ const Cheatsheets = () => {
   const subjects = ['all', 'pedagogy', 'hindi', 'english', 'evs', 'math', 'social', 'science', 'sanskrit'];
   const filteredNotes = filter === 'all' ? notes : notes.filter(n => n.subject === filter);
 
-  if (loading) return <div className="app-container">{t.preparing}</div>;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+      <div className="loader"></div>
+      <p className="text-slate-500 font-bold animate-pulse">{t.preparing}</p>
+    </div>
+  );
 
   return (
-    <div className="app-container animate-fade">
-      <header style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '1.8rem', fontWeight: 700 }}>{t.notes} 📄</h2>
-        <p style={{ color: 'var(--text-muted)' }}>{t.notesDesc}</p>
+    <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
+      <header className="space-y-1">
+        <h2 className="text-3xl font-black text-white tracking-tight">{t.notes} <span className="text-sky-400">📄</span></h2>
+        <p className="text-slate-400 font-medium text-sm">{t.notesDesc}</p>
       </header>
 
       {selectedNote ? (
-        <div className="animate-fade">
+        <div className="animate-fade-in">
           <button 
             onClick={() => setSelectedNote(null)}
-            style={{ background: 'transparent', border: 'none', color: 'var(--primary)', marginBottom: '16px', fontWeight: 600, cursor: 'pointer' }}
+            className="text-sky-400 font-black text-sm mb-4 uppercase tracking-widest hover:text-sky-300 transition-colors"
           >
             ← {t.backToNotes}
           </button>
-          <div className="glass-card" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <span className="subject-pill" style={{ fontSize: '0.7rem' }}>{selectedNote.subject.toUpperCase()}</span>
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{selectedNote.category}</span>
+          <div className="glass-card space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-black text-sky-400 uppercase tracking-widest">{selectedNote.subject.toUpperCase()}</span>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{selectedNote.category}</span>
             </div>
-            <h3 style={{ fontSize: '1.4rem', marginBottom: '20px', borderBottom: '1px solid var(--glass-border)', paddingBottom: '10px' }}>{selectedNote.title}</h3>
-            <div style={{ lineHeight: '1.8', whiteSpace: 'pre-wrap', fontSize: '1rem' }}>
+            <h3 className="text-xl font-black text-white pb-4 border-b border-white/5">{selectedNote.title}</h3>
+            <div className="text-sm text-slate-300 leading-loose whitespace-pre-wrap font-medium">
               {selectedNote.content}
             </div>
           </div>
         </div>
       ) : (
         <>
-          <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '16px', marginBottom: '16px', scrollbarWidth: 'none' }}>
+          {/* Filter Pills */}
+          <div className="flex gap-2.5 overflow-x-auto pb-2 hide-scrollbar">
             {subjects.map(sub => (
               <button
                 key={sub}
                 onClick={() => setFilter(sub)}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  border: filter === sub ? '1px solid var(--primary)' : '1px solid var(--glass-border)',
-                  background: filter === sub ? 'rgba(99, 102, 241, 0.1)' : 'var(--glass)',
-                  color: filter === sub ? 'var(--primary)' : 'white',
-                  whiteSpace: 'nowrap',
-                  cursor: 'pointer',
-                  fontSize: '0.8rem',
-                  fontWeight: 600
-                }}
+                className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${
+                  filter === sub 
+                    ? 'border-sky-500/40 bg-sky-500/10 text-sky-400 shadow-lg shadow-sky-500/10' 
+                    : 'border-white/5 bg-white/5 text-slate-400 hover:border-white/10'
+                }`}
               >
                 {sub.charAt(0).toUpperCase() + sub.slice(1)}
               </button>
             ))}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Notes List */}
+          <div className="flex flex-col gap-3">
             {filteredNotes.length > 0 ? filteredNotes.map(note => (
               <div 
                 key={note.topic_id} 
-                className="glass-card" 
-                style={{ cursor: 'pointer', transition: '0.3s' }}
+                className="glass-card cursor-pointer active:scale-[0.98] transition-all hover:bg-white/5 flex items-center justify-between gap-4"
                 onClick={() => setSelectedNote(note)}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase' }}>{note.subject}</span>
-                    <h4 style={{ margin: '4px 0', fontSize: '1.1rem' }}>{note.title}</h4>
-                    <small style={{ color: 'var(--text-muted)' }}>{note.category}</small>
-                  </div>
-                  <div style={{ fontSize: '1.5rem' }}>📖</div>
+                <div className="space-y-1 min-w-0">
+                  <span className="text-[10px] font-black text-sky-400 uppercase tracking-widest">{note.subject}</span>
+                  <h4 className="text-base font-black text-white truncate">{note.title}</h4>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{note.category}</span>
                 </div>
+                <span className="text-2xl shrink-0">📖</span>
               </div>
             )) : (
-              <div className="glass-card text-center" style={{ padding: '40px' }}>
-                <p style={{ color: 'var(--text-muted)' }}>No notes found for this subject yet.</p>
+              <div className="glass-card text-center py-12">
+                <p className="text-slate-500 font-bold">No notes found for this subject yet.</p>
               </div>
             )}
           </div>

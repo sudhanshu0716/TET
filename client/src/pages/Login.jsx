@@ -5,18 +5,11 @@ import { Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +17,6 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Send normalized email
       await login(formData.email.toLowerCase().trim(), formData.password);
       navigate('/dashboard');
     } catch (err) {
@@ -35,71 +27,77 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col gap-8 pt-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">Welcome Back</h1>
-        <p className="mt-2 text-slate-400 text-sm font-medium">Continue your preparation journey</p>
+    <div className="flex flex-col gap-10 pt-16 px-6 max-w-md mx-auto w-full animate-fade-in">
+      <div className="text-center space-y-3">
+        <h1 className="text-5xl font-black text-white tracking-tight leading-tight">
+          Welcome <br/>
+          <span className="text-gradient">Back</span>
+        </h1>
+        <p className="text-slate-400 font-medium">Continue your preparation journey</p>
       </div>
 
       {error && (
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400"
-        >
-          <AlertCircle size={20} />
-          <span className="font-medium">{error}</span>
-        </motion.div>
+        <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-4 rounded-2xl text-sm font-bold text-center">
+          {error}
+        </div>
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <div className="group relative">
-          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 transition-colors group-focus-within:text-primary-500" size={20} />
+        <div className="relative group">
+          <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-400 transition-colors pointer-events-none z-10">
+            <Mail size={22} />
+          </div>
           <input
             type="email"
-            name="email"
             placeholder="Email Address"
             required
-            autoComplete="email"
-            className="w-full rounded-xl border border-slate-800 bg-slate-900/50 py-4.5 pl-14 pr-4 text-white placeholder:text-slate-600 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 transition-all"
-            onChange={handleChange}
+            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-white font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
         </div>
 
-        <div className="group relative">
-          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 transition-colors group-focus-within:text-primary-500" size={20} />
+        <div className="relative group">
+          <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-400 transition-colors pointer-events-none z-10">
+            <Lock size={22} />
+          </div>
           <input
             type="password"
-            name="password"
             placeholder="Password"
             required
-            autoComplete="current-password"
-            className="w-full rounded-xl border border-slate-800 bg-slate-900/50 py-4.5 pl-14 pr-4 text-white placeholder:text-slate-600 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 transition-all"
-            onChange={handleChange}
+            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-white font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />
         </div>
 
         <button
+          type="submit"
           disabled={loading}
-          className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-primary-500 py-4.5 font-bold text-white transition-all hover:bg-primary-600 hover:shadow-lg hover:shadow-primary-500/25 active:scale-[0.98] disabled:opacity-50"
+          className="premium-button w-full py-5 rounded-2xl font-black text-white text-lg shadow-xl shadow-sky-500/20 disabled:opacity-50 disabled:cursor-not-allowed group mt-4"
         >
           {loading ? (
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></div>
-              <span>Signing In...</span>
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <span>Checking...</span>
             </div>
           ) : (
-            <>Sign In <ArrowRight size={20} /></>
+            <>
+              Sign In
+              <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" size={20} />
+            </>
           )}
         </button>
       </form>
 
-      <p className="text-center text-sm text-slate-500">
-        Don't have an account?{' '}
-        <Link to="/register" className="font-bold text-primary-500 hover:text-primary-400 transition-colors">
-          Sign Up
-        </Link>
-      </p>
+      <div className="text-center">
+        <p className="text-slate-500 font-medium">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-sky-400 font-black hover:underline underline-offset-4 decoration-sky-400/30">
+            Sign Up
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

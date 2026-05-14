@@ -29,9 +29,17 @@ router.get('/today', auth, async (req, res) => {
     const user = await User.findOne({ user_id: req.user.id });
     if (!user) return res.status(404).json({ msg: 'User not found' });
 
-    // Mix questions based on level and languages
+    // Build subject list based on user's profile
+    const userSubjects = ['pedagogy', user.language1.toLowerCase(), user.language2.toLowerCase()];
+    if (user.level === 'primary') {
+      userSubjects.push('math', 'evs');
+    } else {
+      userSubjects.push(user.subject_preference === 'science' ? 'science' : 'social');
+    }
+
+    // Fetch questions ONLY from user's relevant subjects
     const questions = await Question.aggregate([
-      { $match: { level: user.level } },
+      { $match: { level: user.level, subject: { $in: userSubjects } } },
       { $sample: { size: qCount } }
     ]);
 
@@ -45,7 +53,7 @@ router.get('/today', auth, async (req, res) => {
     });
 
     await exam.save();
-    res.json(exam);
+    res.json({ exam, questions });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
@@ -85,7 +93,7 @@ router.get('/full-mock', auth, async (req, res) => {
     });
 
     await exam.save();
-    res.json(exam);
+    res.json({ exam, questions });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
@@ -113,7 +121,7 @@ router.get('/subject/:subject', auth, async (req, res) => {
     });
 
     await exam.save();
-    res.json(exam);
+    res.json({ exam, questions });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
@@ -126,19 +134,28 @@ router.get('/important', auth, async (req, res) => {
   try {
     const user = await User.findOne({ user_id: req.user.id });
     
-    // Priority: Questions that have a year field (PYQs)
+    // Build subject list based on user's profile
+    const userSubjects = ['pedagogy', user.language1.toLowerCase(), user.language2.toLowerCase()];
+    if (user.level === 'primary') {
+      userSubjects.push('math', 'evs');
+    } else {
+      userSubjects.push(user.subject_preference === 'science' ? 'science' : 'social');
+    }
+
+    // Priority: Questions that have a year field (PYQs) from user's subjects
     const questions = await Question.aggregate([
       { $match: { 
         level: user.level,
+        subject: { $in: userSubjects },
         year: { $exists: true, $ne: null } 
       }},
       { $sample: { size: 30 } }
     ]);
 
     if (questions.length === 0) {
-      // Fallback to random if no PYQs found for this level
+      // Fallback to random from user's subjects
       const fallback = await Question.aggregate([
-        { $match: { level: user.level } },
+        { $match: { level: user.level, subject: { $in: userSubjects } } },
         { $sample: { size: 30 } }
       ]);
       questions.push(...fallback);
@@ -154,7 +171,7 @@ router.get('/important', auth, async (req, res) => {
     });
 
     await exam.save();
-    res.json(exam);
+    res.json({ exam, questions });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
