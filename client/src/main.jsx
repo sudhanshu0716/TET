@@ -1,8 +1,3 @@
-window.onerror = function(msg, url, lineNo, columnNo, error) {
-  alert('Error: ' + msg + '\nLine: ' + lineNo + '\nColumn: ' + columnNo);
-  return false;
-};
-
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'

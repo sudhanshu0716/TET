@@ -17,7 +17,7 @@ export default defineConfig({
     }
   },
   build: {
-    target: 'es2015',
-    cssTarget: 'safari12'
+    target: 'es2020',
+    cssTarget: 'safari14'
   }
 })
