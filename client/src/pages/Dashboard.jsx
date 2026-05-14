@@ -12,7 +12,7 @@ const Dashboard = () => {
   const [contestStatus, setContestStatus] = useState({ status: 'upcoming', registered: false });
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
-  const t = translations[lang];
+  const t = translations[lang] || translations.EN;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -100,13 +100,15 @@ const Dashboard = () => {
     <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
       <header className="flex justify-between items-start gap-4">
         <div className="flex-1 min-w-0">
-          <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight break-words leading-tight">{t.hello}, {user.name.split(' ')[0]}! 👋</h2>
+          <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight break-words leading-tight">
+            {t.hello}, {user?.name?.split(' ')[0] || 'User'}! 👋
+          </h2>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">{t.readyChallenge}</p>
         </div>
         <div className="flex flex-col items-end gap-2">
           <div className="streak-badge shrink-0">
             <span>🔥</span>
-            <span className="whitespace-nowrap">{user.streak || 0} {t.streak}</span>
+            <span className="whitespace-nowrap">{user?.streak || 0} {t.streak}</span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 animate-pulse">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
@@ -195,17 +197,17 @@ const Dashboard = () => {
         <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-4">Exam Score Predictor 📈</h4>
         <div className="flex items-end gap-4">
           <div className="text-5xl font-black text-[var(--text-primary)] leading-none">
-            {Math.round((user.avgScore || 0) * 1.5)}
+            {Math.round((user?.avgScore || 0) * 1.5)}
             <span className="text-lg text-slate-500 font-bold ml-1">/150</span>
           </div>
           <div className="pb-1">
-            <div className={`text-[10px] font-black px-2 py-0.5 rounded-full ${user.avgScore > 60 ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'}`}>
-              {user.avgScore > 60 ? 'Trending Up ↑' : 'Steady ⚡'}
+            <div className={`text-[10px] font-black px-2 py-0.5 rounded-full ${user?.avgScore > 60 ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'}`}>
+              {user?.avgScore > 60 ? 'Trending Up ↑' : 'Steady ⚡'}
             </div>
           </div>
         </div>
         <p className="text-[10px] text-slate-500 font-medium mt-3 leading-relaxed">
-          Based on your last {user.examsTaken} exams, this is your estimated score for the real TET exam. 
+          Based on your last {user?.examsTaken || 0} exams, this is your estimated score for the real TET exam. 
           <span className="text-indigo-400 font-bold"> Keep practicing to reach 125+!</span>
         </p>
       </div>

@@ -9,7 +9,7 @@ const ResultAnalysis = () => {
   const [reviewIndex, setReviewIndex] = useState(0);
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
-  const t = translations[lang];
+  const t = translations[lang] || translations.EN;
 
   useEffect(() => {
     const fetchResult = async () => {
@@ -34,8 +34,8 @@ const ResultAnalysis = () => {
   );
 
   const { exam, questions } = data;
-  const currentQ = questions[reviewIndex];
-  const userAns = exam.answers.find(a => a.question_id === currentQ.question_id)?.selected_option;
+  const currentQ = questions?.[reviewIndex];
+  const userAns = exam?.answers?.find(a => a.question_id === currentQ?.question_id)?.selected_option;
 
   return (
     <div className="flex flex-col gap-6 px-5 pt-8 pb-32 max-w-md mx-auto w-full animate-fade-in relative overflow-hidden">

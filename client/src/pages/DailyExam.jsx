@@ -18,8 +18,8 @@ const DailyExam = ({ type }) => {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
-  const t = translations[lang];
-  const [loadingText, setLoadingText] = useState(t.preparing || 'Preparing your questions...');
+  const t = translations[lang] || translations.EN;
+  const [loadingText, setLoadingText] = useState(t?.preparing || 'Preparing your questions...');
 
   useEffect(() => {
     const saved = localStorage.getItem('offline_exam');
