@@ -101,7 +101,7 @@ const Dashboard = () => {
       <header className="flex justify-between items-start gap-4">
         <div className="flex-1 min-w-0">
           <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight break-words leading-tight">{t.hello}, {user.name.split(' ')[0]}! 👋</h2>
-          <p className="text-slate-400 text-sm font-medium mt-1">{t.readyChallenge}</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">{t.readyChallenge}</p>
         </div>
         <div className="flex flex-col items-end gap-2">
           <div className="streak-badge shrink-0">
@@ -110,7 +110,7 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 animate-pulse">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{activeCount || '...'} Studying Now</span>
+            <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">{activeCount || '...'} Studying Now</span>
           </div>
         </div>
       </header>
@@ -118,10 +118,10 @@ const Dashboard = () => {
       {/* Daily Progress Goal */}
       <div className="glass-card !py-4 space-y-3 bg-gradient-to-r from-emerald-500/10 to-transparent border-l-4 border-l-emerald-500">
         <div className="flex justify-between items-center">
-          <h5 className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Today's Goal</h5>
-          <span className="text-xs font-bold text-slate-400">{todaySolved}/25 Qs</span>
+          <h5 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Today's Goal</h5>
+          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{todaySolved}/25 Qs</span>
         </div>
-        <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+        <div className="h-2 w-full bg-slate-200 dark:bg-white/5 rounded-full overflow-hidden">
           <div 
             className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)] transition-all duration-1000"
             style={{ width: `${Math.min((todaySolved/25)*100, 100)}%` }}
@@ -136,7 +136,7 @@ const Dashboard = () => {
       <div className={`glass-card relative overflow-hidden ${contestStatus.status === 'live' ? 'ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/20' : ''}`}>
         <div className="flex justify-between items-start mb-4">
           <div>
-            <span className={`text-[10px] font-black uppercase tracking-widest ${contestStatus.status === 'live' ? 'text-emerald-400' : 'text-sky-400'}`}>
+            <span className={`text-[10px] font-black uppercase tracking-widest ${contestStatus.status === 'live' ? 'text-emerald-600 dark:text-emerald-400' : 'text-sky-600 dark:text-sky-400'}`}>
               {contestStatus.status === 'live' ? t.liveContest : t.upcomingContest}
             </span>
             <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">{t.contestTitle}</h3>
@@ -144,7 +144,7 @@ const Dashboard = () => {
           <div className="text-3xl">🏆</div>
         </div>
         
-        <p className="text-sm text-slate-400 mb-6 leading-relaxed">
+        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
           {contestStatus.status === 'live' ? t.contestDescLive : t.contestDescUpcoming}
         </p>
 
@@ -160,7 +160,7 @@ const Dashboard = () => {
           ) : (
             <>
               {contestStatus.registered ? (
-                <div className="flex-1 py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-black text-center">
+                <div className="flex-1 py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-black text-center">
                   {t.registered}
                 </div>
               ) : (
@@ -175,7 +175,7 @@ const Dashboard = () => {
 
       {/* Daily Tip */}
       <div className="glass-card relative overflow-hidden border-l-4 border-l-sky-500 !py-5 bg-gradient-to-r from-sky-500/10 to-transparent">
-        <h5 className="text-[10px] font-black uppercase tracking-widest text-sky-400 mb-2 flex items-center gap-2">
+        <h5 className="text-[10px] font-black uppercase tracking-widest text-sky-600 dark:text-sky-400 mb-2 flex items-center gap-2">
           <span>💡</span> {t.tipTitle}
         </h5>
         <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed">"{t.tipBody}"</p>
@@ -186,14 +186,14 @@ const Dashboard = () => {
       {/* Performance Predictor */}
       <div className="glass-card bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border-indigo-500/20 relative overflow-hidden">
         <div className="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 blur-2xl rounded-full" />
-        <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-4">Exam Score Predictor 📈</h4>
+        <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-4">Exam Score Predictor 📈</h4>
         <div className="flex items-end gap-4">
           <div className="text-5xl font-black text-[var(--text-primary)] leading-none">
             {Math.round((user.avgScore || 0) * 1.5)}
             <span className="text-lg text-slate-500 font-bold ml-1">/150</span>
           </div>
           <div className="pb-1">
-            <div className={`text-[10px] font-black px-2 py-0.5 rounded-full ${user.avgScore > 60 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+            <div className={`text-[10px] font-black px-2 py-0.5 rounded-full ${user.avgScore > 60 ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'}`}>
               {user.avgScore > 60 ? 'Trending Up ↑' : 'Steady ⚡'}
             </div>
           </div>
@@ -207,7 +207,7 @@ const Dashboard = () => {
       {/* Performance Summary */}
       <div className="glass-card relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 blur-3xl rounded-full -mr-16 -mt-16" />
-        <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-5">{t.perf}</h4>
+        <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-5">{t.perf}</h4>
         <div className="grid grid-cols-2 gap-4 relative z-10">
           <div className="space-y-1">
             <div className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-400">{user.avgScore || 0}%</div>
