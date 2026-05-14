@@ -194,8 +194,8 @@ const Flashcards = () => {
             <div className="absolute w-full h-full backface-hidden glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-white/5 shadow-2xl">
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 mb-4 opacity-50">Who is / What is</span>
               <h3 className="text-3xl font-black text-[var(--text-primary)] leading-tight">{cards[currentIndex].term}</h3>
-              <div className="h-px w-12 bg-white/10 my-4" />
-              <h3 className="text-2xl font-bold text-slate-300 tracking-tight">{cards[currentIndex].termHi}</h3>
+              <div className="h-px w-12 bg-slate-200 dark:bg-white/10 my-4" />
+              <h3 className="text-2xl font-bold text-[var(--text-secondary)] tracking-tight">{cards[currentIndex].termHi}</h3>
               <div className="mt-8 text-xs font-bold text-slate-500 uppercase tracking-widest animate-bounce">Tap to Flip 🔄</div>
             </div>
             
@@ -203,15 +203,15 @@ const Flashcards = () => {
             <div className="absolute w-full h-full backface-hidden rotate-y-180 glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent overflow-y-auto">
               <div className="space-y-6">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400 mb-2 block opacity-50">English</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400 mb-2 block opacity-80">English</span>
                   <p className="text-sm font-bold text-[var(--text-primary)] leading-relaxed italic">
                     "{cards[currentIndex].definition}"
                   </p>
                 </div>
-                <div className="h-px w-full bg-white/5" />
+                <div className="h-px w-full bg-slate-200 dark:bg-white/5" />
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-400 mb-2 block opacity-50">Hindi / हिंदी</span>
-                  <p className="text-sm font-bold text-slate-200 leading-relaxed italic">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-600 dark:text-sky-400 mb-2 block opacity-80">Hindi / हिंदी</span>
+                  <p className="text-sm font-bold text-[var(--text-primary)] leading-relaxed italic">
                     "{cards[currentIndex].defHi}"
                   </p>
                 </div>
