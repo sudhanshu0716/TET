@@ -28,8 +28,8 @@ const Leaderboard = () => {
   return (
     <div className="flex flex-col gap-8 pt-8 px-6 pb-24 max-w-md mx-auto w-full animate-fade-in">
       <div className="space-y-2">
-        <h2 className="text-3xl font-black text-white tracking-tight">Top <span className="text-sky-400">Performers</span></h2>
-        <p className="text-slate-400 font-medium text-sm">Compete with the best and rise to the top</p>
+        <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Top <span className="text-sky-400">Performers</span></h2>
+        <p className="text-[var(--text-secondary)] font-medium text-sm">Compete with the best and rise to the top</p>
       </div>
       
       <div className="flex flex-col gap-3">
@@ -52,7 +52,7 @@ const Leaderboard = () => {
             </div>
 
             <div className="flex-1 min-w-0">
-              <h4 className="font-black text-white truncate">{user.name}</h4>
+              <h4 className="font-black text-[var(--text-primary)] truncate">{user.name}</h4>
               <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">
                 {user.questions_solved} Solved
               </p>

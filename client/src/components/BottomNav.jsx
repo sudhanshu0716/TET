@@ -17,14 +17,14 @@ const BottomNav = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[100] px-4 pb-6 pt-2 pointer-events-none">
-      <nav className="max-w-md mx-auto h-16 bg-slate-900/90 backdrop-blur-2xl border border-white/5 rounded-3xl flex items-center justify-around px-2 shadow-2xl pointer-events-auto overflow-hidden">
+      <nav className="max-w-md mx-auto h-16 bg-[var(--nav-bg)] backdrop-blur-2xl border border-white/5 rounded-3xl flex items-center justify-around px-2 shadow-2xl pointer-events-auto overflow-hidden">
         {navItems.map(({ to, label, Icon }) => (
           <NavLink 
             key={to}
             to={to} 
             className={({ isActive }) => `
               flex flex-col items-center justify-center gap-1 w-16 h-full transition-all duration-300 relative
-              ${isActive ? 'text-sky-400' : 'text-slate-500 hover:text-slate-300'}
+              ${isActive ? 'text-sky-400' : 'text-[var(--text-secondary)] hover:opacity-80'}
             `}
           >
             {({ isActive }) => (

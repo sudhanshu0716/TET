@@ -39,8 +39,8 @@ const Cheatsheets = () => {
   return (
     <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
       <header className="space-y-1">
-        <h2 className="text-3xl font-black text-white tracking-tight">{t.notes} <span className="text-sky-400">📄</span></h2>
-        <p className="text-slate-400 font-medium text-sm">{t.notesDesc}</p>
+        <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">{t.notes} <span className="text-sky-400">📄</span></h2>
+        <p className="text-[var(--text-secondary)] font-medium text-sm">{t.notesDesc}</p>
       </header>
 
       {selectedNote ? (
@@ -56,8 +56,8 @@ const Cheatsheets = () => {
               <span className="text-[10px] font-black text-sky-400 uppercase tracking-widest">{selectedNote.subject.toUpperCase()}</span>
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{selectedNote.category}</span>
             </div>
-            <h3 className="text-xl font-black text-white pb-4 border-b border-white/5">{selectedNote.title}</h3>
-            <div className="text-sm text-slate-300 leading-loose whitespace-pre-wrap font-medium">
+            <h3 className="text-xl font-black text-[var(--text-primary)] pb-4 border-b border-white/5">{selectedNote.title}</h3>
+            <div className="text-sm text-[var(--text-secondary)] leading-loose whitespace-pre-wrap font-medium">
               {selectedNote.content}
             </div>
           </div>
@@ -91,8 +91,8 @@ const Cheatsheets = () => {
               >
                 <div className="space-y-1 min-w-0">
                   <span className="text-[10px] font-black text-sky-400 uppercase tracking-widest">{note.subject}</span>
-                  <h4 className="text-base font-black text-white truncate">{note.title}</h4>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{note.category}</span>
+                  <h4 className="text-base font-black text-[var(--text-primary)] truncate">{note.title}</h4>
+                  <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">{note.category}</span>
                 </div>
                 <span className="text-2xl shrink-0">📖</span>
               </div>

@@ -54,8 +54,8 @@ const Profile = () => {
   return (
     <div className="flex flex-col gap-8 pt-8 px-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
       <div className="space-y-2">
-        <h2 className="text-3xl font-black text-white tracking-tight">Your <span className="text-sky-400">Profile</span></h2>
-        <p className="text-slate-400 font-medium text-sm">Manage your account and preferences</p>
+        <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Your <span className="text-sky-400">Profile</span></h2>
+        <p className="text-[var(--text-secondary)] font-medium text-sm">Manage your account and preferences</p>
       </div>
       
       <div className="glass-card p-6 flex flex-col gap-6 relative overflow-hidden group">
@@ -66,7 +66,7 @@ const Profile = () => {
             {profile.name?.[0]?.toUpperCase()}
           </div>
           <div className="space-y-1">
-            <h3 className="text-xl font-black text-white">{profile.name}</h3>
+            <h3 className="text-xl font-black text-[var(--text-primary)]">{profile.name}</h3>
             <div className="inline-block px-3 py-1 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 text-[10px] font-black uppercase tracking-widest">
               {profile.level === 'primary' ? 'Primary (P-I)' : 'Junior (P-II)'}
             </div>
@@ -76,7 +76,7 @@ const Profile = () => {
         <div className="grid grid-cols-2 gap-4 relative z-10">
           <div className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-1">
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Solved</span>
-            <div className="text-2xl font-black text-white">{profile.questions_solved}</div>
+            <div className="text-2xl font-black text-[var(--text-primary)]">{profile.questions_solved}</div>
           </div>
           <div className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-1">
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Rank Points</span>
@@ -135,7 +135,7 @@ const Profile = () => {
               <select 
                 value={profile.subject_preference} 
                 onChange={e => setProfile({...profile, subject_preference: e.target.value})}
-                className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold appearance-none text-white focus:ring-4 focus:ring-sky-500/10 shadow-inner"
+                className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold appearance-none text-[var(--text-primary)] focus:ring-4 focus:ring-sky-500/10 shadow-inner"
               >
                 <option value="science">Math & Science</option>
                 <option value="arts">Social Studies</option>
