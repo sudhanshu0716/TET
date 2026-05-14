@@ -66,13 +66,8 @@ router.get('/active-count', async (req, res) => {
     const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
     const realCount = await User.countDocuments({ last_active: { $gte: fifteenMinsAgo } });
     
-    // Social Proof: Show a more impressive count including anonymous/guest sessions
-    const hour = new Date().getHours();
-    const baseCount = (hour > 18 || hour < 8) ? 280 : 140; // More activity in evenings
-    const fluctuation = Math.floor(Math.random() * 60);
-    const displayCount = realCount + baseCount + fluctuation;
-    
-    res.json({ count: displayCount });
+    // Return only the exact number of users active in the last 15 minutes
+    res.json({ count: realCount || 1 }); 
   } catch (err) {
     res.status(500).send('Server Error');
   }
