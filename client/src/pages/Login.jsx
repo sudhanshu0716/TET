@@ -90,20 +90,13 @@ const Login = () => {
         </button>
       </form>
 
-      <div className="text-center space-y-4">
+      <div className="text-center">
         <p className="text-slate-500 font-medium">
           Don't have an account?{' '}
           <Link to="/register" className="text-sky-400 font-black hover:underline underline-offset-4 decoration-sky-400/30">
             Sign Up
           </Link>
         </p>
-        
-        <button 
-          onClick={() => setFormData({ email: 'su', password: 'su' })}
-          className="text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-sky-400 transition-colors"
-        >
-          Login as Admin
-        </button>
       </div>
     </div>
   );
