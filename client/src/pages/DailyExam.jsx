@@ -411,7 +411,24 @@ const DailyExam = ({ type }) => {
 
   // EXAM SCREEN
   return (
-    <div className="flex flex-col gap-5 px-5 pt-10 pb-32 max-w-md mx-auto w-full animate-fade-in">
+    <div className="flex flex-col gap-5 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
+      {/* Exit & Mode Header */}
+      <div className="flex justify-between items-center px-1">
+        <button 
+          onClick={() => {
+            if (window.confirm(t.confirmExit || "Quit exam? Your progress will be lost.")) {
+              navigate('/dashboard');
+            }
+          }}
+          className="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] bg-rose-500/5 dark:bg-rose-500/10 px-4 py-2 rounded-full border border-rose-500/20 hover:bg-rose-500/20 transition-all flex items-center gap-2"
+        >
+          <span>✕</span> {t.exitExam || 'Exit Exam'}
+        </button>
+        <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] opacity-60">
+          {type === 'daily' ? 'Daily' : type === 'full-mock' ? 'Mock' : type === 'subject' ? subject : 'Contest'} Mode
+        </span>
+      </div>
+
       {/* Header Bar */}
       <div className="flex justify-between items-center gap-3">
         <div className="glass-card !py-2.5 !px-5 !rounded-full border-white/10 bg-white/5 flex-1 shadow-sm flex items-center justify-between group cursor-pointer" onClick={() => setStep('summary')}>

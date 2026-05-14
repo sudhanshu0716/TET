@@ -49,7 +49,9 @@ const translations = {
     confirmSubmit: "Confirm & Submit",
     reviewAnswers: "Review Answers",
     yourAnswer: "Your Answer",
-    correctAnswer: "Correct Answer"
+    correctAnswer: "Correct Answer",
+    exitExam: "Exit Exam",
+    confirmExit: "Quit exam? Your progress will be lost."
   },
   HI: {
     hello: "नमस्ते",
@@ -101,7 +103,9 @@ const translations = {
     confirmSubmit: "पुष्टि करें और सबमिट करें",
     reviewAnswers: "उत्तरों की समीक्षा करें",
     yourAnswer: "आपका उत्तर",
-    correctAnswer: "सही उत्तर"
+    correctAnswer: "सही उत्तर",
+    exitExam: "परीक्षा से बाहर निकलें",
+    confirmExit: "परीक्षा छोड़ें? आपकी प्रगति खो जाएगी।"
   }
 };
 
