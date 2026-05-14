@@ -8,6 +8,7 @@ const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
   const [todaySolved, setTodaySolved] = useState(0);
+  const [activeCount, setActiveCount] = useState(0);
   const [contestStatus, setContestStatus] = useState({ status: 'upcoming', registered: false });
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
@@ -57,6 +58,16 @@ const Dashboard = () => {
     fetchHistory();
   }, []);
 
+  useEffect(() => {
+    const fetchActiveCount = async () => {
+      try {
+        const res = await api.get('/api/profile/active-count');
+        setActiveCount(res.data.count);
+      } catch (err) { console.error(err); }
+    };
+    fetchActiveCount();
+  }, []);
+
   const handleRegister = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -99,7 +110,7 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 animate-pulse">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{Math.floor(Math.random() * 20) + 30} Studying Now</span>
+            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{activeCount || '...'} Studying Now</span>
           </div>
         </div>
       </header>

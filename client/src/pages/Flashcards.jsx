@@ -17,7 +17,21 @@ const Flashcards = () => {
     { term: "Abraham Maslow", definition: "Known for the Hierarchy of Needs, culminating in Self-Actualization." },
     { term: "ZPD", definition: "Zone of Proximal Development: The gap between what a learner can do alone and what they can do with help." },
     { term: "Scaffolding", definition: "Temporary support given to a student by a teacher or peer to help them master a new task." },
-    { term: "Constructivism", definition: "A theory stating that learners actively construct their own knowledge based on their experiences." }
+    { term: "Constructivism", definition: "A theory stating that learners actively construct their own knowledge based on their experiences." },
+    { term: "Bloom's Taxonomy", definition: "A hierarchical model used to classify educational learning objectives into levels of complexity (Remembering to Creating)." },
+    { term: "Metacognition", definition: "Thinking about one's own thinking. Awareness and understanding of one's own thought processes." },
+    { term: "Inclusive Education", definition: "An approach where students with special needs spend most or all of their time with non-special needs students." },
+    { term: "Formative Assessment", definition: "Ongoing evaluations to monitor student learning and provide continuous feedback (e.g., quizzes, class discussion)." },
+    { term: "Summative Assessment", definition: "Evaluations used to measure student learning at the end of an instructional unit (e.g., final exams)." },
+    { term: "Positive Reinforcement", definition: "The addition of a reinforcing stimulus following a behavior that makes it more likely that the behavior will occur again." },
+    { term: "Negative Reinforcement", definition: "The removal of an unpleasant stimulus after a behavior to increase the likelihood of that behavior repeating." },
+    { term: "Discovery Learning", definition: "An inquiry-based learning method where students interact with their environment to discover principles." },
+    { term: "Egocentrism", definition: "A child's inability to see a situation from another person's point of view (common in Piaget's pre-operational stage)." },
+    { term: "Assimilation", definition: "The process of taking in new information into our already existing schemas." },
+    { term: "Accommodation", definition: "Modifying existing schemas, or ideas, as a result of new information or new experiences." },
+    { term: "Crystallized Intelligence", definition: "The ability to use learned knowledge and experience (increases with age)." },
+    { term: "Fluid Intelligence", definition: "The ability to solve new problems, use logic in new situations, and identify patterns (decreases with age)." },
+    { term: "Spiral Curriculum", definition: "Jerome Bruner's idea that subjects should be revisited at increasing levels of difficulty." }
   ];
 
   const nextCard = () => {
