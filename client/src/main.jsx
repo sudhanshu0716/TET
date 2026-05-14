@@ -9,11 +9,15 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
-// Force uninstall old service workers that might be causing blank screens
+// Force uninstall old service workers and reload to clear cache for all users automatically
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(registrations => {
-    for (let registration of registrations) {
-      registration.unregister();
+    if (registrations.length > 0) {
+      for (let registration of registrations) {
+        registration.unregister();
+      }
+      console.log("Old Service Worker cleared. Refreshing for latest version...");
+      window.location.reload();
     }
-  }).catch(err => console.error("SW unregister error:", err));
+  });
 }
