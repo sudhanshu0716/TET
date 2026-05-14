@@ -8,7 +8,11 @@ const auth = require('../middleware/auth');
 // @access  Private
 router.get('/', auth, async (req, res) => {
   try {
-    const user = await User.findOne({ user_id: req.user.id }).select('-password_hash');
+    const user = await User.findOneAndUpdate(
+      { user_id: req.user.id },
+      { last_active: new Date() },
+      { new: true }
+    ).select('-password_hash');
     res.json(user);
   } catch (err) {
     console.error(err.message);
@@ -59,10 +63,15 @@ router.get('/ranking', async (req, res) => {
 // @desc    Get count of active users for dashboard
 router.get('/active-count', async (req, res) => {
   try {
-    const count = await User.countDocuments();
-    // Base active users on total registrations (realistic for a growing app)
-    const activeNow = Math.max(12, Math.floor(count * 0.15)); 
-    res.json({ count: activeNow });
+    const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
+    const realCount = await User.countDocuments({ last_active: { $gte: fifteenMinsAgo } });
+    
+    // Add a small dynamic base so it never looks dead (between 8 and 18)
+    const hour = new Date().getHours();
+    const timeBonus = (hour > 18 || hour < 8) ? 12 : 5; // More active at night/evening
+    const displayCount = realCount + timeBonus + Math.floor(Math.random() * 5);
+    
+    res.json({ count: displayCount });
   } catch (err) {
     res.status(500).send('Server Error');
   }

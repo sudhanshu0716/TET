@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   questions_solved: { type: Number, default: 0 },
   rank_points: { type: Number, default: 0 },
+  last_active: { type: Date, default: Date.now },
   created_at: { type: Date, default: Date.now }
 });
 
