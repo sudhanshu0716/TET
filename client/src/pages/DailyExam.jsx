@@ -339,12 +339,19 @@ const DailyExam = ({ type }) => {
 
   // EXAM SCREEN
   return (
-    <div className="flex flex-col gap-5 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <span className="text-sm font-black text-white">Q {currentIndex + 1} / {questions.length}</span>
-        <div className={`glass-card !py-2 !px-4 !rounded-xl text-sm font-black ${timeLeft < 300 ? 'text-red-400 border-red-500/20' : 'text-sky-400'}`}>
-          ⏱️ {formatTime(timeLeft)}
+    <div className="flex flex-col gap-5 px-5 pt-10 pb-32 max-w-md mx-auto w-full animate-fade-in">
+      {/* Header Bar */}
+      <div className="flex justify-between items-center gap-3">
+        <div className="glass-card !py-2.5 !px-5 !rounded-full border-white/10 bg-white/5 flex-1 shadow-sm">
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-0.5">Progress</span>
+          <span className="text-sm font-black text-white">Q {currentIndex + 1} / {questions.length}</span>
+        </div>
+        <div className={`glass-card !py-2.5 !px-5 !rounded-full border-sky-500/20 bg-sky-500/5 flex-1 shadow-sm transition-colors ${timeLeft < 300 ? '!border-rose-500/30 !bg-rose-500/5' : ''}`}>
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-0.5">Time Left</span>
+          <div className={`text-sm font-black flex items-center gap-1.5 ${timeLeft < 300 ? 'text-rose-400' : 'text-sky-400'}`}>
+            <span>⏱️</span>
+            <span>{formatTime(timeLeft)}</span>
+          </div>
         </div>
       </div>
 
@@ -376,9 +383,13 @@ const DailyExam = ({ type }) => {
       </div>
 
       {/* Navigation */}
-      <div className="flex gap-3 mt-4">
+      <div className="flex gap-4 mt-6">
         <button 
-          className="glass-card flex-1 !py-4 text-center text-sm font-black text-slate-400 disabled:opacity-30 cursor-pointer" 
+          className={`flex-1 py-4 rounded-2xl font-black text-sm transition-all border-2 ${
+            currentIndex === 0 
+              ? 'border-white/5 bg-white/5 text-slate-600 opacity-50 cursor-not-allowed' 
+              : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 active:scale-95'
+          }`}
           disabled={currentIndex === 0}
           onClick={() => setCurrentIndex(prev => prev - 1)}
         >
@@ -386,14 +397,14 @@ const DailyExam = ({ type }) => {
         </button>
         {currentIndex === questions.length - 1 ? (
           <button 
-            className="flex-[2] py-4 rounded-2xl bg-emerald-500 text-white font-black text-sm shadow-xl shadow-emerald-500/20 active:scale-[0.98] transition-all"
+            className="flex-[1.5] py-4 rounded-2xl bg-emerald-500 text-white font-black text-sm shadow-xl shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
             onClick={() => setStep('summary')}
           >
-            Review Summary
+            Review Summary 📋
           </button>
         ) : (
           <button 
-            className="premium-button flex-[2] py-4 rounded-2xl font-black text-white text-sm shadow-xl shadow-sky-500/20"
+            className="premium-button flex-[1.5] py-4 rounded-2xl font-black text-white text-sm shadow-xl shadow-sky-500/20 active:scale-95"
             onClick={() => setCurrentIndex(prev => prev + 1)}
           >
             Next Question
