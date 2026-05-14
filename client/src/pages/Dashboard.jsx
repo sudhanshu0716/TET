@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import translations from '../translations';
-import ActivityHeatmap from '../components/ActivityHeatmap';
+import TopicInsights from '../components/TopicInsights';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -84,11 +84,19 @@ const Dashboard = () => {
           <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight break-words leading-tight">{t.hello}, {user.name.split(' ')[0]}! 👋</h2>
           <p className="text-slate-400 text-sm font-medium mt-1">{t.readyChallenge}</p>
         </div>
-        <div className="streak-badge shrink-0 text-center">
-          <span>🔥</span>
-          <span className="whitespace-pre-line leading-tight">{user.streak || 0} {t.streak}</span>
-        </div>
       </header>
+
+      {/* Next Exam Countdown */}
+      <div className="glass-card !py-4 flex items-center justify-between bg-gradient-to-r from-rose-500/10 to-transparent border-l-4 border-l-rose-500">
+        <div>
+          <h5 className="text-[10px] font-black uppercase tracking-widest text-rose-400">Next Big Exam</h5>
+          <p className="text-sm font-bold text-[var(--text-primary)]">CTET July 2026</p>
+        </div>
+        <div className="text-right">
+          <div className="text-xl font-black text-rose-400">45 Days</div>
+          <div className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Left to prepare</div>
+        </div>
+      </div>
 
       {/* Daily Live Contest Card */}
       <div className={`glass-card relative overflow-hidden ${contestStatus.status === 'live' ? 'ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/20' : ''}`}>
@@ -139,7 +147,7 @@ const Dashboard = () => {
         <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed">"{t.tipBody}"</p>
       </div>
 
-      <ActivityHeatmap />
+      <TopicInsights />
 
       {/* Performance Summary */}
       <div className="glass-card relative overflow-hidden">

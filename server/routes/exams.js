@@ -238,21 +238,31 @@ router.get('/:examId', auth, async (req, res) => {
   }
 });
 
-// @route   GET api/exams/activity
-// @desc    Get user's daily question solving activity for heatmap
-router.get('/activity', auth, async (req, res) => {
+// @route   GET api/exams/insights
+// @desc    Get performance insights by subject
+router.get('/insights', auth, async (req, res) => {
   try {
-    const activity = await Exam.aggregate([
+    const insights = await Exam.aggregate([
       { $match: { user_id: req.user.id, completed: true } },
+      { $unwind: "$answers" },
       {
-        $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-          count: { $sum: { $size: "$answers" } }
+        $lookup: {
+          from: "questions",
+          localField: "answers.question_id",
+          foreignField: "question_id",
+          as: "question"
         }
       },
-      { $sort: { _id: 1 } }
+      { $unwind: "$question" },
+      {
+        $group: {
+          _id: "$question.subject",
+          total: { $sum: 1 },
+          correct: { $sum: { $cond: ["$answers.is_correct", 1, 0] } }
+        }
+      }
     ]);
-    res.json(activity.map(a => ({ date: a._id, count: a.count })));
+    res.json(insights);
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
