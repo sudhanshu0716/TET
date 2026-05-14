@@ -92,10 +92,10 @@ const Profile = () => {
             <select 
               value={profile.level} 
               onChange={e => setProfile({...profile, level: e.target.value})}
-              className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold appearance-none text-white focus:ring-4 focus:ring-sky-500/10 shadow-inner"
+              className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold appearance-none text-[var(--text-primary)] focus:ring-4 focus:ring-sky-500/10 shadow-inner"
             >
-              <option value="primary">Primary (Level 1)</option>
-              <option value="junior">Junior (Level 2)</option>
+              <option value="primary" className="bg-[var(--bg-secondary)]">Primary (Level 1)</option>
+              <option value="junior" className="bg-[var(--bg-secondary)]">Junior (Level 2)</option>
             </select>
           </div>
 
@@ -105,12 +105,12 @@ const Profile = () => {
               <select 
                 value={profile.language1} 
                 onChange={e => setProfile({...profile, language1: e.target.value})}
-                className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold appearance-none text-white focus:ring-4 focus:ring-sky-500/10 shadow-inner"
+                className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold appearance-none text-[var(--text-primary)] focus:ring-4 focus:ring-sky-500/10 shadow-inner"
               >
-                <option value="Hindi">Hindi</option>
-                <option value="English">English</option>
-                <option value="Sanskrit">Sanskrit</option>
-                <option value="Urdu">Urdu</option>
+                <option value="Hindi" className="bg-[var(--bg-secondary)]">Hindi</option>
+                <option value="English" className="bg-[var(--bg-secondary)]">English</option>
+                <option value="Sanskrit" className="bg-[var(--bg-secondary)]">Sanskrit</option>
+                <option value="Urdu" className="bg-[var(--bg-secondary)]">Urdu</option>
               </select>
             </div>
 
@@ -119,12 +119,12 @@ const Profile = () => {
               <select 
                 value={profile.language2} 
                 onChange={e => setProfile({...profile, language2: e.target.value})}
-                className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold appearance-none text-white focus:ring-4 focus:ring-sky-500/10 shadow-inner"
+                className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold appearance-none text-[var(--text-primary)] focus:ring-4 focus:ring-sky-500/10 shadow-inner"
               >
-                <option value="English">English</option>
-                <option value="Hindi">Hindi</option>
-                <option value="Sanskrit">Sanskrit</option>
-                <option value="Urdu">Urdu</option>
+                <option value="English" className="bg-[var(--bg-secondary)]">English</option>
+                <option value="Hindi" className="bg-[var(--bg-secondary)]">Hindi</option>
+                <option value="Sanskrit" className="bg-[var(--bg-secondary)]">Sanskrit</option>
+                <option value="Urdu" className="bg-[var(--bg-secondary)]">Urdu</option>
               </select>
             </div>
           </div>
@@ -137,8 +137,8 @@ const Profile = () => {
                 onChange={e => setProfile({...profile, subject_preference: e.target.value})}
                 className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold appearance-none text-[var(--text-primary)] focus:ring-4 focus:ring-sky-500/10 shadow-inner"
               >
-                <option value="science">Math & Science</option>
-                <option value="arts">Social Studies</option>
+                <option value="science" className="bg-[var(--bg-secondary)]">Math & Science</option>
+                <option value="arts" className="bg-[var(--bg-secondary)]">Social Studies</option>
               </select>
             </div>
           )}

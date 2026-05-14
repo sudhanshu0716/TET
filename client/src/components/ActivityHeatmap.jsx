@@ -44,11 +44,11 @@ const ActivityHeatmap = () => {
   const data = generateData();
 
   const getColor = (count) => {
-    if (count === 0) return 'bg-slate-800/30';
-    if (count < 10) return 'bg-emerald-900/40';
-    if (count < 30) return 'bg-emerald-700/60';
-    if (count < 60) return 'bg-emerald-500/80';
-    return 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]';
+    if (count === 0) return 'bg-slate-200 dark:bg-slate-800/50';
+    if (count < 10) return 'bg-emerald-200 dark:bg-emerald-900/40';
+    if (count < 30) return 'bg-emerald-400 dark:bg-emerald-700/60';
+    if (count < 60) return 'bg-emerald-500 dark:bg-emerald-500/80';
+    return 'bg-emerald-600 dark:bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]';
   };
 
   return (
@@ -57,22 +57,22 @@ const ActivityHeatmap = () => {
         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Activity Heatmap</h4>
         <div className="flex gap-1 items-center">
           <span className="text-[8px] text-slate-500 uppercase font-black">Less</span>
-          <div className="flex gap-0.5">
-            <div className="w-2 h-2 rounded-sm bg-slate-800/30"></div>
-            <div className="w-2 h-2 rounded-sm bg-emerald-900/40"></div>
-            <div className="w-2 h-2 rounded-sm bg-emerald-700/60"></div>
-            <div className="w-2 h-2 rounded-sm bg-emerald-500/80"></div>
-            <div className="w-2 h-2 rounded-sm bg-emerald-400"></div>
+          <div className="flex gap-1">
+            <div className="w-2.5 h-2.5 rounded-[2px] bg-slate-200 dark:bg-slate-800/50"></div>
+            <div className="w-2.5 h-2.5 rounded-[2px] bg-emerald-200 dark:bg-emerald-900/40"></div>
+            <div className="w-2.5 h-2.5 rounded-[2px] bg-emerald-400 dark:bg-emerald-700/60"></div>
+            <div className="w-2.5 h-2.5 rounded-[2px] bg-emerald-500 dark:bg-emerald-500/80"></div>
+            <div className="w-2.5 h-2.5 rounded-[2px] bg-emerald-600 dark:bg-emerald-400"></div>
           </div>
           <span className="text-[8px] text-slate-500 uppercase font-black ml-1">More</span>
         </div>
       </div>
       
-      <div className="grid grid-flow-col grid-rows-7 gap-1 h-24 overflow-x-auto hide-scrollbar">
+      <div className="grid grid-flow-col grid-rows-7 gap-1.5 h-28 overflow-x-auto hide-scrollbar pb-2">
         {data.map((day, i) => (
           <div 
             key={i}
-            className={`w-3 h-3 rounded-sm transition-all duration-500 ${getColor(day.count)}`}
+            className={`w-3.5 h-3.5 rounded-[3px] transition-all duration-500 ${getColor(day.count)}`}
             title={`${day.date}: ${day.count} Questions`}
           />
         ))}
