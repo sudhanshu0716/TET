@@ -8,7 +8,7 @@ const Cheatsheets = () => {
   const [selectedNote, setSelectedNote] = useState(null);
   const [filter, setFilter] = useState('all');
   const lang = localStorage.getItem('appLang') || 'EN';
-  const t = translations[lang];
+  const t = translations[lang] || translations.EN;
 
   useEffect(() => {
     const fetchNotes = async () => {
