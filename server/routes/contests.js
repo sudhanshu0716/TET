@@ -78,13 +78,13 @@ router.get('/join', auth, async (req, res) => {
     const exam = new Exam({
       exam_id: uuidv4(),
       user_id: req.user.id,
-      type: 'contest',
+      exam_type: 'contest',
       duration: 30,
-      questions: questions.map(q => ({ question_id: q.question_id, correct_option: q.correct_option }))
+      questions: questions.map(q => q.question_id)
     });
 
     await exam.save();
-    res.json({ exam, questions: questions.map(q => ({ ...q, correct_option: undefined })) });
+    res.json({ exam, questions });
   } catch (err) { res.status(500).send('Server Error'); }
 });
 

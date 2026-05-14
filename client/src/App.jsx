@@ -11,6 +11,7 @@ import Cheatsheets from './pages/Cheatsheets';
 import ProfileSetup from './pages/ProfileSetup';
 import AdminDashboard from './pages/AdminDashboard';
 import CommunityUpload from './pages/CommunityUpload';
+import ResultAnalysis from './pages/ResultAnalysis';
 import { AuthProvider } from './context/AuthContext';
 import Profile from './components/Profile';
 import Leaderboard from './components/Leaderboard';
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/contest-live" element={<DailyExam type="contest" />} />
                 <Route path="/contest-leaderboard" element={<Leaderboard />} />
                 <Route path="/cheatsheets" element={<Cheatsheets />} />
+                <Route path="/exam-result/:examId" element={<ResultAnalysis />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/upload" element={<CommunityUpload />} />
               </Route>

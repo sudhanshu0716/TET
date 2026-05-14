@@ -5,6 +5,7 @@ import translations from '../translations';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
+  const [history, setHistory] = useState([]);
   const [contestStatus, setContestStatus] = useState({ status: 'upcoming', registered: false });
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
@@ -34,6 +35,17 @@ const Dashboard = () => {
       } catch (err) { console.error(err); }
     };
     fetchStatus();
+  }, []);
+  
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await api.get('/api/exams/history', { headers: { 'x-auth-token': token } });
+        setHistory(res.data);
+      } catch (err) { console.error(err); }
+    };
+    fetchHistory();
   }, []);
 
   const handleRegister = async () => {
@@ -180,19 +192,34 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Subject-wise MCQ Menu */}
-      <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">{t.subjectWise}</h4>
-      <div className="grid grid-cols-3 gap-3">
-        {subjects.map(sub => (
+      {/* Recent Exams History */}
+      <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">Recent Activity</h4>
+      <div className="flex flex-col gap-3">
+        {history.length > 0 ? history.map(ex => (
           <div 
-            key={sub.id} 
-            className="glass-card !p-3 flex flex-col items-center justify-center gap-2 cursor-pointer active:scale-90 transition-all hover:border-sky-500/30"
-            onClick={() => navigate(`/practice/${sub.id}`)}
+            key={ex.exam_id} 
+            className="glass-card !p-4 flex items-center justify-between cursor-pointer hover:border-sky-500/30 transition-all"
+            onClick={() => navigate(`/exam-result/${ex.exam_id}`)}
           >
-            <span className="text-2xl">{sub.icon}</span>
-            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-tighter text-center">{sub.name}</span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-lg">
+                {ex.exam_type === 'full-mock' ? '🏆' : ex.exam_type === 'contest' ? '🏁' : '📝'}
+              </div>
+              <div>
+                <h5 className="text-sm font-bold text-white capitalize">{ex.exam_type.replace('-', ' ')}</h5>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{new Date(ex.date).toLocaleDateString()}</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-lg font-black text-sky-400">{ex.score} Qs</div>
+              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Score</div>
+            </div>
           </div>
-        ))}
+        )) : (
+          <div className="glass-card !p-8 text-center text-slate-500 font-bold text-sm border-dashed">
+            No exams taken yet. Start your first challenge!
+          </div>
+        )}
       </div>
 
       {/* Stats Quick View */}

@@ -214,6 +214,19 @@ router.post('/submit/:examId', auth, async (req, res) => {
   }
 });
 
+// @route   GET api/exams/history
+// @desc    Get user's previous exam results
+router.get('/history', auth, async (req, res) => {
+  try {
+    const exams = await Exam.find({ user_id: req.user.id, completed: true })
+      .sort({ date: -1 })
+      .limit(20);
+    res.json(exams);
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   GET api/exams/:examId
 router.get('/:examId', auth, async (req, res) => {
   try {

@@ -14,6 +14,7 @@ const DailyExam = ({ type }) => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [result, setResult] = useState(null);
   const [reviewIndex, setReviewIndex] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang];
@@ -103,13 +104,19 @@ const DailyExam = ({ type }) => {
   }, [step, result, exam]);
 
   const handleSubmit = async () => {
+    setSubmitting(true);
     try {
       const token = localStorage.getItem('token');
       const formattedAnswers = Object.entries(answers).map(([qid, opt]) => ({ question_id: qid, selected_option: opt }));
       const res = await api.post(`/api/exams/submit/${exam.exam_id}`, { answers: formattedAnswers }, { headers: { 'x-auth-token': token } });
       setResult(res.data.exam);
       setStep('result');
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err);
+      alert('Error submitting exam. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
@@ -200,10 +207,18 @@ const DailyExam = ({ type }) => {
 
         <div className="flex flex-col gap-3 pt-4">
           <button 
-            className="premium-button w-full py-5 rounded-2xl font-black text-white text-lg shadow-xl shadow-sky-500/20"
+            className="premium-button w-full py-5 rounded-2xl font-black text-white text-lg shadow-xl shadow-sky-500/20 disabled:opacity-70 flex items-center justify-center gap-3"
             onClick={handleSubmit}
+            disabled={submitting}
           >
-            {t.confirmSubmit || 'Confirm & Submit'}
+            {submitting ? (
+              <>
+                <div className="loader w-5 h-5 border-2 border-t-white/30"></div>
+                Submitting...
+              </>
+            ) : (
+              t.confirmSubmit || 'Confirm & Submit'
+            )}
           </button>
           <button 
             className="w-full py-4 rounded-2xl bg-white/5 border border-white/5 text-slate-400 font-black text-sm"
@@ -342,9 +357,12 @@ const DailyExam = ({ type }) => {
     <div className="flex flex-col gap-5 px-5 pt-10 pb-32 max-w-md mx-auto w-full animate-fade-in">
       {/* Header Bar */}
       <div className="flex justify-between items-center gap-3">
-        <div className="glass-card !py-2.5 !px-5 !rounded-full border-white/10 bg-white/5 flex-1 shadow-sm">
-          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-0.5">Progress</span>
-          <span className="text-sm font-black text-white">Q {currentIndex + 1} / {questions.length}</span>
+        <div className="glass-card !py-2.5 !px-5 !rounded-full border-white/10 bg-white/5 flex-1 shadow-sm flex items-center justify-between group cursor-pointer" onClick={() => setStep('summary')}>
+          <div>
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-0.5">Progress</span>
+            <span className="text-sm font-black text-white">Q {currentIndex + 1} / {questions.length}</span>
+          </div>
+          <span className="text-lg group-hover:scale-125 transition-transform">📋</span>
         </div>
         <div className={`glass-card !py-2.5 !px-5 !rounded-full border-sky-500/20 bg-sky-500/5 flex-1 shadow-sm transition-colors ${timeLeft < 300 ? '!border-rose-500/30 !bg-rose-500/5' : ''}`}>
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-0.5">Time Left</span>
