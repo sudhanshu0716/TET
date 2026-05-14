@@ -9,7 +9,13 @@
     <title>TET Prep | UPTET & CTET Companion</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="diagnostic-loader" style="background: #020617; color: #38bdf8; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; gap: 20px;">
+        <div style="width: 40px; height: 40px; border: 4px solid rgba(56, 189, 248, 0.2); border-top-color: #38bdf8; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <div style="font-weight: bold; tracking-tight: -0.025em;">Initializing App...</div>
+        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
