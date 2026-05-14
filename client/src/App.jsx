@@ -12,6 +12,7 @@ import ProfileSetup from './pages/ProfileSetup';
 import AdminDashboard from './pages/AdminDashboard';
 import CommunityUpload from './pages/CommunityUpload';
 import ResultAnalysis from './pages/ResultAnalysis';
+import Flashcards from './pages/Flashcards';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Profile from './components/Profile';
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/exam-result/:examId" element={<ResultAnalysis />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/upload" element={<CommunityUpload />} />
+                <Route path="/flashcards" element={<Flashcards />} />
               </Route>
             </Routes>
           </main>

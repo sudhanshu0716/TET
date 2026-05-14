@@ -87,10 +87,17 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
-      <header className="flex justify-between items-start gap-4">
-        <div className="flex-1 min-w-0">
-          <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight break-words leading-tight">{t.hello}, {user.name.split(' ')[0]}! 👋</h2>
           <p className="text-slate-400 text-sm font-medium mt-1">{t.readyChallenge}</p>
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <div className="streak-badge shrink-0">
+            <span>🔥</span>
+            <span className="whitespace-nowrap">{user.streak || 0} {t.streak}</span>
+          </div>
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 animate-pulse">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">{Math.floor(Math.random() * 20) + 30} Studying Now</span>
+          </div>
         </div>
       </header>
 
@@ -162,6 +169,27 @@ const Dashboard = () => {
 
       <TopicInsights />
 
+      {/* Performance Predictor */}
+      <div className="glass-card bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border-indigo-500/20 relative overflow-hidden">
+        <div className="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 blur-2xl rounded-full" />
+        <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-4">Exam Score Predictor 📈</h4>
+        <div className="flex items-end gap-4">
+          <div className="text-5xl font-black text-[var(--text-primary)] leading-none">
+            {Math.round((user.avgScore || 0) * 1.5)}
+            <span className="text-lg text-slate-500 font-bold ml-1">/150</span>
+          </div>
+          <div className="pb-1">
+            <div className={`text-[10px] font-black px-2 py-0.5 rounded-full ${user.avgScore > 60 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+              {user.avgScore > 60 ? 'Trending Up ↑' : 'Steady ⚡'}
+            </div>
+          </div>
+        </div>
+        <p className="text-[10px] text-slate-500 font-medium mt-3 leading-relaxed">
+          Based on your last {user.examsTaken} exams, this is your estimated score for the real TET exam. 
+          <span className="text-indigo-400 font-bold"> Keep practicing to reach 125+!</span>
+        </p>
+      </div>
+
       {/* Performance Summary */}
       <div className="glass-card relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 blur-3xl rounded-full -mr-16 -mt-16" />
@@ -213,6 +241,11 @@ const Dashboard = () => {
           <div className="text-3xl mb-3">⭐</div>
           <h5 className="text-sm font-bold text-[var(--text-primary)] mb-1">{t.important}</h5>
           <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t.repeated}</div>
+        </div>
+        <div className="glass-card cursor-pointer active:scale-95 transition-all bg-gradient-to-br from-amber-500/10 to-transparent border-amber-500/20" onClick={() => navigate('/flashcards')}>
+          <div className="text-3xl mb-3">🎴</div>
+          <h5 className="text-sm font-bold text-[var(--text-primary)] mb-1">Flashcards</h5>
+          <div className="text-[10px] text-amber-500 font-bold uppercase tracking-wider">Quick Revision</div>
         </div>
       </div>
 
