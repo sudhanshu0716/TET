@@ -192,6 +192,21 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Subject-wise MCQ Menu */}
+      <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">{t.subjectWise}</h4>
+      <div className="grid grid-cols-3 gap-3">
+        {subjects.map(sub => (
+          <div 
+            key={sub.id} 
+            className="glass-card !p-3 flex flex-col items-center justify-center gap-2 cursor-pointer active:scale-90 transition-all hover:border-sky-500/30"
+            onClick={() => navigate(`/practice/${sub.id}`)}
+          >
+            <span className="text-2xl">{sub.icon}</span>
+            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-tighter text-center">{sub.name}</span>
+          </div>
+        ))}
+      </div>
+
       {/* Recent Exams History */}
       <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">Recent Activity</h4>
       <div className="flex flex-col gap-3">
