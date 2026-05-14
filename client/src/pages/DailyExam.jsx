@@ -125,7 +125,7 @@ const DailyExam = ({ type }) => {
   if (step === 'config') return (
     <div className="flex flex-col gap-6 px-5 pt-8 pb-32 max-w-md mx-auto w-full animate-fade-in">
       <div className="glass-card space-y-6">
-        <h2 className="text-2xl font-black text-white">{t.setupExam} ⚙️</h2>
+        <h2 className="text-2xl font-black text-[var(--text-primary)]">{t.setupExam} ⚙️</h2>
         
         <div className="space-y-3">
           <label className="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-1">{t.questions}</label>
@@ -135,8 +135,8 @@ const DailyExam = ({ type }) => {
                 key={n} 
                 className={`flex-1 py-4 rounded-2xl text-sm font-black transition-all border-2 ${
                   config.qCount === n 
-                    ? 'border-sky-500 bg-sky-500/10 text-white shadow-lg shadow-sky-500/10' 
-                    : 'border-white/5 bg-white/5 text-slate-400 hover:border-white/10'
+                    ? 'border-sky-500 bg-sky-500/10 text-[var(--text-primary)] shadow-lg shadow-sky-500/10' 
+                    : 'border-white/5 bg-white/5 text-[var(--text-secondary)] hover:border-white/10'
                 }`}
                 onClick={() => setConfig({...config, qCount: n, timeLimit: n})}
               >
@@ -153,7 +153,7 @@ const DailyExam = ({ type }) => {
             onChange={(e) => setConfig({...config, timeLimit: parseInt(e.target.value)})}
             className="w-full"
           />
-          <div className="text-center text-lg font-black text-white">{config.timeLimit} Minutes</div>
+          <div className="text-center text-lg font-black text-[var(--text-primary)]">{config.timeLimit} Minutes</div>
         </div>
 
         <button 
@@ -171,7 +171,7 @@ const DailyExam = ({ type }) => {
     <div className="flex flex-col gap-6 px-5 pt-8 pb-32 max-w-md mx-auto w-full animate-fade-in">
       <div className="glass-card space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-black text-white">{t.examSummary || 'Summary'} 📋</h2>
+          <h2 className="text-2xl font-black text-[var(--text-primary)]">{t.examSummary || 'Summary'} 📋</h2>
           <div className="text-sky-400 font-bold text-sm">⏱️ {formatTime(timeLeft)}</div>
         </div>
 
@@ -186,7 +186,7 @@ const DailyExam = ({ type }) => {
               className={`aspect-square rounded-xl flex items-center justify-center text-sm font-black transition-all border-2 ${
                 answers[q.question_id]
                   ? 'bg-sky-500 border-sky-500 text-white shadow-lg shadow-sky-500/20'
-                  : 'bg-white/5 border-white/10 text-slate-500'
+                  : 'bg-white/5 border-white/10 text-[var(--text-secondary)]'
               }`}
             >
               {i + 1}
@@ -221,7 +221,7 @@ const DailyExam = ({ type }) => {
             )}
           </button>
           <button 
-            className="w-full py-4 rounded-2xl bg-white/5 border border-white/5 text-slate-400 font-black text-sm"
+            className="w-full py-4 rounded-2xl bg-white/5 border border-white/5 text-[var(--text-secondary)] font-black text-sm"
             onClick={() => setStep('exam')}
           >
             Back to Questions
@@ -241,8 +241,8 @@ const DailyExam = ({ type }) => {
         </div>
       </div>
       <div className="text-center space-y-2">
-        <h3 className="text-xl font-black text-white">{loadingText}</h3>
-        <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Please wait...</p>
+        <h3 className="text-xl font-black text-[var(--text-primary)]">{loadingText}</h3>
+        <p className="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest">Please wait...</p>
       </div>
     </div>
   );
@@ -265,8 +265,8 @@ const DailyExam = ({ type }) => {
       <div className="glass-card text-center relative overflow-hidden border-2 border-sky-500/30 shadow-[0_0_40px_rgba(14,165,233,0.2)]">
         <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle,rgba(14,165,233,0.1)_0%,transparent_70%)] animate-pulse pointer-events-none" />
         
-        <h2 className="text-3xl font-black text-white mb-2 relative z-10">🎊 {t.brilliant}</h2>
-        <p className="text-slate-400 text-sm font-medium relative z-10">{t.completed}</p>
+        <h2 className="text-3xl font-black text-[var(--text-primary)] mb-2 relative z-10">🎊 {t.brilliant}</h2>
+        <p className="text-[var(--text-secondary)] text-sm font-medium relative z-10">{t.completed}</p>
         
         <div className="text-6xl font-black my-8 text-gradient relative z-10">
           {result.score} / {questions.length}
@@ -274,30 +274,30 @@ const DailyExam = ({ type }) => {
         
         <div className="grid grid-cols-2 gap-3 mb-8 relative z-10">
           <div className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-1">
-            <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{t.accuracy}</div>
-            <div className="text-xl font-black text-white">{Math.round((result.score / questions.length) * 100)}%</div>
+            <div className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{t.accuracy}</div>
+            <div className="text-xl font-black text-[var(--text-primary)]">{Math.round((result.score / questions.length) * 100)}%</div>
           </div>
           <div className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-1">
-            <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{t.timeSpent}</div>
-            <div className="text-xl font-black text-white">{config.timeLimit - Math.floor(timeLeft/60)}m</div>
+            <div className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{t.timeSpent}</div>
+            <div className="text-xl font-black text-[var(--text-primary)]">{config.timeLimit - Math.floor(timeLeft/60)}m</div>
           </div>
         </div>
 
         {/* Detailed Review Section */}
         <div className="relative z-10 mt-4 space-y-4 text-left border-t border-white/10 pt-6">
-          <h3 className="text-lg font-black text-white px-2 flex items-center justify-between">
+          <h3 className="text-lg font-black text-[var(--text-primary)] px-2 flex items-center justify-between">
             {t.reviewAnswers || 'Review Answers'} 🔍
-            <span className="text-xs text-slate-500 font-bold">{reviewIndex + 1} / {questions.length}</span>
+            <span className="text-xs text-[var(--text-secondary)] font-bold">{reviewIndex + 1} / {questions.length}</span>
           </h3>
           
           <div className="glass-card !bg-white/5 !border-white/5 space-y-4">
-            <p className="text-sm text-white font-medium leading-relaxed">
+            <p className="text-sm text-[var(--text-primary)] font-medium leading-relaxed">
               {questions[reviewIndex].question_text}
             </p>
             
             <div className="space-y-2">
               <div className="p-3 rounded-xl bg-white/5 border border-white/5">
-                <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">{t.yourAnswer || 'Your Answer'}</div>
+                <div className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1">{t.yourAnswer || 'Your Answer'}</div>
                 <div className={`text-sm font-bold ${
                   answers[questions[reviewIndex].question_id] === questions[reviewIndex].correct_answer 
                     ? 'text-emerald-400' 
@@ -359,13 +359,13 @@ const DailyExam = ({ type }) => {
       <div className="flex justify-between items-center gap-3">
         <div className="glass-card !py-2.5 !px-5 !rounded-full border-white/10 bg-white/5 flex-1 shadow-sm flex items-center justify-between group cursor-pointer" onClick={() => setStep('summary')}>
           <div>
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-0.5">Progress</span>
-            <span className="text-sm font-black text-white">Q {currentIndex + 1} / {questions.length}</span>
+            <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-0.5">Progress</span>
+            <span className="text-sm font-black text-[var(--text-primary)]">Q {currentIndex + 1} / {questions.length}</span>
           </div>
           <span className="text-lg group-hover:scale-125 transition-transform">📋</span>
         </div>
         <div className={`glass-card !py-2.5 !px-5 !rounded-full border-sky-500/20 bg-sky-500/5 flex-1 shadow-sm transition-colors ${timeLeft < 300 ? '!border-rose-500/30 !bg-rose-500/5' : ''}`}>
-          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-0.5">Time Left</span>
+          <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-0.5">Time Left</span>
           <div className={`text-sm font-black flex items-center gap-1.5 ${timeLeft < 300 ? 'text-rose-400' : 'text-sky-400'}`}>
             <span>⏱️</span>
             <span>{formatTime(timeLeft)}</span>
@@ -377,9 +377,9 @@ const DailyExam = ({ type }) => {
       <div className="glass-card space-y-3">
         <div className="flex justify-between items-center">
           <span className="text-[10px] font-black text-sky-400 uppercase tracking-widest">{q.subject}</span>
-          <span className="text-[10px] font-bold text-slate-500 uppercase">{q.year || 'PREVIOUS YEAR'}</span>
+          <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase">{q.year || 'PREVIOUS YEAR'}</span>
         </div>
-        <h3 className="text-base font-bold text-white leading-relaxed">{q.question_text}</h3>
+        <h3 className="text-base font-bold text-[var(--text-primary)] leading-relaxed">{q.question_text}</h3>
       </div>
 
       {/* Options */}
@@ -394,8 +394,8 @@ const DailyExam = ({ type }) => {
             }`}
             onClick={() => setAnswers({ ...answers, [q.question_id]: opt })}
           >
-            <span className="text-slate-500 font-bold shrink-0">{String.fromCharCode(65 + i)}.</span>
-            <span className="text-sm text-white font-medium">{opt}</span>
+            <span className="text-[var(--text-secondary)] font-bold shrink-0">{String.fromCharCode(65 + i)}.</span>
+            <span className="text-sm text-[var(--text-primary)] font-medium">{opt}</span>
           </div>
         ))}
       </div>
@@ -406,7 +406,7 @@ const DailyExam = ({ type }) => {
           className={`flex-1 py-4 rounded-2xl font-black text-sm transition-all border-2 ${
             currentIndex === 0 
               ? 'border-white/5 bg-white/5 text-slate-600 opacity-50 cursor-not-allowed' 
-              : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 active:scale-95'
+              : 'border-white/10 bg-white/5 text-[var(--text-secondary)] hover:bg-white/10 active:scale-95'
           }`}
           disabled={currentIndex === 0}
           onClick={() => setCurrentIndex(prev => prev - 1)}

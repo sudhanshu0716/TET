@@ -135,7 +135,7 @@ const Dashboard = () => {
         <h5 className="text-[10px] font-black uppercase tracking-widest text-sky-400 mb-2 flex items-center gap-2">
           <span>💡</span> {t.tipTitle}
         </h5>
-        <p className="text-sm text-slate-300 italic leading-relaxed">"{t.tipBody}"</p>
+        <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed">"{t.tipBody}"</p>
       </div>
 
       {/* Performance Summary */}
@@ -202,7 +202,7 @@ const Dashboard = () => {
             onClick={() => navigate(`/practice/${sub.id}`)}
           >
             <span className="text-2xl">{sub.icon}</span>
-            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-tighter text-center">{sub.name}</span>
+            <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-tighter text-center">{sub.name}</span>
           </div>
         ))}
       </div>

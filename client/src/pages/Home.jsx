@@ -16,11 +16,11 @@ const Home = () => {
         </div>
         
         <div className="space-y-3">
-          <h1 className="text-5xl font-black text-white leading-[1.1] tracking-tight">
+          <h1 className="text-5xl font-black text-[var(--text-primary)] leading-[1.1] tracking-tight">
             Master <br/>
             <span className="text-gradient">TET Exams</span>
           </h1>
-          <p className="text-slate-400 text-lg font-medium leading-relaxed px-4">
+          <p className="text-[var(--text-secondary)] text-lg font-medium leading-relaxed px-4">
             The ultimate preparation companion for UPTET & CTET success.
           </p>
         </div>
@@ -87,8 +87,8 @@ const Home = () => {
               <feature.icon size={28} />
             </div>
             <div className="space-y-1">
-              <h3 className="font-black text-white text-lg">{feature.title}</h3>
-              <p className="text-sm text-slate-400 font-medium leading-snug">{feature.desc}</p>
+              <h3 className="font-black text-[var(--text-primary)] text-lg">{feature.title}</h3>
+              <p className="text-sm text-[var(--text-secondary)] font-medium leading-snug">{feature.desc}</p>
             </div>
           </div>
         ))}

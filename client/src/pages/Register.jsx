@@ -37,11 +37,11 @@ const Register = () => {
   return (
     <div className="flex flex-col gap-10 pt-16 px-6 max-w-md mx-auto w-full pb-20 animate-fade-in">
       <div className="text-center space-y-3">
-        <h1 className="text-5xl font-black text-white tracking-tight leading-tight">
+        <h1 className="text-5xl font-black text-[var(--text-primary)] tracking-tight leading-tight">
           Create <br/>
           <span className="text-gradient">Account</span>
         </h1>
-        <p className="text-slate-400 font-medium">Join 5,000+ successful candidates</p>
+        <p className="text-[var(--text-secondary)] font-medium">Join 5,000+ successful candidates</p>
       </div>
 
       {error && (
@@ -59,7 +59,7 @@ const Register = () => {
             type="text"
             placeholder="Full Name"
             required
-            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-white font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
+            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-[var(--text-primary)] font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
@@ -73,7 +73,7 @@ const Register = () => {
             type="email"
             placeholder="Email Address"
             required
-            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-white font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
+            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-[var(--text-primary)] font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
@@ -87,7 +87,7 @@ const Register = () => {
             type="password"
             placeholder="Create Password"
             required
-            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-white font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
+            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-[var(--text-primary)] font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />
@@ -136,8 +136,8 @@ const Register = () => {
                 onClick={() => setFormData({ ...formData, subject_preference: 'science' })}
                 className={`rounded-2xl py-4 text-[10px] font-black uppercase tracking-wider transition-all border-2 ${
                   formData.subject_preference === 'science'
-                    ? 'border-sky-500 bg-sky-500/10 text-white shadow-lg shadow-sky-500/10'
-                    : 'border-white/5 bg-white/5 text-slate-500 hover:border-white/10'
+                    ? 'border-sky-500 bg-sky-500/10 text-[var(--text-primary)] shadow-lg shadow-sky-500/10'
+                    : 'border-white/5 bg-white/5 text-[var(--text-secondary)] hover:border-white/10'
                 }`}
               >
                 Maths & Science
@@ -147,8 +147,8 @@ const Register = () => {
                 onClick={() => setFormData({ ...formData, subject_preference: 'arts' })}
                 className={`rounded-2xl py-4 text-[10px] font-black uppercase tracking-wider transition-all border-2 ${
                   formData.subject_preference === 'arts'
-                    ? 'border-sky-500 bg-sky-500/10 text-white shadow-lg shadow-sky-500/10'
-                    : 'border-white/5 bg-white/5 text-slate-500 hover:border-white/10'
+                    ? 'border-sky-500 bg-sky-500/10 text-[var(--text-primary)] shadow-lg shadow-sky-500/10'
+                    : 'border-white/5 bg-white/5 text-[var(--text-secondary)] hover:border-white/10'
                 }`}
               >
                 Social Studies

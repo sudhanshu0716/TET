@@ -29,11 +29,11 @@ const Login = () => {
   return (
     <div className="flex flex-col gap-10 pt-16 px-6 max-w-md mx-auto w-full animate-fade-in">
       <div className="text-center space-y-3">
-        <h1 className="text-5xl font-black text-white tracking-tight leading-tight">
+        <h1 className="text-5xl font-black text-[var(--text-primary)] tracking-tight leading-tight">
           Welcome <br/>
           <span className="text-gradient">Back</span>
         </h1>
-        <p className="text-slate-400 font-medium">Continue your preparation journey</p>
+        <p className="text-[var(--text-secondary)] font-medium">Continue your preparation journey</p>
       </div>
 
       {error && (
@@ -51,7 +51,7 @@ const Login = () => {
             type="email"
             placeholder="Email Address"
             required
-            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-white font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
+            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-[var(--text-primary)] font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
@@ -65,7 +65,7 @@ const Login = () => {
             type="password"
             placeholder="Password"
             required
-            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-white font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
+            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-[var(--text-primary)] font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />

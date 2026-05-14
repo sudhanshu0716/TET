@@ -46,8 +46,8 @@ const CommunityUpload = () => {
   return (
     <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
       <header className="space-y-1">
-        <h1 className="text-2xl font-black text-white tracking-tight">Community <span className="text-sky-400">Uploads</span></h1>
-        <p className="text-slate-400 text-sm font-medium">Help others by sharing past year papers</p>
+        <h1 className="text-2xl font-black text-[var(--text-primary)] tracking-tight">Community <span className="text-sky-400">Uploads</span></h1>
+        <p className="text-[var(--text-secondary)] text-sm font-medium">Help others by sharing past year papers</p>
       </header>
 
       <div className="flex flex-col gap-5">
@@ -65,7 +65,7 @@ const CommunityUpload = () => {
           }`}>
             <Upload size={32} />
           </div>
-          <h3 className="text-sm font-black text-white text-center">
+          <h3 className="text-sm font-black text-[var(--text-primary)] text-center">
             {file ? file.name : 'Click or drag PDF to upload'}
           </h3>
           <p className="mt-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Max 10MB · PDF only</p>
@@ -102,10 +102,10 @@ const CommunityUpload = () => {
         </button>
 
         <div className="glass-card space-y-3">
-          <h4 className="font-black text-white flex items-center gap-2 text-sm">
+          <h4 className="font-black text-[var(--text-primary)] flex items-center gap-2 text-sm">
             <CheckCircle size={16} className="text-sky-400" /> Upload Guidelines
           </h4>
-          <ul className="flex flex-col gap-2 text-xs text-slate-400 leading-relaxed font-medium">
+          <ul className="flex flex-col gap-2 text-xs text-[var(--text-secondary)] leading-relaxed font-medium">
             <li>• Ensure the PDF contains clear MCQ questions.</li>
             <li>• Mention Year and Paper Level in the filename.</li>
             <li>• Avoid blurry or hand-written papers.</li>
