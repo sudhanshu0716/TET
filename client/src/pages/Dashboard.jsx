@@ -80,7 +80,7 @@ const Dashboard = () => {
     <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
       <header className="flex justify-between items-start gap-4">
         <div className="flex-1 min-w-0">
-          <h2 className="text-3xl font-black text-white tracking-tight break-words leading-tight">{t.hello}, {user.name.split(' ')[0]}! 👋</h2>
+          <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight break-words leading-tight">{t.hello}, {user.name.split(' ')[0]}! 👋</h2>
           <p className="text-slate-400 text-sm font-medium mt-1">{t.readyChallenge}</p>
         </div>
         <div className="streak-badge shrink-0 text-center">
@@ -96,7 +96,7 @@ const Dashboard = () => {
             <span className={`text-[10px] font-black uppercase tracking-widest ${contestStatus.status === 'live' ? 'text-emerald-400' : 'text-sky-400'}`}>
               {contestStatus.status === 'live' ? t.liveContest : t.upcomingContest}
             </span>
-            <h3 className="text-xl font-bold text-white mt-1">{t.contestTitle}</h3>
+            <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">{t.contestTitle}</h3>
           </div>
           <div className="text-3xl">🏆</div>
         </div>
@@ -107,11 +107,11 @@ const Dashboard = () => {
 
         <div className="flex gap-3">
           {contestStatus.status === 'live' ? (
-            <button className="premium-button flex-1 py-4 rounded-2xl font-bold text-white text-sm" onClick={() => navigate('/contest-live')}>
+            <button className="premium-button flex-1 py-4 rounded-2xl font-bold text-[var(--text-primary)] text-sm" onClick={() => navigate('/contest-live')}>
               {t.joinNow}
             </button>
           ) : contestStatus.status === 'ended' ? (
-            <button className="premium-button flex-1 py-4 rounded-2xl font-bold text-white text-sm" onClick={() => navigate('/contest-leaderboard')}>
+            <button className="premium-button flex-1 py-4 rounded-2xl font-bold text-[var(--text-primary)] text-sm" onClick={() => navigate('/contest-leaderboard')}>
               {t.viewLeaderboard}
             </button>
           ) : (
@@ -121,7 +121,7 @@ const Dashboard = () => {
                   {t.registered}
                 </div>
               ) : (
-                <button className="premium-button flex-1 py-4 rounded-2xl font-bold text-white text-sm" onClick={handleRegister}>
+                <button className="premium-button flex-1 py-4 rounded-2xl font-bold text-[var(--text-primary)] text-sm" onClick={handleRegister}>
                   {t.registerToday}
                 </button>
               )}
@@ -160,8 +160,8 @@ const Dashboard = () => {
       {/* Main Action: Daily Exam */}
       <div className="glass-card bg-gradient-to-br from-sky-600 to-indigo-900 relative overflow-hidden group">
         <div className="relative z-10">
-          <h3 className="text-2xl font-black text-white mb-2">{t.dailyChallenge}</h3>
-          <p className="text-sm text-white/80 mb-6 font-medium leading-snug">
+          <h3 className="text-2xl font-black text-[var(--text-primary)] mb-2">{t.dailyChallenge}</h3>
+          <p className="text-sm text-[var(--text-primary)]/80 mb-6 font-medium leading-snug">
             {t.dailyDesc} <br/>
             <span className="text-[10px] uppercase tracking-widest bg-white/10 px-2 py-1 rounded mt-2 inline-block">
               {user.level} | {user.language1} | {user.language2}
@@ -182,12 +182,12 @@ const Dashboard = () => {
       <div className="grid grid-cols-2 gap-4">
         <div className="glass-card cursor-pointer active:scale-95 transition-all" onClick={() => navigate('/full-mock')}>
           <div className="text-3xl mb-3">🏆</div>
-          <h5 className="text-sm font-bold text-white mb-1">{t.fullMock}</h5>
+          <h5 className="text-sm font-bold text-[var(--text-primary)] mb-1">{t.fullMock}</h5>
           <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">150 Qs | 150 Mins</div>
         </div>
         <div className="glass-card cursor-pointer active:scale-95 transition-all" onClick={() => navigate('/important')}>
           <div className="text-3xl mb-3">⭐</div>
-          <h5 className="text-sm font-bold text-white mb-1">{t.important}</h5>
+          <h5 className="text-sm font-bold text-[var(--text-primary)] mb-1">{t.important}</h5>
           <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t.repeated}</div>
         </div>
       </div>
@@ -221,7 +221,7 @@ const Dashboard = () => {
                 {ex.exam_type === 'full-mock' ? '🏆' : ex.exam_type === 'contest' ? '🏁' : '📝'}
               </div>
               <div>
-                <h5 className="text-sm font-bold text-white capitalize">{ex.exam_type.replace('-', ' ')}</h5>
+                <h5 className="text-sm font-bold text-[var(--text-primary)] capitalize">{ex.exam_type.replace('-', ' ')}</h5>
                 <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{new Date(ex.date).toLocaleDateString()}</p>
               </div>
             </div>
@@ -240,7 +240,7 @@ const Dashboard = () => {
       {/* Stats Quick View */}
       <div className="glass-card border-dashed border-slate-800 bg-transparent flex justify-between items-center mt-4">
         <div>
-          <h5 className="text-sm font-bold text-white">{t.ranking}</h5>
+          <h5 className="text-sm font-bold text-[var(--text-primary)]">{t.ranking}</h5>
           <p className="text-[10px] text-slate-500 font-medium">{t.top10}</p>
         </div>
         <Link to="/leaderboard" className="text-xs font-black text-sky-400 uppercase tracking-widest hover:text-sky-300 transition-colors">

@@ -10,42 +10,80 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-500;
   }
 
+:root {
+  --primary-glow: rgba(14, 165, 233, 0.4);
+  --secondary-glow: rgba(99, 102, 241, 0.3);
+  
+  /* Dark Mode Defaults */
+  --bg-primary: #020617;
+  --bg-secondary: #0f172a;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --glass-bg: rgba(30, 41, 59, 0.5);
+  --glass-bg-hover: rgba(30, 41, 59, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --input-bg: rgba(15, 23, 42, 0.6);
+  --nav-bg: rgba(15, 23, 42, 0.8);
+}
+
+.light-mode {
+  --bg-primary: #f1f5f9;
+  --bg-secondary: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-bg-hover: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --input-bg: rgba(255, 255, 255, 0.8);
+  --nav-bg: rgba(255, 255, 255, 0.9);
+}
+
+@layer components {
+  /* Premium Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight font-black;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-indigo-500;
+  }
+
   /* Glassmorphism System */
   .glass-panel {
-    background: rgba(15, 23, 42, 0.7);
+    background: var(--nav-bg);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
   }
 
   .glass-card {
     @apply p-6;
-    background: rgba(30, 41, 59, 0.5);
+    background: var(--glass-bg);
     backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
     border-radius: 28px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-card:hover {
-    background: rgba(30, 41, 59, 0.6);
-    border-color: rgba(255, 255, 255, 0.15);
+    background: var(--glass-bg-hover);
+    border-color: rgba(56, 189, 248, 0.2);
     transform: translateY(-4px);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
   }
 
   .glass-input {
-    background: rgba(15, 23, 42, 0.6);
+    background: var(--input-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
     transition: all 0.3s ease;
-    color: white;
+    color: var(--text-primary);
   }
 
   .glass-input:focus {
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--bg-secondary);
     border-color: #38bdf8;
-    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
     outline: none;
   }
 
@@ -53,12 +91,12 @@
   .premium-button {
     @apply relative overflow-hidden flex items-center justify-center transition-all duration-300;
     background: linear-gradient(135deg, #0ea5e9, #6366f1);
-    box-shadow: 0 4px 20px -1px rgba(14, 165, 233, 0.5);
+    box-shadow: 0 4px 20px -1px rgba(14, 165, 233, 0.3);
   }
 
   .premium-button:hover {
     @apply scale-[1.02] brightness-110;
-    box-shadow: 0 12px 30px -1px rgba(14, 165, 233, 0.6);
+    box-shadow: 0 12px 30px -1px rgba(14, 165, 233, 0.4);
   }
 
   .premium-button:active {
@@ -71,7 +109,7 @@
     background: rgba(251, 191, 36, 0.1);
     border: 1px solid rgba(251, 191, 36, 0.2);
     color: #fbbf24;
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.05);
   }
 
   /* Animations */
@@ -86,16 +124,11 @@
 
   .bottom-nav-bar {
     @apply flex justify-around items-center p-2 rounded-[28px];
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--nav-bg);
     backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.2);
   }
-}
-
-:root {
-  --primary-glow: rgba(14, 165, 233, 0.4);
-  --secondary-glow: rgba(99, 102, 241, 0.3);
 }
 
 * {
@@ -107,11 +140,12 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background-color: #020617;
-  color: #f8fafc;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 #root {
