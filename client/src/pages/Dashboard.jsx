@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import translations from '../translations';
+import ActivityHeatmap from '../components/ActivityHeatmap';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -137,6 +138,8 @@ const Dashboard = () => {
         </h5>
         <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed">"{t.tipBody}"</p>
       </div>
+
+      <ActivityHeatmap />
 
       {/* Performance Summary */}
       <div className="glass-card relative overflow-hidden">

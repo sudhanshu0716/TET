@@ -9,6 +9,7 @@ const DailyExam = ({ type }) => {
   const [config, setConfig] = useState({ qCount: 30, timeLimit: 30 });
   const [questions, setQuestions] = useState([]);
   const [exam, setExam] = useState(null);
+  const [offlineExam, setOfflineExam] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [timeLeft, setTimeLeft] = useState(0);
@@ -19,6 +20,27 @@ const DailyExam = ({ type }) => {
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang];
   const [loadingText, setLoadingText] = useState(t.preparing || 'Preparing your questions...');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('offline_exam');
+    if (saved) setOfflineExam(JSON.parse(saved));
+  }, []);
+
+  const downloadOffline = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      // Fetch 50 questions based on user profile
+      const res = await api.get('/api/exams/today?count=50&duration=60', {
+        headers: { 'x-auth-token': token }
+      });
+      localStorage.setItem('offline_exam', JSON.stringify(res.data));
+      setOfflineExam(res.data);
+      alert('Offline Mock Test downloaded! You can now practice without internet.');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to download offline test. Please check your connection.');
+    }
+  };
 
   const startExam = async () => {
     setStep('loading');
@@ -162,6 +184,41 @@ const DailyExam = ({ type }) => {
         >
           {t.launchExam}
         </button>
+
+        <div className="pt-4 border-t border-white/5 space-y-3">
+          <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest text-center">Offline Practice</p>
+          {offlineExam ? (
+            <div className="flex flex-col gap-2">
+              <button 
+                className="w-full py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-black text-sm transition-all active:scale-[0.98]"
+                onClick={() => {
+                  setQuestions(offlineExam.questions);
+                  setExam(offlineExam.exam);
+                  setStep('exam');
+                  setTimeLeft(offlineExam.exam.duration * 60);
+                }}
+              >
+                🚀 Start Offline Exam (50 Qs)
+              </button>
+              <button 
+                className="text-[10px] text-slate-500 font-bold uppercase hover:text-red-400 transition-colors"
+                onClick={() => {
+                  localStorage.removeItem('offline_exam');
+                  setOfflineExam(null);
+                }}
+              >
+                Remove Offline Data
+              </button>
+            </div>
+          ) : (
+            <button 
+              className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-slate-400 font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:bg-white/10"
+              onClick={downloadOffline}
+            >
+              📥 Download for Offline
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

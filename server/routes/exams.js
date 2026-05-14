@@ -238,4 +238,25 @@ router.get('/:examId', auth, async (req, res) => {
   }
 });
 
+// @route   GET api/exams/activity
+// @desc    Get user's daily question solving activity for heatmap
+router.get('/activity', auth, async (req, res) => {
+  try {
+    const activity = await Exam.aggregate([
+      { $match: { user_id: req.user.id, completed: true } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+          count: { $sum: { $size: "$answers" } }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+    res.json(activity.map(a => ({ date: a._id, count: a.count })));
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;
