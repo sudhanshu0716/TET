@@ -13,6 +13,7 @@ const DailyExam = ({ type }) => {
   const [answers, setAnswers] = useState({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [result, setResult] = useState(null);
+  const [reviewIndex, setReviewIndex] = useState(0);
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang];
@@ -158,6 +159,63 @@ const DailyExam = ({ type }) => {
     </div>
   );
 
+  // SUMMARY SCREEN (Dotted Sheet)
+  if (step === 'summary') return (
+    <div className="flex flex-col gap-6 px-5 pt-8 pb-32 max-w-md mx-auto w-full animate-fade-in">
+      <div className="glass-card space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-black text-white">{t.examSummary || 'Summary'} 📋</h2>
+          <div className="text-sky-400 font-bold text-sm">⏱️ {formatTime(timeLeft)}</div>
+        </div>
+
+        <div className="grid grid-cols-5 gap-3">
+          {questions.map((q, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setCurrentIndex(i);
+                setStep('exam');
+              }}
+              className={`aspect-square rounded-xl flex items-center justify-center text-sm font-black transition-all border-2 ${
+                answers[q.question_id]
+                  ? 'bg-sky-500 border-sky-500 text-white shadow-lg shadow-sky-500/20'
+                  : 'bg-white/5 border-white/10 text-slate-500'
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex gap-4 pt-2">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-sky-500"></div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t.attempted || 'Attempted'}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-white/10 border border-white/10"></div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t.unattempted || 'Skipped'}</span>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 pt-4">
+          <button 
+            className="premium-button w-full py-5 rounded-2xl font-black text-white text-lg shadow-xl shadow-sky-500/20"
+            onClick={handleSubmit}
+          >
+            {t.confirmSubmit || 'Confirm & Submit'}
+          </button>
+          <button 
+            className="w-full py-4 rounded-2xl bg-white/5 border border-white/5 text-slate-400 font-black text-sm"
+            onClick={() => setStep('exam')}
+          >
+            Back to Questions
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   // LOADING
   if (step === 'loading') return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 px-5 max-w-md mx-auto w-full animate-fade-in">
@@ -210,8 +268,59 @@ const DailyExam = ({ type }) => {
           </div>
         </div>
 
+        {/* Detailed Review Section */}
+        <div className="relative z-10 mt-4 space-y-4 text-left border-t border-white/10 pt-6">
+          <h3 className="text-lg font-black text-white px-2 flex items-center justify-between">
+            {t.reviewAnswers || 'Review Answers'} 🔍
+            <span className="text-xs text-slate-500 font-bold">{reviewIndex + 1} / {questions.length}</span>
+          </h3>
+          
+          <div className="glass-card !bg-white/5 !border-white/5 space-y-4">
+            <p className="text-sm text-white font-medium leading-relaxed">
+              {questions[reviewIndex].question_text}
+            </p>
+            
+            <div className="space-y-2">
+              <div className="p-3 rounded-xl bg-white/5 border border-white/5">
+                <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">{t.yourAnswer || 'Your Answer'}</div>
+                <div className={`text-sm font-bold ${
+                  answers[questions[reviewIndex].question_id] === questions[reviewIndex].correct_answer 
+                    ? 'text-emerald-400' 
+                    : 'text-rose-400'
+                }`}>
+                  {answers[questions[reviewIndex].question_id] || 'Not Attempted'}
+                </div>
+              </div>
+              
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <div className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">{t.correctAnswer || 'Correct Answer'}</div>
+                <div className="text-sm font-bold text-emerald-400">
+                  {questions[reviewIndex].correct_answer}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button 
+                disabled={reviewIndex === 0}
+                onClick={() => setReviewIndex(prev => prev - 1)}
+                className="flex-1 py-3 rounded-xl bg-white/5 text-slate-400 font-black text-xs disabled:opacity-20"
+              >
+                ← Prev
+              </button>
+              <button 
+                disabled={reviewIndex === questions.length - 1}
+                onClick={() => setReviewIndex(prev => prev + 1)}
+                className="flex-1 py-3 rounded-xl bg-white/5 text-slate-400 font-black text-xs disabled:opacity-20"
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+        </div>
+
         <button 
-          className="premium-button w-full py-5 rounded-2xl font-black text-white text-lg shadow-xl shadow-sky-500/20 relative z-10"
+          className="premium-button w-full py-5 rounded-2xl font-black text-white text-lg shadow-xl shadow-sky-500/20 relative z-10 mt-8"
           onClick={() => navigate('/dashboard')}
         >
           {t.returnDash}
@@ -278,9 +387,9 @@ const DailyExam = ({ type }) => {
         {currentIndex === questions.length - 1 ? (
           <button 
             className="flex-[2] py-4 rounded-2xl bg-emerald-500 text-white font-black text-sm shadow-xl shadow-emerald-500/20 active:scale-[0.98] transition-all"
-            onClick={handleSubmit}
+            onClick={() => setStep('summary')}
           >
-            Submit Exam
+            Review Summary
           </button>
         ) : (
           <button 

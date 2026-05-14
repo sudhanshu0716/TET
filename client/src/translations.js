@@ -42,7 +42,14 @@ const translations = {
     joinNow: "Join Contest Now",
     viewLeaderboard: "View Leaderboard",
     registerToday: "Register for Today",
-    registered: "✓ Registered"
+    registered: "✓ Registered",
+    examSummary: "Exam Summary",
+    attempted: "Attempted",
+    unattempted: "Skipped",
+    confirmSubmit: "Confirm & Submit",
+    reviewAnswers: "Review Answers",
+    yourAnswer: "Your Answer",
+    correctAnswer: "Correct Answer"
   },
   HI: {
     hello: "नमस्ते",
@@ -87,7 +94,14 @@ const translations = {
     joinNow: "अभी शामिल हों",
     viewLeaderboard: "लीडरबोर्ड देखें",
     registerToday: "आज के लिए पंजीकरण करें",
-    registered: "✓ पंजीकृत"
+    registered: "✓ पंजीकृत",
+    examSummary: "परीक्षा सारांश",
+    attempted: "हल किए गए",
+    unattempted: "छोड़े गए",
+    confirmSubmit: "पुष्टि करें और सबमिट करें",
+    reviewAnswers: "उत्तरों की समीक्षा करें",
+    yourAnswer: "आपका उत्तर",
+    correctAnswer: "सही उत्तर"
   }
 };
 
