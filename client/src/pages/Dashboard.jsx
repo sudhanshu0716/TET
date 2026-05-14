@@ -87,6 +87,9 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
+      <header className="flex justify-between items-start gap-4">
+        <div className="flex-1 min-w-0">
+          <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight break-words leading-tight">{t.hello}, {user.name.split(' ')[0]}! 👋</h2>
           <p className="text-slate-400 text-sm font-medium mt-1">{t.readyChallenge}</p>
         </div>
         <div className="flex flex-col items-end gap-2">
