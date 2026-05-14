@@ -43,6 +43,9 @@ app.use('/api/cheatsheets', cheatsheetRoutes);
 const profileRoutes = require('./routes/profile');
 app.use('/api/profile', profileRoutes);
 
+// Admin Routes
+app.use('/api/admin', require('./routes/admin'));
+
 // Connect to MongoDB
 const { initAutomation } = require('./services/automationService');
 mongoose.connect(process.env.MONGODB_URI)

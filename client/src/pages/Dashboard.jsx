@@ -150,9 +150,15 @@ const Dashboard = () => {
 
         <div className="flex gap-3">
           {contestStatus.status === 'live' ? (
-            <button className="premium-button flex-1 py-4 rounded-2xl font-bold text-[var(--text-primary)] text-sm" onClick={() => navigate('/contest-live')}>
-              {t.joinNow}
-            </button>
+            contestStatus.attempted ? (
+              <div className="flex-1 py-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-sm font-black text-center">
+                Attempted 🏁
+              </div>
+            ) : (
+              <button className="premium-button flex-1 py-4 rounded-2xl font-bold text-[var(--text-primary)] text-sm" onClick={() => navigate('/contest-live')}>
+                {t.joinNow}
+              </button>
+            )
           ) : contestStatus.status === 'ended' ? (
             <button className="premium-button flex-1 py-4 rounded-2xl font-bold text-[var(--text-primary)] text-sm" onClick={() => navigate('/contest-leaderboard')}>
               {t.viewLeaderboard}

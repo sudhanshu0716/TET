@@ -48,8 +48,8 @@ const Login = () => {
             <Mail size={22} />
           </div>
           <input
-            type="email"
-            placeholder="Email Address"
+            type="text"
+            placeholder="Email Address or Admin ID"
             required
             className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-[var(--text-primary)] font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
             value={formData.email}
@@ -82,21 +82,28 @@ const Login = () => {
               <span>Checking...</span>
             </div>
           ) : (
-            <>
-              Sign In
-              <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" size={20} />
-            </>
+            <div className="flex items-center justify-center gap-2">
+              <span>Sign In</span>
+              <ArrowRight className="transition-transform group-hover:translate-x-1" size={20} />
+            </div>
           )}
         </button>
       </form>
 
-      <div className="text-center">
+      <div className="text-center space-y-4">
         <p className="text-slate-500 font-medium">
           Don't have an account?{' '}
           <Link to="/register" className="text-sky-400 font-black hover:underline underline-offset-4 decoration-sky-400/30">
             Sign Up
           </Link>
         </p>
+        
+        <button 
+          onClick={() => setFormData({ email: 'su', password: 'su' })}
+          className="text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-sky-400 transition-colors"
+        >
+          Login as Admin
+        </button>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -49,6 +49,15 @@ const Navbar = () => {
             {lang === 'EN' ? 'हिंदी' : 'English'}
           </button>
           
+          {user?.role === 'admin' && (
+            <button 
+              onClick={() => navigate('/admin')}
+              className="px-3 py-1.5 rounded-lg bg-sky-500 text-white text-[10px] font-black uppercase tracking-widest hover:bg-sky-600 transition-colors shadow-lg shadow-sky-500/20"
+            >
+              Admin
+            </button>
+          )}
+
           {token && (
             <button 
               onClick={handleLogout}
