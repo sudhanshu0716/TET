@@ -23,7 +23,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-[100] px-4 py-4 backdrop-blur-xl border-b border-white/5 bg-[var(--nav-bg)]">
+    <nav className="sticky top-0 z-[100] px-4 pb-4 nav-top-safe backdrop-blur-xl border-b border-white/5 bg-[var(--nav-bg)]">
       <div className="max-w-md mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-gradient-to-br from-sky-400 to-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-sky-500/20">
