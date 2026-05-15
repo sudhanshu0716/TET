@@ -43,10 +43,25 @@ router.get('/', auth, async (req, res) => {
       { new: true }
     );
 
-    // Fix for older users: If trial_end_date is missing, set it based on created_at
-    if (user && !user.trial_end_date) {
-      user.trial_end_date = new Date(new Date(user.created_at).getTime() + 3 * 24 * 60 * 60 * 1000);
-      await user.save();
+    let needsSave = false;
+    if (user) {
+      const cutoffDate = new Date('2026-05-15T00:00:00Z');
+      
+      if (new Date(user.created_at) < cutoffDate) {
+        // Force trial to be expired for any user created before May 15, 2026
+        if (!user.trial_end_date || new Date(user.trial_end_date) > new Date()) {
+          user.trial_end_date = new Date(user.created_at);
+          needsSave = true;
+        }
+      } else if (!user.trial_end_date) {
+        // Standard fallback for newer users who somehow missed the field
+        user.trial_end_date = new Date(new Date(user.created_at).getTime() + 3 * 24 * 60 * 60 * 1000);
+        needsSave = true;
+      }
+
+      if (needsSave) {
+        await user.save();
+      }
     }
 
     const settings = await GlobalSettings.findOne();
