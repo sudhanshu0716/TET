@@ -37,11 +37,17 @@ const calculateStreak = (exams) => {
 // @access  Private
 router.get('/', auth, async (req, res) => {
   try {
-    const user = await User.findOneAndUpdate(
+    let user = await User.findOneAndUpdate(
       { user_id: req.user.id },
       { last_active: new Date() },
       { new: true }
-    ).select('-password_hash');
+    );
+
+    // Fix for older users: If trial_end_date is missing, set it based on created_at
+    if (user && !user.trial_end_date) {
+      user.trial_end_date = new Date(new Date(user.created_at).getTime() + 3 * 24 * 60 * 60 * 1000);
+      await user.save();
+    }
 
     const settings = await GlobalSettings.findOne();
     
@@ -54,8 +60,11 @@ router.get('/', auth, async (req, res) => {
     
     const streak = calculateStreak(allExams);
 
+    const userData = user ? user._doc : {};
+    if (userData.password_hash) delete userData.password_hash;
+
     res.json({
-      ...(user ? user._doc : {}),
+      ...userData,
       premium_service_enabled: settings ? settings.premium_service_enabled : false,
       examsTaken,
       avgScore,
