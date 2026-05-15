@@ -71,16 +71,16 @@ router.post('/verify-payment', auth, async (req, res) => {
       oneYear.setFullYear(oneYear.getFullYear() + 1);
 
       await User.findOneAndUpdate(
-        { user_id: req.user.id }, 
-        { 
+        { user_id: req.user.id },
+        {
           is_premium: true,
           subscription_end_date: oneYear
         }
       );
-      
+
       const updatedUser = await User.findOne({ user_id: req.user.id }).select('-password_hash');
-      
-      return res.status(200).json({ 
+
+      return res.status(200).json({
         message: 'Payment verified successfully. Welcome to Premium!',
         success: true,
         user: {
@@ -94,9 +94,9 @@ router.post('/verify-payment', auth, async (req, res) => {
         }
       });
     } else {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: 'Invalid signature, payment verification failed',
-        success: false 
+        success: false
       });
     }
   } catch (error) {

@@ -35,7 +35,7 @@ const Subscription = () => {
   return (
     <div className="flex flex-col gap-8 px-5 pt-10 pb-32 max-w-md mx-auto w-full animate-fade-in">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-black text-[var(--text-primary)]">{lang === 'HI' ? 'प्रीमियम में' : 'Upgrade to'} <span className="text-sky-400">{t.premium}</span> {lang === 'HI' ? 'बदलें' : ''}</h1>
+        <h1 className="text-3xl font-black text-[var(--text-primary)]">{lang === 'HI' ? 'प्रीमियम में' : 'Upgrade to'} <span className="text-sky-400">{lang === 'HI' ? 'अपग्रेड' : t.premium}</span> {lang === 'HI' ? 'करें' : ''}</h1>
         <p className="text-slate-400 text-sm font-medium">{lang === 'HI' ? 'असीमित तैयारी के लिए एक प्लान चुनें' : 'Choose a plan for unlimited preparation'}</p>
       </div>
 
@@ -79,7 +79,7 @@ const Subscription = () => {
             ? ['असीमित दैनिक परीक्षाएं', 'पूर्ण प्रदर्शन विश्लेषण', 'लाइव प्रतियोगिताओं में प्राथमिकता', 'विज्ञापन-मुक्त अनुभव', 'सभी प्रीमियम नोट्स']
             : ['Unlimited Daily Exams', 'Complete Performance Analytics', 'Priority Access to Live Contests', 'Ad-free Experience', 'All Premium Cheatsheets']
           ).map((feat, i) => (
-            <div key={i} className="flex items-center gap-3 text-slate-300 text-sm font-medium">
+            <div key={i} className="flex items-center gap-3 text-[var(--text-primary)] opacity-80 text-sm font-medium">
               <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400">
                 <Check size={12} />
               </div>
@@ -99,7 +99,7 @@ const Subscription = () => {
 
       <p className="text-[10px] text-slate-500 font-medium text-center px-4">
         {lang === 'HI' 
-          ? 'सुरक्षित भुगतान रेजरपे (Razorpay) द्वारा संचालित।' 
+          ? 'रेज़रपे (Razorpay) द्वारा सुरक्षित भुगतान' 
           : 'Secure payment powered by Razorpay.'}
       </p>
     </div>

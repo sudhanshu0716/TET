@@ -15,6 +15,7 @@ const AdminDashboard = () => {
   const [grantMonths, setGrantMonths] = useState(1);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [cleaning, setCleaning] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,6 +67,24 @@ const AdminDashboard = () => {
       alert('Failed to update contest settings');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleRemoveDuplicates = async () => {
+    if (!window.confirm("Are you sure you want to scan and remove duplicate questions from the database?")) return;
+    setCleaning(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await api.post('/api/admin/remove-duplicates', {}, { headers: { 'x-auth-token': token } });
+      alert(res.data.message);
+      // Refresh stats after deletion
+      const statsRes = await api.get('/api/admin/stats', { headers: { 'x-auth-token': token } });
+      setStats(statsRes.data);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to remove duplicates');
+    } finally {
+      setCleaning(false);
     }
   };
 
@@ -213,6 +232,20 @@ const AdminDashboard = () => {
             <div>
               <h4 className="font-black text-[var(--text-primary)] text-sm">Upload Paper</h4>
               <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Import PDF or CSV</p>
+            </div>
+          </button>
+          
+          <button 
+            onClick={handleRemoveDuplicates}
+            disabled={cleaning}
+            className="glass-card flex items-center gap-4 text-left active:scale-[0.98] transition-all"
+          >
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400">
+              <Database size={22} />
+            </div>
+            <div>
+              <h4 className="font-black text-[var(--text-primary)] text-sm">{cleaning ? 'Scanning Database...' : 'Clean Duplicates'}</h4>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Remove identical questions</p>
             </div>
           </button>
           <button className="glass-card flex items-center gap-4 text-left active:scale-[0.98] transition-all">

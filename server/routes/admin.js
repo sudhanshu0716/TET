@@ -123,4 +123,30 @@ router.post('/grant-premium', [auth, adminAuth], async (req, res) => {
   } catch (err) { res.status(500).send('Server Error'); }
 });
 
+// @desc    Remove duplicate questions from the database
+router.post('/remove-duplicates', [auth, adminAuth], async (req, res) => {
+  try {
+    const duplicates = await Question.aggregate([
+      { $group: { _id: '$question_text', count: { $sum: 1 }, docs: { $push: '$_id' } } },
+      { $match: { count: { $gt: 1 } } }
+    ]);
+    
+    let idsToDelete = [];
+    duplicates.forEach(dup => {
+      const [, ...rest] = dup.docs; 
+      idsToDelete = idsToDelete.concat(rest);
+    });
+    
+    if (idsToDelete.length > 0) {
+      const result = await Question.deleteMany({ _id: { $in: idsToDelete } });
+      return res.json({ message: `Successfully deleted ${result.deletedCount} duplicate questions.`, deletedCount: result.deletedCount });
+    } else {
+      return res.json({ message: 'No duplicate questions found.', deletedCount: 0 });
+    }
+  } catch (err) { 
+    console.error('Duplicate removal error:', err);
+    res.status(500).send('Server Error'); 
+  }
+});
+
 module.exports = router;
