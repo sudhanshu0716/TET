@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import translations from '../translations';
+import ReactMarkdown from 'react-markdown';
 
 const Cheatsheets = () => {
   const [notes, setNotes] = useState([]);
@@ -57,8 +58,8 @@ const Cheatsheets = () => {
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{selectedNote.category}</span>
             </div>
             <h3 className="text-xl font-black text-[var(--text-primary)] pb-4 border-b border-white/5">{selectedNote.title}</h3>
-            <div className="text-sm text-[var(--text-secondary)] leading-loose whitespace-pre-wrap font-medium">
-              {selectedNote.content}
+            <div className="text-sm text-[var(--text-secondary)] leading-loose font-medium markdown-body">
+              <ReactMarkdown>{selectedNote.content}</ReactMarkdown>
             </div>
           </div>
         </div>

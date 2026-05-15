@@ -45,6 +45,7 @@ function App() {
                 <Route path="/practice/:subject" element={<DailyExam type="subject" />} />
                 <Route path="/full-mock" element={<DailyExam type="full-mock" />} />
                 <Route path="/important" element={<DailyExam type="important" />} />
+                <Route path="/year-test/:year" element={<DailyExam type="year" />} />
                 <Route path="/contest-live" element={<DailyExam type="contest" />} />
                 <Route path="/contest-leaderboard" element={<Leaderboard />} />
                 <Route path="/cheatsheets" element={<Cheatsheets />} />

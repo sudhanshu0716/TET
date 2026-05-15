@@ -197,6 +197,62 @@ router.get('/subject/:subject', auth, async (req, res) => {
   }
 });
 
+// @route   GET api/exams/year/:year
+// @desc    Get questions exclusively from a specific year
+router.get('/year/:year', auth, async (req, res) => {
+  try {
+    const hasAccess = await checkAccess(req.user.id);
+    if (!hasAccess) {
+      return res.status(403).json({ message: 'Trial expired. Please upgrade to Premium to continue practicing.' });
+    }
+
+    const year = parseInt(req.params.year);
+    const user = await User.findOne({ user_id: req.user.id });
+    
+    // Build subject list based on user's profile
+    const userSubjects = ['pedagogy', user.language1.toLowerCase(), user.language2.toLowerCase()];
+    if (user.level === 'primary') {
+      userSubjects.push('math', 'evs');
+    } else {
+      userSubjects.push(user.subject_preference === 'science' ? 'science' : 'social');
+    }
+
+    const lang = req.query.lang || 'hindi';
+    const questions = await Question.aggregate([
+      { $match: { 
+        level: user.level,
+        subject: { $in: userSubjects },
+        year: year,
+        $or: [
+          { subject: 'english', language: 'english' },
+          { subject: 'hindi', language: 'hindi' },
+          { subject: { $nin: ['english', 'hindi'] }, language: lang }
+        ]
+      }},
+      { $sample: { size: 30 } }
+    ]);
+
+    if (questions.length === 0) {
+      return res.status(404).json({ message: `No questions found for the year ${year}.` });
+    }
+
+    const exam = new Exam({
+      exam_id: uuidv4(),
+      user_id: req.user.id,
+      exam_type: 'year-wise',
+      questions: questions.map(q => q.question_id),
+      duration: 30,
+      date: new Date()
+    });
+
+    await exam.save();
+    res.json({ exam, questions });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   GET api/exams/important
 // @desc    Get most important questions (Asked in multiple years)
 router.get('/important', auth, async (req, res) => {

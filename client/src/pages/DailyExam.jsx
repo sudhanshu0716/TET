@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, CheckCircle2, Clock, ListChecks, X, Trophy } from 'lucide-react';
 
 const DailyExam = ({ type }) => {
-  const { subject } = useParams();
+  const { subject, year } = useParams();
   const [step, setStep] = useState('config');
   const [config, setConfig] = useState({ qCount: 30, timeLimit: 30 });
   const [questions, setQuestions] = useState([]);
@@ -83,6 +83,7 @@ const DailyExam = ({ type }) => {
       if (type === 'full-mock') url = '/api/exams/full-mock';
       if (type === 'subject') url = `/api/exams/subject/${subject}?count=${config.qCount}&duration=${config.timeLimit}`;
       if (type === 'important') url = '/api/exams/important';
+      if (type === 'year') url = `/api/exams/year/${year}`;
       if (type === 'contest') url = '/api/contests/join';
 
       const res = await api.get(url, { headers: { 'x-auth-token': token } });

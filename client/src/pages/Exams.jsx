@@ -130,6 +130,23 @@ const Exams = () => {
         ))}
       </div>
 
+      {/* Previous Year Papers */}
+      <div className="mt-4 space-y-4">
+        <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Previous Year Papers</h4>
+        <div className="grid grid-cols-3 gap-3">
+          {[2018, 2019, 2020, 2021, 2022, 2023].map((year) => (
+            <button 
+              key={year}
+              onClick={() => navigate(`/year-test/${year}`)}
+              className="glass-card !p-3 flex flex-col items-center justify-center gap-1 group active:scale-95 transition-all bg-gradient-to-br from-slate-500/10 to-transparent hover:border-sky-500/30 hover:bg-sky-500/5"
+            >
+              <span className="text-sm font-black text-[var(--text-primary)]">{year}</span>
+              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Test</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Quick Revision Section */}
       <div className="mt-4 space-y-4">
         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Quick Tools</h4>
