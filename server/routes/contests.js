@@ -7,6 +7,21 @@ const Question = require('../models/Question');
 const User = require('../models/User');
 const ContestSettings = require('../models/ContestSettings');
 const { v4: uuidv4 } = require('uuid');
+const GlobalSettings = require('../models/GlobalSettings');
+
+// Helper to check if user has access
+const checkAccess = async (userId) => {
+  const settings = await GlobalSettings.findOne();
+  if (!settings || !settings.premium_service_enabled) return true;
+
+  const user = await User.findOne({ user_id: userId });
+  if (!user || user.role === 'admin') return true;
+
+  const isTrialValid = new Date(user.trial_end_date) > new Date();
+  const isSubValid = user.subscription_end_date && new Date(user.subscription_end_date) > new Date();
+  
+  return user.is_premium || isTrialValid || isSubValid;
+};
 
 // Helper to get today's contest date in IST (at 00:00:00 for uniqueness)
 const getContestDate = () => {
@@ -36,6 +51,11 @@ const getOrUpdateContestSettings = async () => {
 // @desc    Register for today's contest
 router.post('/register', auth, async (req, res) => {
   try {
+    const hasAccess = await checkAccess(req.user.id);
+    if (!hasAccess) {
+      return res.status(403).json({ message: 'Trial expired. Please upgrade to Premium to participate in Contests.' });
+    }
+
     const contestDate = getContestDate();
     const existing = await ContestRegistration.findOne({ user_id: req.user.id, contest_date: contestDate });
     if (existing) return res.status(400).json({ message: 'Already registered for today.' });
@@ -90,6 +110,11 @@ router.get('/status', auth, async (req, res) => {
 // @desc    Start/Join the live contest
 router.get('/join', auth, async (req, res) => {
   try {
+    const hasAccess = await checkAccess(req.user.id);
+    if (!hasAccess) {
+      return res.status(403).json({ message: 'Trial expired. Please upgrade to Premium to join the contest.' });
+    }
+
     const settings = await getOrUpdateContestSettings();
     const d = new Date();
     const istOffset = 5.5 * 60 * 60 * 1000;

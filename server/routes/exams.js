@@ -6,6 +6,22 @@ const Question = require('../models/Question');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 
+const GlobalSettings = require('../models/GlobalSettings');
+
+// Helper to check if user has access
+const checkAccess = async (userId) => {
+  const settings = await GlobalSettings.findOne();
+  if (!settings || !settings.premium_service_enabled) return true;
+
+  const user = await User.findOne({ user_id: userId });
+  if (!user || user.role === 'admin') return true;
+
+  const isTrialValid = new Date(user.trial_end_date) > new Date();
+  const isSubValid = user.subscription_end_date && new Date(user.subscription_end_date) > new Date();
+  
+  return user.is_premium || isTrialValid || isSubValid;
+};
+
 // @route   GET api/exams/today
 // @desc    Get/Create a daily exam based on profile settings (Level, L1, L2)
 router.get('/today', auth, async (req, res) => {
@@ -25,6 +41,11 @@ router.get('/today', auth, async (req, res) => {
 
     const qCount = parseInt(req.query.count) || 30;
     const duration = parseInt(req.query.duration) || 30;
+
+    const hasAccess = await checkAccess(req.user.id);
+    if (!hasAccess) {
+      return res.status(403).json({ message: 'Trial expired. Please upgrade to Premium to continue practicing.' });
+    }
 
     const user = await User.findOne({ user_id: req.user.id });
     if (!user) return res.status(404).json({ msg: 'User not found' });
@@ -64,6 +85,11 @@ router.get('/today', auth, async (req, res) => {
 // @desc    Create a full 150-question mock exam (3 hours duration)
 router.get('/full-mock', auth, async (req, res) => {
   try {
+    const hasAccess = await checkAccess(req.user.id);
+    if (!hasAccess) {
+      return res.status(403).json({ message: 'Trial expired. Please upgrade to Premium to continue practicing.' });
+    }
+
     const user = await User.findOne({ user_id: req.user.id });
     
     // Distribution: 30 CDP, 30 L1, 30 L2, 60 Subject/EVS-Math
@@ -102,6 +128,11 @@ router.get('/full-mock', auth, async (req, res) => {
 
 router.get('/subject/:subject', auth, async (req, res) => {
   try {
+    const hasAccess = await checkAccess(req.user.id);
+    if (!hasAccess) {
+      return res.status(403).json({ message: 'Trial expired. Please upgrade to Premium to continue practicing.' });
+    }
+
     const qCount = parseInt(req.query.count) || 30;
     const duration = parseInt(req.query.duration) || 30;
 
@@ -132,6 +163,11 @@ router.get('/subject/:subject', auth, async (req, res) => {
 // @desc    Get most important questions (Asked in multiple years)
 router.get('/important', auth, async (req, res) => {
   try {
+    const hasAccess = await checkAccess(req.user.id);
+    if (!hasAccess) {
+      return res.status(403).json({ message: 'Trial expired. Please upgrade to Premium to continue practicing.' });
+    }
+
     const user = await User.findOne({ user_id: req.user.id });
     
     // Build subject list based on user's profile
