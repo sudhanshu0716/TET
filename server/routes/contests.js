@@ -177,6 +177,7 @@ router.get('/leaderboard', auth, async (req, res) => {
       const u = await User.findOne({ user_id: r.user_id });
       return { 
         name: u?.name || 'User', 
+        level: u?.level || 'primary',
         score: r.score, 
         timeSpent: r.duration, // Optional: show duration
         date: r.date 

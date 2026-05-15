@@ -12,6 +12,13 @@ const Subscription = () => {
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
 
+  const isTrialValid = user?.trial_end_date && new Date(user.trial_end_date) > new Date();
+  const isSubValid = user?.subscription_end_date && new Date(user.subscription_end_date) > new Date();
+  const trialDaysLeft = user?.trial_end_date ? Math.ceil((new Date(user.trial_end_date) - new Date()) / (1000 * 60 * 60 * 24)) : 0;
+  
+  const currentPlanName = user?.is_premium || isSubValid ? 'Premium' : isTrialValid ? 'Trial' : 'Expired';
+  const currentPlanIcon = user?.is_premium || isSubValid ? Crown : isTrialValid ? Zap : Shield;
+
   const plans = [
     { id: 0, name: t.monthly, price: 29, duration: t.oneMonth, icon: Zap, color: 'text-blue-400', bg: 'bg-blue-500/10' },
     { id: 1, name: t.quarterly, price: 59, duration: t.threeMonths, icon: Crown, color: 'text-amber-400', bg: 'bg-amber-500/10', popular: true },
@@ -37,6 +44,27 @@ const Subscription = () => {
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-black text-[var(--text-primary)]">{lang === 'HI' ? 'प्रीमियम में' : 'Upgrade to'} <span className="text-sky-400">{lang === 'HI' ? 'अपग्रेड' : t.premium}</span> {lang === 'HI' ? 'करें' : ''}</h1>
         <p className="text-slate-400 text-sm font-medium">{lang === 'HI' ? 'असीमित तैयारी के लिए एक प्लान चुनें' : 'Choose a plan for unlimited preparation'}</p>
+      </div>
+
+      <div className="glass-card p-5 border-l-4 border-l-amber-500 bg-gradient-to-r from-amber-500/10 to-transparent flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center">
+            {React.createElement(currentPlanIcon, { size: 24 })}
+          </div>
+          <div>
+            <h4 className="text-sm font-black text-[var(--text-primary)]">
+              {lang === 'HI' ? 'वर्तमान प्लान: ' : 'Current Plan: '} 
+              <span className="text-amber-500">{currentPlanName}</span>
+            </h4>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">
+              {currentPlanName === 'Premium' 
+                ? (user.subscription_end_date ? `Expires: ${new Date(user.subscription_end_date).toLocaleDateString()}` : 'Lifetime Access')
+                : currentPlanName === 'Trial'
+                ? `${trialDaysLeft} days left in trial`
+                : 'Your access has expired'}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-4">

@@ -79,7 +79,14 @@ const Leaderboard = () => {
               </div>
 
               <div className="flex-1 min-w-0">
-                <h4 className="font-black text-[var(--text-primary)] truncate">{user.name}</h4>
+                <div className="flex items-center gap-2">
+                  <h4 className="font-black text-[var(--text-primary)] truncate">{user.name}</h4>
+                  {user.level && (
+                    <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${user.level === 'primary' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'}`}>
+                      {user.level}
+                    </span>
+                  )}
+                </div>
                 <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">
                   {tab === 'global' ? `${user.questions_solved} Solved` : `Completed Today`}
                 </p>

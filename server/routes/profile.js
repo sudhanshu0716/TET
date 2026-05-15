@@ -98,7 +98,7 @@ router.get('/ranking', async (req, res) => {
     const topUsers = await User.find()
       .sort({ questions_solved: -1 })
       .limit(10)
-      .select('name questions_solved rank_points');
+      .select('name questions_solved rank_points level');
     res.json(topUsers);
   } catch (err) {
     console.error(err.message);

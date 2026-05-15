@@ -22,6 +22,11 @@ const Cheatsheets = () => {
         setLoading(false);
       } catch (err) {
         console.error(err);
+        setLoading(false);
+        if (err.response?.status === 403) {
+          alert(err.response?.data?.message || 'Trial expired. Please upgrade.');
+          window.location.href = '/subscription';
+        }
       }
     };
     fetchNotes();
