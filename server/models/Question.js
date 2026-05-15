@@ -9,6 +9,7 @@ const questionSchema = new mongoose.Schema({
     required: true 
   },
   question_text: { type: String, required: true },
+  language: { type: String, enum: ['hindi', 'english'], default: 'hindi' },
   options: [{ type: String, required: true }],
   correct_answer: { type: String, required: true },
   explanation: { type: String },

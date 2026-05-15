@@ -58,9 +58,20 @@ router.get('/today', auth, async (req, res) => {
       userSubjects.push(user.subject_preference === 'science' ? 'science' : 'social');
     }
 
-    // Fetch questions ONLY from user's relevant subjects
+    // Fetch questions ONLY from user's relevant subjects and matching language
+    const lang = req.query.lang || 'hindi';
     const questions = await Question.aggregate([
-      { $match: { level: user.level, subject: { $in: userSubjects } } },
+      { 
+        $match: { 
+          level: user.level, 
+          subject: { $in: userSubjects },
+          $or: [
+            { subject: 'english', language: 'english' },
+            { subject: 'hindi', language: 'hindi' },
+            { subject: { $nin: ['english', 'hindi'] }, language: lang }
+          ]
+        } 
+      },
       { $sample: { size: qCount } }
     ]);
 
@@ -93,18 +104,44 @@ router.get('/full-mock', auth, async (req, res) => {
     const user = await User.findOne({ user_id: req.user.id });
     
     // Distribution: 30 CDP, 30 L1, 30 L2, 60 Subject/EVS-Math
-    const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level } }, { $sample: { size: 30 } }]);
-    const l1 = await Question.aggregate([{ $match: { subject: user.language1.toLowerCase(), level: user.level } }, { $sample: { size: 30 } }]);
-    const l2 = await Question.aggregate([{ $match: { subject: user.language2.toLowerCase(), level: user.level } }, { $sample: { size: 30 } }]);
+    const lang = req.query.lang || 'hindi';
+    const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level, language: lang } }, { $sample: { size: 30 } }]);
+    
+    // For languages (L1/L2), we want to match the subject specifically
+    // Hindi subject questions are always 'hindi' language, English always 'english'
+    const l1 = await Question.aggregate([
+      { $match: { 
+        subject: user.language1.toLowerCase(), 
+        level: user.level,
+        $or: [
+          { subject: 'english', language: 'english' },
+          { subject: 'hindi', language: 'hindi' },
+          { subject: { $nin: ['english', 'hindi'] }, language: lang }
+        ]
+      } }, 
+      { $sample: { size: 30 } }
+    ]);
+    const l2 = await Question.aggregate([
+      { $match: { 
+        subject: user.language2.toLowerCase(), 
+        level: user.level,
+        $or: [
+          { subject: 'english', language: 'english' },
+          { subject: 'hindi', language: 'hindi' },
+          { subject: { $nin: ['english', 'hindi'] }, language: lang }
+        ]
+      } }, 
+      { $sample: { size: 30 } }
+    ]);
     
     let subQ = [];
     if (user.level === 'primary') {
-      const math = await Question.aggregate([{ $match: { subject: 'math', level: 'primary' } }, { $sample: { size: 30 } }]);
-      const evs = await Question.aggregate([{ $match: { subject: 'evs', level: 'primary' } }, { $sample: { size: 30 } }]);
+      const math = await Question.aggregate([{ $match: { subject: 'math', level: 'primary', language: lang } }, { $sample: { size: 30 } }]);
+      const evs = await Question.aggregate([{ $match: { subject: 'evs', level: 'primary', language: lang } }, { $sample: { size: 30 } }]);
       subQ = [...math, ...evs];
     } else {
       const subject = user.subject_preference === 'science' ? 'science' : 'social';
-      subQ = await Question.aggregate([{ $match: { subject, level: 'junior' } }, { $sample: { size: 60 } }]);
+      subQ = await Question.aggregate([{ $match: { subject, level: 'junior', language: lang } }, { $sample: { size: 60 } }]);
     }
 
     const questions = [...cdp, ...l1, ...l2, ...subQ];
@@ -137,8 +174,9 @@ router.get('/subject/:subject', auth, async (req, res) => {
     const duration = parseInt(req.query.duration) || 30;
 
     const user = await User.findOne({ user_id: req.user.id });
+    const lang = req.query.lang || 'hindi';
     const questions = await Question.aggregate([
-      { $match: { subject: req.params.subject.toLowerCase(), level: user.level } },
+      { $match: { subject: req.params.subject.toLowerCase(), level: user.level, language: lang } },
       { $sample: { size: qCount } }
     ]);
 
@@ -178,20 +216,33 @@ router.get('/important', auth, async (req, res) => {
       userSubjects.push(user.subject_preference === 'science' ? 'science' : 'social');
     }
 
-    // Priority: Questions that have a year field (PYQs) from user's subjects
+    const lang = req.query.lang || 'hindi';
     const questions = await Question.aggregate([
       { $match: { 
         level: user.level,
         subject: { $in: userSubjects },
-        year: { $exists: true, $ne: null } 
+        year: { $exists: true, $ne: null },
+        $or: [
+          { subject: 'english', language: 'english' },
+          { subject: 'hindi', language: 'hindi' },
+          { subject: { $nin: ['english', 'hindi'] }, language: lang }
+        ]
       }},
       { $sample: { size: 30 } }
     ]);
 
     if (questions.length === 0) {
-      // Fallback to random from user's subjects
+      // Fallback to random from user's subjects with language filter
       const fallback = await Question.aggregate([
-        { $match: { level: user.level, subject: { $in: userSubjects } } },
+        { $match: { 
+          level: user.level, 
+          subject: { $in: userSubjects },
+          $or: [
+            { subject: 'english', language: 'english' },
+            { subject: 'hindi', language: 'hindi' },
+            { subject: { $nin: ['english', 'hindi'] }, language: lang }
+          ]
+        } },
         { $sample: { size: 30 } }
       ]);
       questions.push(...fallback);
@@ -227,6 +278,7 @@ router.post('/submit/:examId', auth, async (req, res) => {
     const graded = [];
     for (const ans of answers) {
       const q = await Question.findOne({ question_id: ans.question_id });
+      if (!q) continue; // Skip if question not found
       const is_correct = q.correct_answer === ans.selected_option;
       if (is_correct) score++;
       graded.push({ ...ans, is_correct });
