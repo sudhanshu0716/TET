@@ -17,8 +17,12 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(formData.email.toLowerCase().trim(), formData.password);
-      navigate('/dashboard');
+      const data = await login(formData.email.toLowerCase().trim(), formData.password);
+      if (data.user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password');
     } finally {

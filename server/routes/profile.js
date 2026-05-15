@@ -81,6 +81,8 @@ router.get('/', auth, async (req, res) => {
     res.json({
       ...userData,
       premium_service_enabled: settings ? settings.premium_service_enabled : false,
+      system_message: settings ? settings.system_message : '',
+      is_maintenance_mode: settings ? settings.is_maintenance_mode : false,
       examsTaken,
       avgScore,
       streak

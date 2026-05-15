@@ -97,7 +97,7 @@ const DailyExam = ({ type }) => {
     } catch (err) {
       clearInterval(intervalId);
       alert(err.response?.data?.message || 'Error starting exam');
-      navigate('/dashboard');
+      navigate('/profile');
     }
   };
 

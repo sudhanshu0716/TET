@@ -36,9 +36,8 @@ const Dashboard = () => {
         if (res.data.premium_service_enabled && res.data.role !== 'admin') {
           const isTrialValid = new Date(res.data.trial_end_date) > new Date();
           const isSubValid = res.data.subscription_end_date && new Date(res.data.subscription_end_date) > new Date();
-          
           if (!res.data.is_premium && !isTrialValid && !isSubValid) {
-            navigate('/subscription');
+            navigate('/profile');
           }
         }
       } catch (err) {
@@ -138,6 +137,22 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col gap-6 px-5 pt-4 pb-32 max-w-md mx-auto w-full animate-fade-in">
+      {/* Global System Message */}
+      {user?.system_message && (
+        <motion.div 
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex gap-3 items-center"
+        >
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-500">
+            <Sparkles size={16} />
+          </div>
+          <p className="text-xs font-bold text-amber-400 leading-relaxed">
+            {user.system_message}
+          </p>
+        </motion.div>
+      )}
+
       {/* Top Info Bar */}
       <div id="tut-stats" className="flex justify-between items-center px-1">
         <div className="flex items-center gap-4">

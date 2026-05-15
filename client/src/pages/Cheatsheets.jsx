@@ -25,7 +25,7 @@ const Cheatsheets = () => {
         setLoading(false);
         if (err.response?.status === 403) {
           alert(err.response?.data?.message || 'Trial expired. Please upgrade.');
-          window.location.href = '/subscription';
+          window.location.href = '/profile';
         }
       }
     };

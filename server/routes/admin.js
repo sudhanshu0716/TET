@@ -39,6 +39,17 @@ router.get('/stats', [auth, adminAuth], async (req, res) => {
   } catch (err) { res.status(500).send('Server Error'); }
 });
 
+// @desc    Get Recent App Activity
+router.get('/recent-activity', [auth, adminAuth], async (req, res) => {
+  try {
+    const recentExams = await Exam.find()
+      .sort({ date: -1 })
+      .limit(10)
+      .populate('user_id', 'name email');
+    res.json(recentExams);
+  } catch (err) { res.status(500).send('Server Error'); }
+});
+
 // @desc    Get Current Contest Settings
 router.get('/contest-settings', [auth, adminAuth], async (req, res) => {
   try {
@@ -91,6 +102,34 @@ router.get('/premium-status', [auth, adminAuth], async (req, res) => {
   } catch (err) { res.status(500).send('Server Error'); }
 });
 
+// @desc    Update Global System Message
+router.post('/set-system-message', [auth, adminAuth], async (req, res) => {
+  const { message } = req.body;
+  try {
+    let settings = await GlobalSettings.findOne();
+    if (!settings) settings = new GlobalSettings();
+    
+    settings.system_message = message || '';
+    settings.last_updated = new Date();
+    await settings.save();
+    res.json(settings);
+  } catch (err) { res.status(500).send('Server Error'); }
+});
+
+// @desc    Toggle Global Maintenance Mode
+router.post('/toggle-maintenance', [auth, adminAuth], async (req, res) => {
+  const { enabled } = req.body;
+  try {
+    let settings = await GlobalSettings.findOne();
+    if (!settings) settings = new GlobalSettings();
+    
+    settings.is_maintenance_mode = enabled;
+    settings.last_updated = new Date();
+    await settings.save();
+    res.json(settings);
+  } catch (err) { res.status(500).send('Server Error'); }
+});
+
 // @desc    Toggle Global Premium Status
 router.post('/toggle-premium', [auth, adminAuth], async (req, res) => {
   const { enabled } = req.body;
@@ -102,6 +141,15 @@ router.post('/toggle-premium', [auth, adminAuth], async (req, res) => {
     settings.last_updated = new Date();
     await settings.save();
     res.json(settings);
+  } catch (err) { res.status(500).send('Server Error'); }
+});
+
+// @desc    Inspect specific user by email
+router.get('/inspect-user/:email', [auth, adminAuth], async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.params.email.toLowerCase().trim() }).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user);
   } catch (err) { res.status(500).send('Server Error'); }
 });
 
@@ -147,6 +195,39 @@ router.post('/remove-duplicates', [auth, adminAuth], async (req, res) => {
     console.error('Duplicate removal error:', err);
     res.status(500).send('Server Error'); 
   }
+});
+
+// @desc    Reset Leaderboard (Zero out all points)
+router.post('/reset-leaderboard', [auth, adminAuth], async (req, res) => {
+  try {
+    await User.updateMany({}, { $set: { rank_points: 0, questions_solved: 0 } });
+    res.json({ message: 'Leaderboard successfully reset. All user points have been zeroed.' });
+  } catch (err) { res.status(500).send('Server Error'); }
+});
+
+// @desc    Clear Idle/Abandoned Exams
+router.post('/clear-idle-exams', [auth, adminAuth], async (req, res) => {
+  try {
+    const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+    const result = await Exam.deleteMany({ completed: false, date: { $lt: twoDaysAgo } });
+    res.json({ message: `Successfully deleted ${result.deletedCount} abandoned exams.` });
+  } catch (err) { res.status(500).send('Server Error'); }
+});
+
+// @desc    Revoke Premium and Kill Trial
+router.post('/revoke-premium', [auth, adminAuth], async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    user.is_premium = false;
+    user.subscription_end_date = null;
+    user.trial_end_date = new Date('2020-01-01'); // Force deep into the past
+    await user.save();
+    
+    res.json({ message: `Premium revoked and trial ended for ${user.email}.` });
+  } catch (err) { res.status(500).send('Server Error'); }
 });
 
 module.exports = router;
