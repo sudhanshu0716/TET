@@ -5,8 +5,11 @@ import translations from '../translations';
 import TopicInsights from '../components/TopicInsights';
 import PerformanceRadar from '../components/PerformanceRadar';
 
+import { useAuth } from '../context/AuthContext';
+
 const Dashboard = () => {
-  const [user, setUser] = useState(null);
+  const { user: authUser, setUser: setAuthUser } = useAuth();
+  const [user, setUser] = useState(authUser || null);
   const [error, setError] = useState(false);
   const [history, setHistory] = useState([]);
   const [todaySolved, setTodaySolved] = useState(0);
@@ -23,7 +26,11 @@ const Dashboard = () => {
         const res = await api.get('/api/profile', {
           headers: { 'x-auth-token': token }
         });
-        setUser(res.data);
+        if (res.data) {
+          setUser(res.data);
+          setAuthUser(res.data);
+          localStorage.setItem('user', JSON.stringify(res.data));
+        }
 
         // Access Check
         if (res.data.premium_service_enabled && res.data.role !== 'admin') {
@@ -110,7 +117,7 @@ const Dashboard = () => {
     </div>
   );
 
-  if (!user) return (
+  if (!user && !error) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-5 max-w-md mx-auto w-full">
       <div className="loader"></div>
       <p className="text-slate-500 font-bold animate-pulse">{t.preparing}</p>
@@ -167,13 +174,6 @@ const Dashboard = () => {
               <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest">{t.readyChallenge}</p>
             </div>
           </div>
-          <button 
-            onClick={() => navigate('/exams')}
-            className="h-12 px-4 rounded-2xl bg-sky-500 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-sky-500/20 active:scale-95 transition-all flex flex-col items-center justify-center gap-1"
-          >
-            <span>📝</span>
-            <span>EXAMS</span>
-          </button>
         </div>
       </header>
 
@@ -194,11 +194,6 @@ const Dashboard = () => {
         </p>
       </div>
       
-      {/* Subject Wise Weakness Analysis */}
-      <div id="tut-radar">
-        <PerformanceRadar />
-      </div>
-
       {/* Daily Live Contest Card */}
       <div className={`glass-card relative overflow-hidden ${contestStatus.status === 'live' ? 'ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/20' : ''}`}>
         <div className="flex justify-between items-start mb-4">
@@ -270,8 +265,6 @@ const Dashboard = () => {
         </h5>
         <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed">"{t.tipBody}"</p>
       </div>
-
-      <TopicInsights />
 
       {/* Performance Predictor */}
       <div className="glass-card bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border-indigo-500/20 relative overflow-hidden">
@@ -368,6 +361,14 @@ const Dashboard = () => {
             <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-tighter text-center">{sub.name}</span>
           </div>
         ))}
+      </div>
+
+      {/* Performance Analysis Group */}
+      <div className="space-y-6 pt-4">
+        <div id="tut-radar">
+          <PerformanceRadar />
+        </div>
+        <TopicInsights />
       </div>
 
       {/* Recent Exams History */}

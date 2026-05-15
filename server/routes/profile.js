@@ -4,6 +4,34 @@ const User = require('../models/User');
 const auth = require('../middleware/auth');
 const GlobalSettings = require('../models/GlobalSettings');
 
+const Exam = require('../models/Exam');
+
+// Helper to calculate streak
+const calculateStreak = (exams) => {
+  if (!exams.length) return 0;
+  const uniqueDays = [...new Set(exams.map(e => new Date(e.date).toDateString()))]
+    .map(d => new Date(d))
+    .sort((a, b) => b - a);
+
+  let streak = 0;
+  let current = new Date();
+  current.setHours(0, 0, 0, 0);
+
+  // If didn't play today, check if played yesterday to continue streak
+  const lastPlayed = uniqueDays[0];
+  if (current - lastPlayed > 86400000) return 0; 
+
+  for (let i = 0; i < uniqueDays.length; i++) {
+    const diff = (current - uniqueDays[i]) / 86400000;
+    if (diff === streak || diff === streak - 1) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return streak;
+};
+
 // @route   GET api/profile
 // @desc    Get current user profile
 // @access  Private
@@ -17,9 +45,21 @@ router.get('/', auth, async (req, res) => {
 
     const settings = await GlobalSettings.findOne();
     
+    // Calculate Stats
+    const allExams = await Exam.find({ user_id: req.user.id, completed: true });
+    const examsTaken = allExams.length;
+    const avgScore = examsTaken > 0 
+      ? Math.round(allExams.reduce((acc, curr) => acc + (curr.score / curr.questions.length), 0) / examsTaken * 100) 
+      : 0;
+    
+    const streak = calculateStreak(allExams);
+
     res.json({
       ...(user ? user._doc : {}),
-      premium_service_enabled: settings ? settings.premium_service_enabled : false
+      premium_service_enabled: settings ? settings.premium_service_enabled : false,
+      examsTaken,
+      avgScore,
+      streak
     });
   } catch (err) {
     console.error(err.message);
