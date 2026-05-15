@@ -51,12 +51,9 @@ const paymentRoutes = require('./routes/payment');
 app.use('/api/payment', paymentRoutes);
 
 // Connect to MongoDB
-const { initAutomation } = require('./services/automationService');
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB');
-    // Start background automation (checks for empty DB on boot + schedules daily runs)
-    initAutomation();
   })
   .catch(err => console.error('Could not connect to MongoDB:', err));
 
