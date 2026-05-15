@@ -22,4 +22,6 @@ const userSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now }
 });
 
+userSchema.index({ last_active: -1 });
+
 module.exports = mongoose.model('User', userSchema);

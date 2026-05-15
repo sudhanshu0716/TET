@@ -96,13 +96,17 @@ router.get('/status', auth, async (req, res) => {
       date: { $gte: contestDate } 
     });
 
+    // Get total registered count for today
+    const registrationCount = await ContestRegistration.countDocuments({ contest_date: contestDate });
+
     res.json({ 
       status, 
       registered: !!registered,
       attempted: !!attempted,
       startTime: start,
       endTime: end,
-      duration: settings.duration
+      duration: settings.duration,
+      registrationCount
     });
   } catch (err) { res.status(500).send('Server Error'); }
 });
@@ -177,6 +181,20 @@ router.get('/leaderboard', auth, async (req, res) => {
     }));
 
     res.json(leaderboard);
+  } catch (err) { res.status(500).send('Server Error'); }
+});
+
+// @desc    Get list of participants registered for today
+router.get('/participants', auth, async (req, res) => {
+  try {
+    const today = getContestDate();
+    const regs = await ContestRegistration.find({ contest_date: today });
+    const userIds = regs.map(r => r.user_id);
+    const users = await User.find({ user_id: { $in: userIds } }).select('name role');
+    
+    // Sort so admins don't always appear at top, but preserve anonymity if needed
+    // For now just names
+    res.json(users.map(u => ({ name: u.name, isAdmin: u.role === 'admin' })));
   } catch (err) { res.status(500).send('Server Error'); }
 });
 

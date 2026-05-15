@@ -18,7 +18,7 @@ router.get('/', auth, async (req, res) => {
     const settings = await GlobalSettings.findOne();
     
     res.json({
-      ...user._doc,
+      ...(user ? user._doc : {}),
       premium_service_enabled: settings ? settings.premium_service_enabled : false
     });
   } catch (err) {

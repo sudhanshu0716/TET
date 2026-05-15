@@ -7,6 +7,7 @@ import PerformanceRadar from '../components/PerformanceRadar';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
+  const [error, setError] = useState(false);
   const [history, setHistory] = useState([]);
   const [todaySolved, setTodaySolved] = useState(0);
   const [activeCount, setActiveCount] = useState(0);
@@ -35,6 +36,11 @@ const Dashboard = () => {
         }
       } catch (err) {
         console.error(err);
+        setError(true);
+        if (err.response?.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        }
       }
     };
     fetchUser();
@@ -88,6 +94,22 @@ const Dashboard = () => {
     } catch (err) { alert(err.response?.data?.message || 'Registration failed'); }
   };
 
+  if (error) return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 px-5 max-w-md mx-auto w-full">
+      <div className="text-4xl">📡</div>
+      <div className="text-center space-y-2">
+        <h3 className="text-xl font-black text-[var(--text-primary)]">Connection Issue</h3>
+        <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">Unable to reach the server</p>
+      </div>
+      <button 
+        onClick={() => window.location.reload()}
+        className="px-8 py-4 rounded-2xl bg-sky-500 text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-sky-500/20 active:scale-95 transition-all"
+      >
+        Retry Connection
+      </button>
+    </div>
+  );
+
   if (!user) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-5 max-w-md mx-auto w-full">
       <div className="loader"></div>
@@ -136,19 +158,22 @@ const Dashboard = () => {
       </div>
 
       <header className="space-y-1">
-        <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">
-          {t.hello}, <span className="text-sky-400">{user?.name?.split(' ')[0] || 'User'}</span>! 👋
-        </h2>
-        <div className="flex items-center gap-2">
-          <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest">{t.readyChallenge}</p>
-          {!(user.is_premium || (user.subscription_end_date && new Date(user.subscription_end_date) > new Date())) && new Date(user.trial_end_date) > new Date() && (
-            <>
-              <div className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></div>
-              <p className="text-[10px] font-black text-sky-500 uppercase tracking-widest">
-                {Math.ceil((new Date(user.trial_end_date) - new Date()) / (1000 * 60 * 60 * 24))} {t.daysLeft}
-              </p>
-            </>
-          )}
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">
+              {t.hello}, <span className="text-sky-400">{user?.name?.split(' ')[0] || 'User'}</span>! 👋
+            </h2>
+            <div className="flex items-center gap-2">
+              <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest">{t.readyChallenge}</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => navigate('/exams')}
+            className="h-12 px-4 rounded-2xl bg-sky-500 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-sky-500/20 active:scale-95 transition-all flex flex-col items-center justify-center gap-1"
+          >
+            <span>📝</span>
+            <span>EXAMS</span>
+          </button>
         </div>
       </header>
 
@@ -182,6 +207,20 @@ const Dashboard = () => {
               {contestStatus.status === 'live' ? t.liveContest : t.upcomingContest}
             </span>
             <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">{t.contestTitle}</h3>
+            {contestStatus.registrationCount > 0 && (
+              <div className="flex items-center gap-1.5 mt-1">
+                <div className="flex -space-x-2">
+                  {[...Array(Math.min(3, contestStatus.registrationCount))].map((_, i) => (
+                    <div key={i} className="w-5 h-5 rounded-full bg-slate-800 border-2 border-[var(--bg-card)] flex items-center justify-center text-[8px] font-black">
+                      {String.fromCharCode(65 + i)}
+                    </div>
+                  ))}
+                </div>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  {contestStatus.registrationCount} {lang === 'HI' ? 'छात्र पंजीकृत' : 'Students Registered'}
+                </span>
+              </div>
+            )}
           </div>
           <div className="text-3xl">🏆</div>
         </div>
@@ -208,9 +247,12 @@ const Dashboard = () => {
           ) : (
             <>
               {contestStatus.registered ? (
-                <div className="flex-1 py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-black text-center">
-                  {t.registered}
-                </div>
+                <button 
+                  className="flex-1 py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-black text-center active:scale-95 transition-all"
+                  onClick={() => navigate('/contest-live')}
+                >
+                  Enter Waiting Room 🛋️
+                </button>
               ) : (
                 <button className="premium-button flex-1 py-4 rounded-2xl font-bold text-[var(--text-primary)] text-sm" onClick={handleRegister}>
                   {t.registerToday}

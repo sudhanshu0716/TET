@@ -14,6 +14,7 @@ import CommunityUpload from './pages/CommunityUpload';
 import ResultAnalysis from './pages/ResultAnalysis';
 import Flashcards from './pages/Flashcards';
 import Subscription from './pages/Subscription';
+import Exams from './pages/Exams';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Profile from './components/Profile';
@@ -39,6 +40,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/exams" element={<Exams />} />
                 <Route path="/daily-exam" element={<DailyExam type="daily" />} />
                 <Route path="/practice/:subject" element={<DailyExam type="subject" />} />
                 <Route path="/full-mock" element={<DailyExam type="full-mock" />} />

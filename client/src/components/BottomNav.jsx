@@ -1,15 +1,22 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Trophy, FileText, User } from 'lucide-react';
+import { Home, Trophy, FileText, User, LayoutGrid } from 'lucide-react';
 
 const BottomNav = () => {
   const location = useLocation();
   const token = localStorage.getItem('token');
   
-  // Hide on public routes or during exams
-  if (!token || ['/', '/login', '/register'].includes(location.pathname) || location.pathname.includes('exam')) return null;
+  // Hide on public routes or during exams (but show on /exams portal)
+  const isExamPath = (location.pathname.includes('exam') || 
+                     location.pathname.includes('practice') || 
+                     location.pathname.includes('mock') || 
+                     location.pathname.includes('important') || 
+                     location.pathname.includes('contest')) && location.pathname !== '/exams';
+
+  if (!token || ['/', '/login', '/register'].includes(location.pathname) || isExamPath) return null;
 
   const navItems = [
     { to: '/dashboard', label: 'Home', Icon: Home },
+    { to: '/exams', label: 'Tests', Icon: LayoutGrid },
     { to: '/leaderboard', label: 'Rank', Icon: Trophy },
     { to: '/cheatsheets', label: 'Notes', Icon: FileText },
     { to: '/profile', label: 'Me', Icon: User },

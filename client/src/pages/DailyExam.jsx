@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import translations from '../translations';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight, CheckCircle2, Clock, ListChecks, X, Trophy } from 'lucide-react';
 
 const DailyExam = ({ type }) => {
   const { subject } = useParams();
@@ -16,6 +18,8 @@ const DailyExam = ({ type }) => {
   const [result, setResult] = useState(null);
   const [reviewIndex, setReviewIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [participants, setParticipants] = useState([]);
+  const [contestData, setContestData] = useState(null);
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
@@ -60,6 +64,21 @@ const DailyExam = ({ type }) => {
 
     try {
       const token = localStorage.getItem('token');
+      
+      if (type === 'contest') {
+        const statusRes = await api.get('/api/contests/status', { headers: { 'x-auth-token': token } });
+        setContestData(statusRes.data);
+        
+        const partRes = await api.get('/api/contests/participants', { headers: { 'x-auth-token': token } });
+        setParticipants(partRes.data);
+
+        if (statusRes.data.status !== 'live') {
+          setStep('contest-waiting');
+          clearInterval(intervalId);
+          return;
+        }
+      }
+
       let url = `/api/exams/today?count=${config.qCount}&duration=${config.timeLimit}`;
       if (type === 'full-mock') url = '/api/exams/full-mock';
       if (type === 'subject') url = `/api/exams/subject/${subject}?count=${config.qCount}&duration=${config.timeLimit}`;
@@ -97,7 +116,29 @@ const DailyExam = ({ type }) => {
     }
   }, [type]);
 
-  // Prevent accidental exit
+  // Contest Auto-Refresh Logic (Polling)
+  useEffect(() => {
+    if (step !== 'contest-waiting') return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await api.get('/api/contests/status', { headers: { 'x-auth-token': token } });
+        if (res.data.status === 'live') {
+          clearInterval(pollInterval);
+          startExam(); // Automatically start when live
+        } else {
+          // Refresh participant list while waiting
+          const partRes = await api.get('/api/contests/participants', { headers: { 'x-auth-token': token } });
+          setParticipants(partRes.data);
+          setContestData(res.data);
+        }
+      } catch (err) { console.error('Polling error:', err); }
+    }, 10000);
+
+    return () => clearInterval(pollInterval);
+  }, [step]);
+
   useEffect(() => {
     if (step !== 'exam') return;
 
@@ -310,7 +351,75 @@ const DailyExam = ({ type }) => {
     </div>
   );
 
-  // LOADING
+  // CONTEST WAITING ROOM
+  if (step === 'contest-waiting') return (
+    <div className="flex flex-col gap-6 px-5 pt-8 pb-32 max-w-md mx-auto w-full animate-fade-in">
+      <div className="flex justify-start px-1">
+        <button 
+          onClick={() => navigate('/dashboard')}
+          className="text-[9px] font-black text-slate-500 uppercase tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10"
+        >
+          ← {t.returnDash}
+        </button>
+      </div>
+
+      <div className="glass-card text-center space-y-6 bg-gradient-to-br from-sky-500/10 to-indigo-500/10 border-sky-500/30 shadow-2xl">
+        <div className="w-20 h-20 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto animate-pulse">
+          <Trophy size={40} className="text-sky-400" />
+        </div>
+        
+        <div>
+          <h2 className="text-2xl font-black text-[var(--text-primary)]">{t.waitingRoom || 'Waiting Room'} 🛋️</h2>
+          <p className="text-sm text-slate-400 font-medium mt-1">
+            {t.timeToStart || 'Starts at'} {contestData?.startTime ? new Date(contestData.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
+            <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">{t.registeredUsers || 'Registered'}</div>
+            <div className="text-2xl font-black text-sky-400">{contestData?.registrationCount || 0}</div>
+          </div>
+          <div className="bg-white/5 rounded-2xl p-4 border border-white/5 relative group cursor-pointer active:scale-95 transition-all" onClick={() => startExam()}>
+            <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Status</div>
+            <div className="text-sm font-black text-emerald-400 flex items-center justify-center gap-1">
+              Ready <Clock size={12} className="animate-spin-slow" />
+            </div>
+            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-2xl transition-opacity">
+              <span className="text-[8px] font-black uppercase tracking-widest">Refresh</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3 text-left">
+          <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+             <CheckCircle2 size={12} /> {lang === 'HI' ? 'लाइव छात्र' : 'Live Participants'}
+          </h4>
+          <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-1 custom-scrollbar">
+            {participants && participants.length > 0 ? participants.map((p, i) => (
+              <div key={i} className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-slate-300 flex items-center gap-1.5">
+                <div className={`w-1.5 h-1.5 rounded-full ${p.isAdmin ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
+                {p.name}
+              </div>
+            )) : (
+              <p className="text-[10px] text-slate-500 italic ml-1">Fetching participants...</p>
+            )}
+          </div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-500 font-bold leading-relaxed">
+          ⚠️ Please do not close this page. The test will automatically refresh when it goes live.
+        </div>
+
+        <button 
+          disabled
+          className="w-full py-5 rounded-2xl bg-slate-800 text-slate-500 font-black text-lg cursor-not-allowed border border-white/5"
+        >
+          Waiting for Live...
+        </button>
+      </div>
+    </div>
+  );
   if (step === 'loading') return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 px-5 max-w-md mx-auto w-full animate-fade-in">
       <div className="relative">
@@ -443,98 +552,147 @@ const DailyExam = ({ type }) => {
 
   // EXAM SCREEN
   return (
-    <div className="flex flex-col gap-5 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
-      {/* Exit & Mode Header */}
-      <div className="flex justify-between items-center px-1">
-        <button 
-          onClick={() => {
-            console.log('Exit clicked');
-            if (window.confirm(t.confirmExit || "Quit exam? Your progress will be lost.")) {
-              navigate('/dashboard');
-            }
-          }}
-          className="relative z-50 text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] bg-rose-500/5 dark:bg-rose-500/10 px-4 py-2 rounded-full border border-rose-500/20 hover:bg-rose-500/20 transition-all flex items-center gap-2"
-        >
-          <span>✕</span> {t.exitExam || 'Exit Exam'}
-        </button>
-        <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] opacity-60">
-          {type === 'daily' ? 'Daily' : type === 'full-mock' ? 'Mock' : type === 'subject' ? subject : 'Contest'} Mode
-        </span>
+    <div className="flex flex-col min-h-screen bg-[var(--bg-main)]">
+      {/* Top Progress Bar */}
+      <div className="fixed top-0 left-0 right-0 z-[60] h-1.5 bg-white/5">
+        <motion.div 
+          initial={{ width: 0 }}
+          animate={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
+          className="h-full bg-gradient-to-r from-sky-500 to-indigo-500 shadow-[0_0_10px_rgba(14,165,233,0.5)]"
+        />
       </div>
 
-      {/* Header Bar */}
-      <div className="flex justify-between items-center gap-3">
-        <div className="glass-card !py-2.5 !px-5 !rounded-full border-white/10 bg-white/5 flex-1 shadow-sm flex items-center justify-between group cursor-pointer" onClick={() => setStep('summary')}>
-          <div>
-            <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-0.5">Progress</span>
-            <span className="text-sm font-black text-[var(--text-primary)]">Q {currentIndex + 1} / {questions.length}</span>
-          </div>
-          <span className="text-lg group-hover:scale-125 transition-transform">📋</span>
-        </div>
-        <div className={`glass-card !py-2.5 !px-5 !rounded-full border-sky-500/20 bg-sky-500/5 flex-1 shadow-sm transition-colors ${timeLeft < 300 ? '!border-rose-500/30 !bg-rose-500/5' : ''}`}>
-          <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-0.5">Time Left</span>
-          <div className={`text-sm font-black flex items-center gap-1.5 ${timeLeft < 300 ? 'text-rose-400' : 'text-sky-400'}`}>
-            <span>⏱️</span>
-            <span>{formatTime(timeLeft)}</span>
+      <div className="flex flex-col gap-6 px-5 pt-8 pb-32 max-w-md mx-auto w-full">
+        {/* Header Section */}
+        <div className="flex justify-between items-center px-1">
+          <button 
+            onClick={() => {
+              if (window.confirm(t.confirmExit || "Quit exam? Your progress will be lost.")) {
+                navigate('/dashboard');
+              }
+            }}
+            className="flex items-center gap-1.5 py-1.5 px-3 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/20 text-[10px] font-black uppercase tracking-wider active:scale-95 transition-all"
+          >
+            <X size={12} /> {t.exitExam || 'Exit'}
+          </button>
+          
+          <div className="flex items-center gap-4">
+            <div className={`flex items-center gap-1.5 font-black text-sm ${timeLeft < 300 ? 'text-rose-500 animate-pulse' : 'text-sky-400'}`}>
+              <Clock size={16} className={timeLeft < 300 ? 'animate-spin-slow' : ''} />
+              <span>{formatTime(timeLeft)}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Question */}
-      <div className="glass-card space-y-3">
-        <div className="flex justify-between items-center">
-          <span className="text-[10px] font-black text-sky-400 uppercase tracking-widest">{q.subject}</span>
-          <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase">{q.year || 'PREVIOUS YEAR'}</span>
-        </div>
-        <h3 className="text-base font-bold text-[var(--text-primary)] leading-relaxed">{q.question_text}</h3>
-      </div>
-
-      {/* Options */}
-      <div className="flex flex-col gap-3">
-        {q.options.map((opt, i) => (
+        {/* Stats Row */}
+        <div className="flex gap-3">
           <div 
-            key={i} 
-            className={`glass-card !py-4 !px-5 cursor-pointer active:scale-[0.98] transition-all flex items-start gap-3 ${
-              answers[q.question_id] === opt 
-                ? 'border-2 !border-sky-500/50 bg-sky-500/10' 
-                : 'hover:bg-white/5'
-            }`}
-            onClick={() => setAnswers({ ...answers, [q.question_id]: opt })}
-          >
-            <span className="text-[var(--text-secondary)] font-bold shrink-0">{String.fromCharCode(65 + i)}.</span>
-            <span className="text-sm text-[var(--text-primary)] font-medium">{opt}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Navigation */}
-      <div className="flex gap-4 mt-6">
-        <button 
-          className={`flex-1 py-4 rounded-2xl font-black text-sm transition-all border-2 ${
-            currentIndex === 0 
-              ? 'border-white/5 bg-white/5 text-slate-600 opacity-50 cursor-not-allowed' 
-              : 'border-white/10 bg-white/5 text-[var(--text-secondary)] hover:bg-white/10 active:scale-95'
-          }`}
-          disabled={currentIndex === 0}
-          onClick={() => setCurrentIndex(prev => prev - 1)}
-        >
-          Previous
-        </button>
-        {currentIndex === questions.length - 1 ? (
-          <button 
-            className="flex-[1.5] py-4 rounded-2xl bg-emerald-500 text-white font-black text-sm shadow-xl shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
             onClick={() => setStep('summary')}
+            className="flex-1 glass-card !p-3 !rounded-2xl flex items-center justify-between cursor-pointer group active:scale-[0.98] transition-all"
           >
-            Review Summary 📋
-          </button>
-        ) : (
-          <button 
-            className="premium-button flex-[1.5] py-4 rounded-2xl font-black text-white text-sm shadow-xl shadow-sky-500/20 active:scale-95"
-            onClick={() => setCurrentIndex(prev => prev + 1)}
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-400 group-hover:bg-sky-500 group-hover:text-white transition-all">
+                <ListChecks size={16} />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">Question</span>
+                <span className="text-sm font-black text-[var(--text-primary)] leading-none">{currentIndex + 1} of {questions.length}</span>
+              </div>
+            </div>
+            <ChevronRight size={16} className="text-slate-600 group-hover:text-sky-400" />
+          </div>
+        </div>
+
+        {/* Question Card */}
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={currentIndex}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="glass-card !p-6 space-y-4"
           >
-            Next Question
-          </button>
-        )}
+            <div className="flex justify-between items-center">
+              <span className="px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-400 text-[10px] font-black uppercase tracking-widest border border-sky-500/20">
+                {q.subject}
+              </span>
+              <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
+                {q.year || 'PREVIOUS YEAR'}
+              </span>
+            </div>
+            <h3 className="text-lg font-bold text-[var(--text-primary)] leading-relaxed text-pretty">
+              {q.question_text}
+            </h3>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Options List */}
+        <div className="flex flex-col gap-3">
+          {q.options.map((opt, i) => {
+            const isSelected = answers[q.question_id] === opt;
+            return (
+              <motion.div 
+                key={`${currentIndex}-${i}`}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setAnswers({ ...answers, [q.question_id]: opt })}
+                className={`group relative overflow-hidden glass-card !p-4 cursor-pointer transition-all border-2 flex items-center gap-4 ${
+                  isSelected 
+                    ? 'border-sky-500/50 bg-sky-500/10 shadow-[0_0_20px_rgba(14,165,233,0.1)]' 
+                    : 'border-white/5 hover:border-white/20'
+                }`}
+              >
+                {/* Option Letter/Circle */}
+                <div className={`h-10 w-10 shrink-0 rounded-full flex items-center justify-center text-sm font-black transition-all ${
+                  isSelected ? 'bg-sky-500 text-white shadow-lg' : 'bg-white/5 text-slate-500'
+                }`}>
+                  {isSelected ? <CheckCircle2 size={20} /> : String.fromCharCode(65 + i)}
+                </div>
+
+                <span className={`text-sm font-medium leading-snug ${isSelected ? 'text-sky-400 font-bold' : 'text-[var(--text-primary)]'}`}>
+                  {opt}
+                </span>
+
+                {/* Selected Glow Effect */}
+                {isSelected && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-sky-500/5 to-transparent pointer-events-none" />
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Navigation Controls */}
+        <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--bg-main)] via-[var(--bg-main)] to-transparent z-50 pointer-events-none">
+          <div className="max-w-md mx-auto flex gap-4 pointer-events-auto">
+            <button 
+              disabled={currentIndex === 0}
+              onClick={() => setCurrentIndex(prev => prev - 1)}
+              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border-2 transition-all ${
+                currentIndex === 0 
+                  ? 'border-white/5 bg-white/5 text-slate-700 opacity-50 cursor-not-allowed' 
+                  : 'border-white/10 bg-white/5 text-white hover:bg-white/10 active:scale-95'
+              }`}
+            >
+              <ChevronLeft size={24} />
+            </button>
+
+            {currentIndex === questions.length - 1 ? (
+              <button 
+                onClick={() => setStep('summary')}
+                className="flex-1 h-14 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-sm shadow-xl shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+              >
+                Review Summary <CheckCircle2 size={18} />
+              </button>
+            ) : (
+              <button 
+                onClick={() => setCurrentIndex(prev => prev + 1)}
+                className="premium-button flex-1 h-14 rounded-2xl font-black text-white text-sm shadow-xl shadow-sky-500/20 active:scale-95 flex items-center justify-center gap-2 group"
+              >
+                Next Question <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

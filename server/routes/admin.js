@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Question = require('../models/Question');
 const ContestSettings = require('../models/ContestSettings');
 const Exam = require('../models/Exam');
+const ContestRegistration = require('../models/ContestRegistration');
 
 // Middleware to check if user is admin
 const adminAuth = async (req, res, next) => {
