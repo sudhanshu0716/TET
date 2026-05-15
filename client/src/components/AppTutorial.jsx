@@ -11,6 +11,7 @@ const AppTutorial = () => {
     { id: null, key: 'welcome' },
     { id: 'tut-stats', key: 'stats' },
     { id: 'tut-daily', key: 'daily' },
+    { id: 'tut-contest', key: 'contest' },
     { id: 'tut-modes', key: 'modes' },
     { id: 'tut-radar', key: 'radar' },
     { id: 'tut-nav', key: 'nav' }
