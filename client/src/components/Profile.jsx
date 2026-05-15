@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import { Crown, Zap, Calendar, ChevronRight, ShieldCheck } from 'lucide-react';
+import translations from '../translations';
 
 const Profile = () => {
+  const lang = localStorage.getItem('appLang') || 'EN';
+  const t = translations[lang] || translations.EN;
   const [profile, setProfile] = useState({
     level: 'primary',
     language1: 'Hindi',
@@ -13,6 +18,7 @@ const Profile = () => {
   });
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -85,6 +91,41 @@ const Profile = () => {
         </div>
       </div>
 
+      {/* Subscription Card */}
+      <div 
+        onClick={() => navigate('/subscription')}
+        className="glass-card p-5 border-l-4 border-l-amber-500 bg-gradient-to-r from-amber-500/10 to-transparent flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all group"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center">
+            <Crown size={24} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h4 className="text-sm font-black text-[var(--text-primary)]">
+                {profile.is_premium || (profile.subscription_end_date && new Date(profile.subscription_end_date) > new Date()) 
+                  ? t.premium 
+                  : new Date(profile.trial_end_date) > new Date() 
+                  ? t.trial 
+                  : t.planExpired}
+              </h4>
+              <Zap size={12} className="text-amber-500 fill-amber-500" />
+            </div>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">
+              {profile.is_premium || (profile.subscription_end_date && new Date(profile.subscription_end_date) > new Date())
+                ? `Expires: ${new Date(profile.subscription_end_date).toLocaleDateString()}`
+                : new Date(profile.trial_end_date) > new Date()
+                ? `${Math.ceil((new Date(profile.trial_end_date) - new Date()) / (1000 * 60 * 60 * 24))} ${t.daysLeft}`
+                : lang === 'HI' ? 'जारी रखने के लिए रिन्यू करें' : 'Renew to continue'}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1 text-amber-500 group-hover:translate-x-1 transition-transform">
+          <span className="text-[10px] font-black uppercase tracking-widest">{t.viewPlans}</span>
+          <ChevronRight size={16} />
+        </div>
+      </div>
+
       <form onSubmit={handleUpdate} className="flex flex-col gap-6">
         <div className="glass-card p-6 space-y-6">
           <div className="space-y-2">
@@ -142,6 +183,23 @@ const Profile = () => {
               </select>
             </div>
           )}
+
+          <div 
+            onClick={() => {
+              localStorage.removeItem('hasSeenTutorial');
+              navigate('/dashboard');
+              window.location.reload();
+            }}
+            className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 cursor-pointer hover:bg-white/10 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-500 flex items-center justify-center">
+                <ShieldCheck size={18} />
+              </div>
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Replay App Tutorial</span>
+            </div>
+            <ChevronRight size={16} className="text-slate-600 group-hover:translate-x-1 transition-transform" />
+          </div>
 
           <button 
             type="submit" 

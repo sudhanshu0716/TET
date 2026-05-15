@@ -13,6 +13,12 @@ const userSchema = new mongoose.Schema({
   questions_solved: { type: Number, default: 0 },
   rank_points: { type: Number, default: 0 },
   last_active: { type: Date, default: Date.now },
+  is_premium: { type: Boolean, default: false },
+  subscription_end_date: { type: Date, default: null },
+  trial_end_date: { 
+    type: Date, 
+    default: () => new Date(+new Date() + 3 * 24 * 60 * 60 * 1000) 
+  },
   created_at: { type: Date, default: Date.now }
 });
 

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import translations from '../translations';
 import TopicInsights from '../components/TopicInsights';
+import PerformanceRadar from '../components/PerformanceRadar';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -22,6 +23,16 @@ const Dashboard = () => {
           headers: { 'x-auth-token': token }
         });
         setUser(res.data);
+
+        // Access Check
+        if (res.data.premium_service_enabled && res.data.role !== 'admin') {
+          const isTrialValid = new Date(res.data.trial_end_date) > new Date();
+          const isSubValid = res.data.subscription_end_date && new Date(res.data.subscription_end_date) > new Date();
+          
+          if (!res.data.is_premium && !isTrialValid && !isSubValid) {
+            navigate('/subscription');
+          }
+        }
       } catch (err) {
         console.error(err);
       }
@@ -97,28 +108,52 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
-      <header className="flex justify-between items-start gap-4">
-        <div className="flex-1 min-w-0">
-          <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight break-words leading-tight">
-            {t.hello}, {user?.name?.split(' ')[0] || 'User'}! 👋
-          </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">{t.readyChallenge}</p>
+    <div className="flex flex-col gap-6 px-5 pt-4 pb-32 max-w-md mx-auto w-full animate-fade-in">
+      {/* Top Info Bar */}
+      <div id="tut-stats" className="flex justify-between items-center px-1">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs">🔥</span>
+            <span className="text-[10px] font-black text-[var(--text-primary)] uppercase tracking-wider">{user?.streak || 0} {t.streak}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span className="text-[10px] font-black text-emerald-500/80 uppercase tracking-wider">{activeCount || '...'} {lang === 'HI' ? 'ऑनलाइन' : 'Online'}</span>
+          </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <div className="streak-badge shrink-0">
-            <span>🔥</span>
-            <span className="whitespace-nowrap">{user?.streak || 0} {t.streak}</span>
+        
+        {user.is_premium || (user.subscription_end_date && new Date(user.subscription_end_date) > new Date()) ? (
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+            <div className="w-1 h-1 rounded-full bg-amber-500"></div>
+            <span className="text-[8px] font-black text-amber-500 uppercase">{t.premium}</span>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 animate-pulse">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-            <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">{activeCount || '...'} Studying Now</span>
+        ) : new Date(user.trial_end_date) > new Date() ? (
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/20">
+            <div className="w-1 h-1 rounded-full bg-sky-500"></div>
+            <span className="text-[8px] font-black text-sky-400 uppercase">{t.trial}</span>
           </div>
+        ) : null}
+      </div>
+
+      <header className="space-y-1">
+        <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">
+          {t.hello}, <span className="text-sky-400">{user?.name?.split(' ')[0] || 'User'}</span>! 👋
+        </h2>
+        <div className="flex items-center gap-2">
+          <p className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest">{t.readyChallenge}</p>
+          {!(user.is_premium || (user.subscription_end_date && new Date(user.subscription_end_date) > new Date())) && new Date(user.trial_end_date) > new Date() && (
+            <>
+              <div className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+              <p className="text-[10px] font-black text-sky-500 uppercase tracking-widest">
+                {Math.ceil((new Date(user.trial_end_date) - new Date()) / (1000 * 60 * 60 * 24))} {t.daysLeft}
+              </p>
+            </>
+          )}
         </div>
       </header>
 
       {/* Daily Progress Goal */}
-      <div className="glass-card !py-4 space-y-3 bg-gradient-to-r from-emerald-500/10 to-transparent border-l-4 border-l-emerald-500">
+      <div id="tut-daily" className="glass-card !py-4 space-y-3 bg-gradient-to-r from-emerald-500/10 to-transparent border-l-4 border-l-emerald-500">
         <div className="flex justify-between items-center">
           <h5 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Today's Goal</h5>
           <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{todaySolved}/25 Qs</span>
@@ -132,6 +167,11 @@ const Dashboard = () => {
         <p className="text-[10px] text-slate-500 font-medium italic">
           {todaySolved >= 25 ? "Amazing! Goal reached. Keep it up! 🏆" : `Solve ${Math.max(0, 25 - todaySolved)} more to hit your daily goal!`}
         </p>
+      </div>
+      
+      {/* Subject Wise Weakness Analysis */}
+      <div id="tut-radar">
+        <PerformanceRadar />
       </div>
 
       {/* Daily Live Contest Card */}
@@ -252,8 +292,9 @@ const Dashboard = () => {
       </div>
 
       {/* Secondary Actions */}
-      <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">{t.practiceModes}</h4>
-      <div className="grid grid-cols-2 gap-4">
+      <div id="tut-modes">
+        <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">{t.practiceModes}</h4>
+        <div className="grid grid-cols-2 gap-4">
         <div className="glass-card cursor-pointer active:scale-95 transition-all" onClick={() => navigate('/full-mock')}>
           <div className="text-3xl mb-3">🏆</div>
           <h5 className="text-sm font-bold text-[var(--text-primary)] mb-1">{t.fullMock}</h5>
@@ -270,6 +311,7 @@ const Dashboard = () => {
           <div className="text-[10px] text-amber-500 font-bold uppercase tracking-wider">Quick Revision</div>
         </div>
       </div>
+    </div>
 
       {/* Subject-wise MCQ Menu */}
       <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">{t.subjectWise}</h4>

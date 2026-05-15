@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const GlobalSettings = require('../models/GlobalSettings');
 
 // @route   GET api/profile
 // @desc    Get current user profile
@@ -13,7 +14,13 @@ router.get('/', auth, async (req, res) => {
       { last_active: new Date() },
       { new: true }
     ).select('-password_hash');
-    res.json(user);
+
+    const settings = await GlobalSettings.findOne();
+    
+    res.json({
+      ...user._doc,
+      premium_service_enabled: settings ? settings.premium_service_enabled : false
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

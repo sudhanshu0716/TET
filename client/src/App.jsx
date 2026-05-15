@@ -13,12 +13,14 @@ import AdminDashboard from './pages/AdminDashboard';
 import CommunityUpload from './pages/CommunityUpload';
 import ResultAnalysis from './pages/ResultAnalysis';
 import Flashcards from './pages/Flashcards';
+import Subscription from './pages/Subscription';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Profile from './components/Profile';
 import Leaderboard from './components/Leaderboard';
 import BottomNav from './components/BottomNav';
 import ProtectedRoute from './components/ProtectedRoute';
+import AppTutorial from './components/AppTutorial';
 
 function App() {
   return (
@@ -48,10 +50,12 @@ function App() {
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/upload" element={<CommunityUpload />} />
                 <Route path="/flashcards" element={<Flashcards />} />
+                <Route path="/subscription" element={<Subscription />} />
               </Route>
             </Routes>
           </main>
           <BottomNav />
+          <AppTutorial />
         </div>
       </Router>
     </AuthProvider>

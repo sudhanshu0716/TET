@@ -5,8 +5,8 @@ const BottomNav = () => {
   const location = useLocation();
   const token = localStorage.getItem('token');
   
-  // Hide on public routes
-  if (!token || ['/', '/login', '/register'].includes(location.pathname)) return null;
+  // Hide on public routes or during exams
+  if (!token || ['/', '/login', '/register'].includes(location.pathname) || location.pathname.includes('exam')) return null;
 
   const navItems = [
     { to: '/dashboard', label: 'Home', Icon: Home },
@@ -17,7 +17,7 @@ const BottomNav = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[100] px-4 pb-[env(safe-area-inset-bottom,12px)] pt-2 pointer-events-none">
-      <nav className="max-w-md mx-auto h-16 bg-[var(--nav-bg)] backdrop-blur-2xl border border-white/5 rounded-3xl flex items-center justify-around px-2 shadow-2xl pointer-events-auto overflow-hidden">
+      <nav id="tut-nav" className="max-w-md mx-auto h-16 bg-[var(--nav-bg)] backdrop-blur-2xl border border-white/5 rounded-3xl flex items-center justify-around px-2 shadow-2xl pointer-events-auto overflow-hidden">
         {navItems.map(({ to, label, Icon }) => (
           <NavLink 
             key={to}

@@ -145,7 +145,16 @@ const DailyExam = ({ type }) => {
 
   // CONFIG SCREEN
   if (step === 'config') return (
-    <div className="flex flex-col gap-6 px-5 pt-8 pb-32 max-w-md mx-auto w-full animate-fade-in">
+    <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
+      <div className="flex justify-start px-1">
+        <button 
+          onClick={() => navigate('/dashboard')}
+          className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] bg-white/5 px-4 py-2 rounded-full border border-white/10 hover:bg-white/10 transition-all flex items-center gap-2"
+        >
+          <span>←</span> {t.returnDash}
+        </button>
+      </div>
+
       <div className="glass-card space-y-6">
         <h2 className="text-2xl font-black text-[var(--text-primary)]">{t.setupExam} ⚙️</h2>
         
@@ -225,7 +234,20 @@ const DailyExam = ({ type }) => {
 
   // SUMMARY SCREEN (Dotted Sheet)
   if (step === 'summary') return (
-    <div className="flex flex-col gap-6 px-5 pt-8 pb-32 max-w-md mx-auto w-full animate-fade-in">
+    <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
+      <div className="flex justify-start px-1">
+        <button 
+          onClick={() => {
+            if (window.confirm(t.confirmExit || "Quit exam? Your progress will be lost.")) {
+              navigate('/dashboard');
+            }
+          }}
+          className="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] bg-rose-500/5 px-4 py-2 rounded-full border border-rose-500/20 hover:bg-rose-500/20 transition-all flex items-center gap-2"
+        >
+          <span>✕</span> {t.exitExam || 'Exit Exam'}
+        </button>
+      </div>
+
       <div className="glass-card space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-black text-[var(--text-primary)]">{t.examSummary || 'Summary'} 📋</h2>
@@ -402,8 +424,18 @@ const DailyExam = ({ type }) => {
   );
 
   if (!questions || questions.length === 0) return (
-    <div className="flex items-center justify-center min-h-[60vh] text-slate-500 font-bold px-5 max-w-md mx-auto">
-      No questions found.
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 px-5 max-w-md mx-auto w-full">
+      <div className="text-center space-y-2">
+        <div className="text-4xl mb-4">🔍</div>
+        <h3 className="text-xl font-black text-[var(--text-primary)]">{lang === 'HI' ? 'कोई प्रश्न नहीं मिला' : 'No questions found'}</h3>
+        <p className="text-sm text-slate-500 font-medium">{lang === 'HI' ? 'कृपया दूसरा विषय या स्तर चुनें।' : 'Please try a different subject or level.'}</p>
+      </div>
+      <button 
+        onClick={() => navigate('/dashboard')}
+        className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-slate-400 font-black text-sm"
+      >
+        {t.returnDash}
+      </button>
     </div>
   );
 
@@ -416,11 +448,12 @@ const DailyExam = ({ type }) => {
       <div className="flex justify-between items-center px-1">
         <button 
           onClick={() => {
+            console.log('Exit clicked');
             if (window.confirm(t.confirmExit || "Quit exam? Your progress will be lost.")) {
               navigate('/dashboard');
             }
           }}
-          className="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] bg-rose-500/5 dark:bg-rose-500/10 px-4 py-2 rounded-full border border-rose-500/20 hover:bg-rose-500/20 transition-all flex items-center gap-2"
+          className="relative z-50 text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] bg-rose-500/5 dark:bg-rose-500/10 px-4 py-2 rounded-full border border-rose-500/20 hover:bg-rose-500/20 transition-all flex items-center gap-2"
         >
           <span>✕</span> {t.exitExam || 'Exit Exam'}
         </button>

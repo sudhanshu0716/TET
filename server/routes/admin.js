@@ -76,4 +76,50 @@ router.post('/contest-settings', [auth, adminAuth], async (req, res) => {
   } catch (err) { res.status(500).send('Server Error'); }
 });
 
+const GlobalSettings = require('../models/GlobalSettings');
+
+// @desc    Get Global Premium Toggle
+router.get('/premium-status', [auth, adminAuth], async (req, res) => {
+  try {
+    let settings = await GlobalSettings.findOne();
+    if (!settings) {
+      settings = new GlobalSettings({ premium_service_enabled: false });
+      await settings.save();
+    }
+    res.json(settings);
+  } catch (err) { res.status(500).send('Server Error'); }
+});
+
+// @desc    Toggle Global Premium Status
+router.post('/toggle-premium', [auth, adminAuth], async (req, res) => {
+  const { enabled } = req.body;
+  try {
+    let settings = await GlobalSettings.findOne();
+    if (!settings) settings = new GlobalSettings();
+    
+    settings.premium_service_enabled = enabled;
+    settings.last_updated = new Date();
+    await settings.save();
+    res.json(settings);
+  } catch (err) { res.status(500).send('Server Error'); }
+});
+
+// @desc    Manually grant premium to user
+router.post('/grant-premium', [auth, adminAuth], async (req, res) => {
+  const { email, months } = req.body;
+  try {
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + (months || 1));
+    
+    user.is_premium = true;
+    user.subscription_end_date = endDate;
+    await user.save();
+    
+    res.json({ message: `Premium granted to ${user.name} until ${endDate.toLocaleDateString()}`, user });
+  } catch (err) { res.status(500).send('Server Error'); }
+});
+
 module.exports = router;
