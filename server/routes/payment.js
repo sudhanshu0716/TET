@@ -5,11 +5,16 @@ const crypto = require('crypto');
 const auth = require('../middleware/auth');
 const User = require('../models/User');
 
-// Initialize Razorpay instance
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+// Initialize Razorpay instance safely to prevent server crashes if env vars are missing
+let razorpay;
+try {
+  razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID || 'dummy_key_id',
+    key_secret: process.env.RAZORPAY_KEY_SECRET || 'dummy_key_secret',
+  });
+} catch (err) {
+  console.error("Razorpay initialization warning:", err.message);
+}
 
 // @route   POST /api/payment/create-order
 // @desc    Create a Razorpay order
