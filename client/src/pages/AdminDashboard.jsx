@@ -3,10 +3,12 @@ import api from '../services/api';
 import { 
   Users, Database, ShieldCheck, Activity, BarChart2, Clock, Save, 
   Search, Trash2, Send, CheckCircle, AlertTriangle, UserMinus,
-  Sparkles, Settings, ShieldAlert, Trophy, Zap, FilePlus
+  Sparkles, Settings, ShieldAlert, Trophy, Zap, FilePlus, LogOut
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const AdminDashboard = () => {
+  const { logout } = useAuth();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalQuestions: 0,
@@ -179,13 +181,21 @@ const AdminDashboard = () => {
   return (
     <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
       <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-[var(--text-primary)] tracking-tight">Admin <span className="text-sky-400">Panel</span></h1>
-          <p className="text-slate-400 text-sm font-medium">Monitor and manage content</p>
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <ShieldCheck size={20} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black text-[var(--text-primary)] tracking-tight">Admin <span className="text-sky-400">Panel</span></h1>
+            <p className="text-slate-400 text-sm font-medium leading-none mt-0.5">Control Center</p>
+          </div>
         </div>
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          <ShieldCheck size={20} />
-        </div>
+        <button 
+          onClick={logout}
+          className="flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-500 border border-rose-500/20 active:scale-95 transition-all"
+        >
+          <LogOut size={20} />
+        </button>
       </header>
 
       {/* Stats Grid */}
