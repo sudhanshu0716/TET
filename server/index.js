@@ -46,10 +46,6 @@ app.use('/api/profile', profileRoutes);
 // Admin Routes
 app.use('/api/admin', require('./routes/admin'));
 
-// Payment Routes
-const paymentRoutes = require('./routes/payment');
-app.use('/api/payment', paymentRoutes);
-
 // Connect to MongoDB
 const { initAutomation } = require('./services/automationService');
 mongoose.connect(process.env.MONGODB_URI)
