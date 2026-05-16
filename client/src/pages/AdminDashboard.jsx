@@ -29,24 +29,21 @@ const AdminDashboard = () => {
   const [inspectEmail, setInspectEmail] = useState('');
   const [inspectedUser, setInspectedUser] = useState(null);
   const [maintenanceEnabled, setMaintenanceEnabled] = useState(false);
-  const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const [statsRes, contestRes, premiumRes, activityRes] = await Promise.all([
+        const [statsRes, contestRes, premiumRes] = await Promise.all([
           api.get('/api/admin/stats', { headers: { 'x-auth-token': token } }),
           api.get('/api/admin/contest-settings', { headers: { 'x-auth-token': token } }),
-          api.get('/api/admin/premium-status', { headers: { 'x-auth-token': token } }),
-          api.get('/api/admin/recent-activity', { headers: { 'x-auth-token': token } })
+          api.get('/api/admin/premium-status', { headers: { 'x-auth-token': token } })
         ]);
         setStats(statsRes.data);
         setContestSettings(contestRes.data);
         setPremiumEnabled(premiumRes.data.premium_service_enabled);
         setSystemMessage(premiumRes.data.system_message || '');
         setMaintenanceEnabled(premiumRes.data.is_maintenance_mode || false);
-        setRecentActivity(activityRes.data);
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -213,32 +210,6 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {/* Recent Activity Feed */}
-      <div className="space-y-3">
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-          <Activity size={12} /> Recent App Activity
-        </h3>
-        <div className="glass-card divide-y divide-white/5 p-0 overflow-hidden">
-          {recentActivity.length > 0 ? recentActivity.map((act, i) => (
-            <div key={i} className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
-              <div className="space-y-1">
-                <h4 className="text-sm font-black text-white">{act.user_id?.name || 'Unknown User'}</h4>
-                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                  <span className="text-sky-400">{act.subject || act.type || 'Mock Test'}</span>
-                  <span>•</span>
-                  <span>{new Date(act.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-black text-emerald-400">{act.score} pts</div>
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Score</div>
-              </div>
-            </div>
-          )) : (
-            <div className="p-8 text-center text-slate-500 text-xs font-bold uppercase tracking-widest">No recent activity</div>
-          )}
-        </div>
-      </div>
 
       {/* Premium Service Management */}
       <div className="space-y-3">

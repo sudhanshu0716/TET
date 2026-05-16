@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -29,12 +29,22 @@ import PremiumModal from './components/PremiumModal';
 import { useState, useEffect } from 'react';
 
 function AppContent() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const isAdmin = user?.role === 'admin';
   const location = useLocation();
 
   useEffect(() => {
+    // Role-based redirection
+    if (user && !loading) {
+      if (user.role === 'admin' && location.pathname === '/dashboard') {
+        navigate('/admin');
+      } else if (user.role !== 'admin' && location.pathname === '/admin') {
+        navigate('/dashboard');
+      }
+    }
+
     // Check if premium expired
     if (user && !user.is_premium && !isAdmin) {
       const trialEnd = new Date(user.trial_end_date);
@@ -53,7 +63,7 @@ function AppContent() {
     } else {
       setShowPremiumModal(false);
     }
-  }, [user, isAdmin, location.pathname]);
+  }, [user, isAdmin, loading, location.pathname, navigate]);
 
   if (user?.is_maintenance_mode && !isAdmin) {
     return (
