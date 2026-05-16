@@ -33,13 +33,7 @@ const Dashboard = () => {
         }
 
         // Access Check
-        if (res.data.premium_service_enabled && res.data.role !== 'admin') {
-          const isTrialValid = new Date(res.data.trial_end_date) > new Date();
-          const isSubValid = res.data.subscription_end_date && new Date(res.data.subscription_end_date) > new Date();
-          if (!res.data.is_premium && !isTrialValid && !isSubValid) {
-            navigate('/profile');
-          }
-        }
+        
       } catch (err) {
         console.error(err);
         setError(true);

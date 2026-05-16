@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -23,13 +23,39 @@ import BottomNav from './components/BottomNav';
 import ProtectedRoute from './components/ProtectedRoute';
 import AppTutorial from './components/AppTutorial';
 import { useAuth } from './context/AuthContext';
-import { Settings, ShieldAlert, Sparkles } from 'lucide-react';
+import { Settings, ShieldAlert, Sparkles, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import PremiumModal from './components/PremiumModal';
+import { useState, useEffect } from 'react';
 
 function AppContent() {
   const { user } = useAuth();
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const isAdmin = user?.role === 'admin';
+  const location = useLocation();
 
-  if (user?.is_maintenance_mode && user?.role !== 'admin') {
+  useEffect(() => {
+    // Check if premium expired
+    if (user && !user.is_premium && !isAdmin) {
+      const trialEnd = new Date(user.trial_end_date);
+      const isExpired = trialEnd < new Date();
+      
+      // Don't show modal on profile page, subscription page, home, login or register
+      const isExcludedPage = ['/profile', '/subscription', '/login', '/register', '/'].some(path => 
+        location.pathname === path || location.pathname.startsWith(path + '/')
+      );
+      
+      if (isExpired && !isExcludedPage) {
+        setShowPremiumModal(true);
+      } else {
+        setShowPremiumModal(false);
+      }
+    } else {
+      setShowPremiumModal(false);
+    }
+  }, [user, isAdmin, location.pathname]);
+
+  if (user?.is_maintenance_mode && !isAdmin) {
     return (
       <div className="fixed inset-0 z-[9999] bg-[#020617] flex flex-col items-center justify-center p-6 text-center">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(56,189,248,0.05),transparent_70%)]" />
@@ -71,8 +97,6 @@ function AppContent() {
     );
   }
 
-  const isAdmin = user?.role === 'admin';
-
   return (
     <div className="flex flex-col min-h-screen selection:bg-sky-500/30">
       {!isAdmin && <Navbar />}
@@ -105,6 +129,10 @@ function AppContent() {
       </main>
       {!isAdmin && <BottomNav />}
       {!isAdmin && <AppTutorial />}
+      <PremiumModal 
+        isOpen={showPremiumModal} 
+        user={user} 
+      />
     </div>
   );
 }

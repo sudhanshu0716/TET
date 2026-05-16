@@ -24,8 +24,8 @@ const Cheatsheets = () => {
         console.error(err);
         setLoading(false);
         if (err.response?.status === 403) {
-          alert(err.response?.data?.message || 'Trial expired. Please upgrade.');
-          window.location.href = '/profile';
+          // Handled by global PremiumModal
+          console.log("Access denied: Premium required");
         }
       }
     };

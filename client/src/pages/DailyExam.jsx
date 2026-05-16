@@ -96,8 +96,11 @@ const DailyExam = ({ type }) => {
       setStep('exam');
     } catch (err) {
       clearInterval(intervalId);
-      alert(err.response?.data?.message || 'Error starting exam');
-      navigate('/profile');
+      // Handled by global PremiumModal or specific error display
+      if (err.response?.status !== 403) {
+        alert(err.response?.data?.message || 'Error starting exam');
+      }
+      navigate('/dashboard');
     }
   };
 
