@@ -18,7 +18,31 @@ const Profile = () => {
   });
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: ''
+  });
+  const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
   const navigate = useNavigate();
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (!passwordData.currentPassword || !passwordData.newPassword) {
+      setPasswordMessage({ type: 'error', text: 'Please fill all fields' });
+      return;
+    }
+    try {
+      const token = localStorage.getItem('token');
+      const res = await api.post('/api/auth/change-password', passwordData, {
+        headers: { 'x-auth-token': token }
+      });
+      setPasswordMessage({ type: 'success', text: res.data.message });
+      setPasswordData({ currentPassword: '', newPassword: '' });
+      setTimeout(() => setPasswordMessage({ type: '', text: '' }), 3000);
+    } catch (err) {
+      setPasswordMessage({ type: 'error', text: err.response?.data?.message || 'Error changing password' });
+    }
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -71,22 +95,31 @@ const Profile = () => {
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-sky-400 to-indigo-600 flex items-center justify-center text-3xl font-black text-white shadow-xl shadow-sky-500/20">
             {profile.name?.[0]?.toUpperCase()}
           </div>
-          <div className="space-y-1">
-            <h3 className="text-xl font-black text-[var(--text-primary)]">{profile.name}</h3>
+          <div className="space-y-0.5">
+            <h3 className="text-xl font-black text-[var(--text-primary)] leading-tight">{profile.name}</h3>
+            <p className="text-[10px] font-bold text-slate-500 lowercase tracking-wide mb-1">{profile.email}</p>
             <div className="inline-block px-3 py-1 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 text-[10px] font-black uppercase tracking-widest">
               {profile.level === 'primary' ? 'Primary (P-I)' : 'Junior (P-II)'}
             </div>
           </div>
         </div>
         
-        <div className="grid grid-cols-2 gap-4 relative z-10">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 relative z-10">
           <div className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-1">
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Solved</span>
-            <div className="text-2xl font-black text-[var(--text-primary)]">{profile.questions_solved}</div>
+            <div className="text-xl font-black text-[var(--text-primary)]">{profile.questions_solved}</div>
           </div>
           <div className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-1">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Rank Points</span>
-            <div className="text-2xl font-black text-sky-400">{profile.rank_points}</div>
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Success</span>
+            <div className="text-xl font-black text-emerald-400">{profile.avgScore || 0}%</div>
+          </div>
+          <div className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-1">
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Streak</span>
+            <div className="text-xl font-black text-orange-400">{profile.streak || 0} 🔥</div>
+          </div>
+          <div className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-1">
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Points</span>
+            <div className="text-xl font-black text-sky-400">{profile.rank_points}</div>
           </div>
         </div>
       </div>
@@ -126,7 +159,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <form onSubmit={handleUpdate} className="flex flex-col gap-6">
+      <form onSubmit={handleUpdate} className="flex flex-col gap-8">
         <div className="glass-card p-6 space-y-6">
           <div className="space-y-2">
             <label className="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-2">Exam Level</label>
@@ -201,6 +234,24 @@ const Profile = () => {
             <ChevronRight size={16} className="text-slate-600 group-hover:translate-x-1 transition-transform" />
           </div>
 
+          <div 
+            onClick={() => {
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+              navigate('/login');
+              window.location.reload();
+            }}
+            className="flex items-center justify-between p-4 rounded-2xl bg-rose-500/5 border border-rose-500/10 cursor-pointer hover:bg-rose-500/10 transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              </div>
+              <span className="text-xs font-bold text-rose-500 uppercase tracking-widest">Logout Account</span>
+            </div>
+            <ChevronRight size={16} className="text-rose-400 group-hover:translate-x-1 transition-transform" />
+          </div>
+
           <button 
             type="submit" 
             className="premium-button w-full py-5 rounded-2xl font-black text-white text-lg shadow-xl shadow-sky-500/20"
@@ -215,6 +266,73 @@ const Profile = () => {
           )}
         </div>
       </form>
+
+      {/* Security Section */}
+      <div className="space-y-4">
+        <div className="px-2">
+          <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Account Security</h5>
+        </div>
+        <div className="glass-card p-6 space-y-4">
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-2">Current Password</label>
+            <input 
+              type="password"
+              placeholder="••••••••"
+              value={passwordData.currentPassword}
+              onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})}
+              className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold text-[var(--text-primary)] focus:ring-4 focus:ring-sky-500/10 shadow-inner"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-2">New Password</label>
+            <input 
+              type="password"
+              placeholder="••••••••"
+              value={passwordData.newPassword}
+              onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})}
+              className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold text-[var(--text-primary)] focus:ring-4 focus:ring-sky-500/10 shadow-inner"
+            />
+          </div>
+          
+          <button 
+            onClick={handlePasswordChange}
+            className="w-full py-4 rounded-2xl border-2 border-sky-500/20 text-sky-500 font-black text-sm uppercase tracking-widest hover:bg-sky-500/5 active:scale-95 transition-all"
+          >
+            Update Password
+          </button>
+
+          {passwordMessage.text && (
+            <div className={`px-4 py-3 rounded-xl text-xs font-bold text-center animate-fade-in ${
+              passwordMessage.type === 'success' 
+                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+            }`}>
+              {passwordMessage.text}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* App Information */}
+      <div className="space-y-4">
+        <div className="px-2">
+          <h5 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">App Information</h5>
+        </div>
+        <div className="glass-card p-4 flex items-center justify-between opacity-80">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-slate-500/10 text-slate-400 flex items-center justify-center">
+              <ShieldCheck size={20} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Version Status</span>
+              <span className="text-xs font-bold text-white">v1.2.4 Premium</span>
+            </div>
+          </div>
+          <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">
+            Stable
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
