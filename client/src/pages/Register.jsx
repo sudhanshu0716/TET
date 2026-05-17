@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Register = () => {
@@ -16,6 +16,7 @@ const Register = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -84,13 +85,20 @@ const Register = () => {
             <Lock size={22} />
           </div>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             placeholder="Create Password"
             required
-            className="glass-input w-full rounded-2xl py-5 pl-14 pr-5 text-[var(--text-primary)] font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
+            className="glass-input w-full rounded-2xl py-5 pl-14 pr-14 text-[var(--text-primary)] font-semibold placeholder:text-slate-600 focus:ring-4 focus:ring-sky-500/10"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-sky-400 transition-colors z-10"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
