@@ -133,18 +133,14 @@ const Dashboard = () => {
     <div className="flex flex-col gap-6 px-5 pt-4 pb-32 max-w-md mx-auto w-full animate-fade-in">
       {/* Global System Message */}
       {user?.system_message && (
-        <motion.div 
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: 'auto', opacity: 1 }}
-          className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex gap-3 items-center"
-        >
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex gap-3 items-center animate-fade-in">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-500">
-            <Sparkles size={16} />
+            <span className="text-sm">✨</span>
           </div>
           <p className="text-xs font-bold text-amber-400 leading-relaxed">
             {user.system_message}
           </p>
-        </motion.div>
+        </div>
       )}
 
       {/* Top Info Bar */}

@@ -20,11 +20,14 @@ const PerformanceRadar = () => {
         
         // Transform data for Radar Chart
         // Ensure we have at least 3 points for a good radar look
-        const transformed = res.data.map(item => ({
-          subject: t.subjects[item._id] || item._id,
-          score: Math.round((item.correct / item.total) * 100),
+        const transformed = res.data.map(item => {
+          const rawId = item._id || 'Unknown';
+          return {
+            subject: (t.subjects && t.subjects[rawId]) ? t.subjects[rawId] : rawId.charAt(0).toUpperCase() + rawId.slice(1),
+            score: Math.round((item.correct / item.total) * 100),
           fullMark: 100
-        }));
+          };
+        });
 
         setData(transformed);
         setLoading(false);
@@ -85,7 +88,7 @@ const PerformanceRadar = () => {
       </div>
 
       <div className="pt-2 flex flex-col gap-2 relative z-10">
-        {data.sort((a, b) => a.score - b.score).slice(0, 2).map((item, idx) => (
+        {[...data].sort((a, b) => a.score - b.score).slice(0, 2).map((item, idx) => (
           <div key={idx} className="flex items-center justify-between p-3 rounded-xl bg-red-500/5 border border-red-500/10">
             <div className="flex items-center gap-2">
               <span className="text-xs">⚠️</span>
