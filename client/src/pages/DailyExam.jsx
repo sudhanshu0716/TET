@@ -96,9 +96,10 @@ const DailyExam = ({ type }) => {
       setStep('exam');
     } catch (err) {
       clearInterval(intervalId);
-      // Handled by global PremiumModal or specific error display
-      if (err.response?.status !== 403 || (err.response?.data?.message && err.response.data.message.includes('limit'))) {
-        alert(err.response?.data?.message || 'Error starting exam');
+      const msg = err.response?.data?.message || 'Error starting exam';
+      // Suppress alert ONLY for trial/premium limits which are handled by PremiumModal
+      if (err.response?.status !== 403 || (!msg.toLowerCase().includes('trial') && !msg.toLowerCase().includes('premium'))) {
+        alert(msg);
       }
       navigate('/dashboard');
     }

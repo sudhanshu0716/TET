@@ -134,8 +134,15 @@ router.get('/join', auth, async (req, res) => {
     if (nowIST < start || nowIST > end) return res.status(403).json({ message: 'Contest is not live.' });
 
     const contestDate = getContestDate();
-    const registered = await ContestRegistration.findOne({ user_id: req.user.id, contest_date: contestDate });
-    if (!registered) return res.status(403).json({ message: 'You must register before the contest starts.' });
+    let registered = await ContestRegistration.findOne({ user_id: req.user.id, contest_date: contestDate });
+    if (!registered) {
+      registered = new ContestRegistration({ user_id: req.user.id, contest_date: contestDate });
+      await registered.save();
+      await ContestSettings.updateOne(
+        { contest_date: contestDate },
+        { $inc: { registrationCount: 1 } }
+      );
+    }
 
     // Single Attempt Check
     const existingAttempt = await Exam.findOne({ 
@@ -146,7 +153,25 @@ router.get('/join', auth, async (req, res) => {
     if (existingAttempt) return res.status(403).json({ message: 'You have already attempted today\'s contest. Only one attempt is allowed.' });
 
     // Use fixed questions for today
-    const questions = await Question.find({ question_id: { $in: settings.questions } });
+    let questions = await Question.find({ question_id: { $in: settings.questions } });
+    
+    // If stored question_ids are stale (e.g. DB was reseeded), regenerate
+    if (!questions || questions.length === 0 || questions.length < settings.questions.length) {
+      await ContestSettings.deleteOne({ contest_date: getContestDate() });
+      const freshSettings = await getOrUpdateContestSettings();
+      questions = await Question.find({ question_id: { $in: freshSettings.questions } });
+      
+      const exam = new Exam({
+        exam_id: uuidv4(),
+        user_id: req.user.id,
+        exam_type: 'contest',
+        duration: freshSettings.duration,
+        questions: freshSettings.questions
+      });
+
+      await exam.save();
+      return res.json({ exam, questions });
+    }
     
     const exam = new Exam({
       exam_id: uuidv4(),

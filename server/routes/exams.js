@@ -54,18 +54,19 @@ router.get('/today', auth, async (req, res) => {
     const l2Subject = (user.language2 || 'english').toLowerCase();
 
     // Separate aggregates for each section (Following 647e588 pattern)
-    const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level } }, { $sample: { size: size } }]);
-    const l1 = await Question.aggregate([{ $match: { subject: l1Subject, level: user.level } }, { $sample: { size: size } }]);
-    const l2 = await Question.aggregate([{ $match: { subject: l2Subject, level: user.level } }, { $sample: { size: size } }]);
+    // Filter by language: 'hindi' to only serve Hindi-text questions
+    const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level, language: 'hindi' } }, { $sample: { size: size } }]);
+    const l1 = await Question.aggregate([{ $match: { subject: l1Subject, level: user.level, language: 'hindi' } }, { $sample: { size: size } }]);
+    const l2 = await Question.aggregate([{ $match: { subject: l2Subject, level: user.level, language: 'hindi' } }, { $sample: { size: size } }]);
     
     let subQ = [];
     if (user.level === 'primary') {
-      const math = await Question.aggregate([{ $match: { subject: 'math', level: 'primary' } }, { $sample: { size: size } }]);
-      const evs = await Question.aggregate([{ $match: { subject: 'evs', level: 'primary' } }, { $sample: { size: size } }]);
+      const math = await Question.aggregate([{ $match: { subject: 'math', level: 'primary', language: 'hindi' } }, { $sample: { size: size } }]);
+      const evs = await Question.aggregate([{ $match: { subject: 'evs', level: 'primary', language: 'hindi' } }, { $sample: { size: size } }]);
       subQ = [...math, ...evs];
     } else {
       const subject = user.subject_preference === 'science' ? 'science' : 'social';
-      subQ = await Question.aggregate([{ $match: { subject, level: 'junior' } }, { $sample: { size: size * 2 } }]);
+      subQ = await Question.aggregate([{ $match: { subject, level: 'junior', language: 'hindi' } }, { $sample: { size: size * 2 } }]);
     }
 
     const questions = [...cdp, ...l1, ...l2, ...subQ];
@@ -98,18 +99,18 @@ router.get('/full-mock', auth, async (req, res) => {
     const l1Subject = (user.language1 || 'hindi').toLowerCase();
     const l2Subject = (user.language2 || 'english').toLowerCase();
     
-    const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level } }, { $sample: { size: 30 } }]);
-    const l1 = await Question.aggregate([{ $match: { subject: l1Subject, level: user.level } }, { $sample: { size: 30 } }]);
-    const l2 = await Question.aggregate([{ $match: { subject: l2Subject, level: user.level } }, { $sample: { size: 30 } }]);
+    const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level, language: 'hindi' } }, { $sample: { size: 30 } }]);
+    const l1 = await Question.aggregate([{ $match: { subject: l1Subject, level: user.level, language: 'hindi' } }, { $sample: { size: 30 } }]);
+    const l2 = await Question.aggregate([{ $match: { subject: l2Subject, level: user.level, language: 'hindi' } }, { $sample: { size: 30 } }]);
     
     let subQ = [];
     if (user.level === 'primary') {
-      const math = await Question.aggregate([{ $match: { subject: 'math', level: 'primary' } }, { $sample: { size: 30 } }]);
-      const evs = await Question.aggregate([{ $match: { subject: 'evs', level: 'primary' } }, { $sample: { size: 30 } }]);
+      const math = await Question.aggregate([{ $match: { subject: 'math', level: 'primary', language: 'hindi' } }, { $sample: { size: 30 } }]);
+      const evs = await Question.aggregate([{ $match: { subject: 'evs', level: 'primary', language: 'hindi' } }, { $sample: { size: 30 } }]);
       subQ = [...math, ...evs];
     } else {
       const subject = user.subject_preference === 'science' ? 'science' : 'social';
-      subQ = await Question.aggregate([{ $match: { subject, level: 'junior' } }, { $sample: { size: 60 } }]);
+      subQ = await Question.aggregate([{ $match: { subject, level: 'junior', language: 'hindi' } }, { $sample: { size: 60 } }]);
     }
 
     const questions = [...cdp, ...l1, ...l2, ...subQ];
@@ -141,7 +142,7 @@ router.get('/subject/:subject', auth, async (req, res) => {
     const user = await User.findOne({ user_id: req.user.id });
 
     const questions = await Question.aggregate([
-      { $match: { subject: req.params.subject.toLowerCase(), level: user.level } },
+      { $match: { subject: req.params.subject.toLowerCase(), level: user.level, language: 'hindi' } },
       { $sample: { size: qCount } }
     ]);
 
@@ -174,19 +175,55 @@ router.get('/history', auth, async (req, res) => {
 });
 
 
-router.post('/submit', auth, async (req, res) => {
-  const { exam_id, answers, score } = req.body;
+router.post(['/submit', '/submit/:examId'], auth, async (req, res) => {
   try {
-    let exam = await Exam.findOne({ exam_id, user_id: req.user.id });
+    const examId = req.params.examId || req.body.exam_id;
+    const { answers, score: bodyScore } = req.body;
+
+    let exam = await Exam.findOne({ exam_id: examId, user_id: req.user.id });
     if (!exam) return res.status(404).json({ message: 'Exam not found' });
 
-    exam.answers = answers;
+    if (exam.completed) {
+      return res.json({ exam, message: 'Exam already submitted' });
+    }
+
+    let score = 0;
+    const graded = [];
+    if (Array.isArray(answers)) {
+      for (const ans of answers) {
+        const q = await Question.findOne({ question_id: ans.question_id });
+        const is_correct = q ? (q.correct_answer === ans.selected_option) : false;
+        if (is_correct) score++;
+        graded.push({
+          question_id: ans.question_id,
+          selected_option: ans.selected_option,
+          is_correct
+        });
+      }
+    } else {
+      score = bodyScore || 0;
+    }
+
     exam.score = score;
+    exam.answers = graded.length ? graded : (answers || []);
     exam.completed = true;
 
     await exam.save();
-    res.json(exam);
+
+    // Update User Stats for Ranking
+    const user = await User.findOne({ user_id: req.user.id });
+    if (user) {
+      user.questions_solved = (user.questions_solved || 0) + (answers ? answers.length : 0);
+      user.rank_points = (user.rank_points || 0) + (score * 10);
+      await user.save();
+    }
+
+    res.json({
+      exam,
+      user_stats: user ? { questions_solved: user.questions_solved, rank_points: user.rank_points } : {}
+    });
   } catch (err) {
+    console.error(err);
     res.status(500).send('Server Error');
   }
 });
@@ -240,6 +277,7 @@ router.get('/important', auth, async (req, res) => {
       { $match: { 
         level: user.level,
         subject: { $in: userSubjects },
+        language: 'hindi',
         year: { $exists: true, $ne: null } 
       } },
       { $sample: { size: 30 } }
@@ -249,7 +287,8 @@ router.get('/important', auth, async (req, res) => {
       questions = await Question.aggregate([
         { $match: { 
           level: user.level,
-          subject: { $in: userSubjects }
+          subject: { $in: userSubjects },
+          language: 'hindi'
         } },
         { $sample: { size: 30 } }
       ]);

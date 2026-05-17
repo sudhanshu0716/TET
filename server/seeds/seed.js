@@ -14,8 +14,14 @@ const getAllQuestions = () => {
   for (const f of files) {
     try {
       const qs = require(path.join(seedDir, f));
-      console.log(`  📄 Loaded ${qs.length} questions from ${f}`);
-      all = all.concat(qs);
+      const normalized = qs.map(q => {
+        if (!q.language) {
+          q.language = q.subject === 'english' ? 'english' : 'hindi';
+        }
+        return q;
+      });
+      console.log(`  📄 Loaded ${normalized.length} questions from ${f}`);
+      all = all.concat(normalized);
     } catch(e) {
       console.error(`  ❌ Error loading ${f}:`, e.message);
     }
