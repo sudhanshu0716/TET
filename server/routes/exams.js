@@ -50,10 +50,13 @@ router.get('/today', auth, async (req, res) => {
 
     const size = Math.floor(qCount / 5) || 6;
 
+    const l1Subject = (user.language1 || 'hindi').toLowerCase();
+    const l2Subject = (user.language2 || 'english').toLowerCase();
+
     // Separate aggregates for each section (Following 647e588 pattern)
     const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level } }, { $sample: { size: size } }]);
-    const l1 = await Question.aggregate([{ $match: { subject: user.language1.toLowerCase(), level: user.level } }, { $sample: { size: size } }]);
-    const l2 = await Question.aggregate([{ $match: { subject: user.language2.toLowerCase(), level: user.level } }, { $sample: { size: size } }]);
+    const l1 = await Question.aggregate([{ $match: { subject: l1Subject, level: user.level } }, { $sample: { size: size } }]);
+    const l2 = await Question.aggregate([{ $match: { subject: l2Subject, level: user.level } }, { $sample: { size: size } }]);
     
     let subQ = [];
     if (user.level === 'primary') {
@@ -92,9 +95,12 @@ router.get('/full-mock', auth, async (req, res) => {
 
     const user = await User.findOne({ user_id: req.user.id });
     
+    const l1Subject = (user.language1 || 'hindi').toLowerCase();
+    const l2Subject = (user.language2 || 'english').toLowerCase();
+    
     const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level } }, { $sample: { size: 30 } }]);
-    const l1 = await Question.aggregate([{ $match: { subject: user.language1.toLowerCase(), level: user.level } }, { $sample: { size: 30 } }]);
-    const l2 = await Question.aggregate([{ $match: { subject: user.language2.toLowerCase(), level: user.level } }, { $sample: { size: 30 } }]);
+    const l1 = await Question.aggregate([{ $match: { subject: l1Subject, level: user.level } }, { $sample: { size: 30 } }]);
+    const l2 = await Question.aggregate([{ $match: { subject: l2Subject, level: user.level } }, { $sample: { size: 30 } }]);
     
     let subQ = [];
     if (user.level === 'primary') {
@@ -167,16 +173,6 @@ router.get('/history', auth, async (req, res) => {
   }
 });
 
-router.get('/:examId', auth, async (req, res) => {
-  try {
-    const exam = await Exam.findOne({ exam_id: req.params.examId, user_id: req.user.id });
-    if (!exam) return res.status(404).json({ message: 'Exam not found' });
-    const questions = await Question.find({ question_id: { $in: exam.questions } });
-    res.json({ exam, questions });
-  } catch (err) {
-    res.status(500).send('Server Error');
-  }
-});
 
 router.post('/submit', auth, async (req, res) => {
   const { exam_id, answers, score } = req.body;
@@ -233,14 +229,14 @@ router.get('/important', auth, async (req, res) => {
     const user = await User.findOne({ user_id: req.user.id });
     
     // Build subject list based on user's profile
-    const userSubjects = ['pedagogy', user.language1.toLowerCase(), user.language2.toLowerCase()];
+    const userSubjects = ['pedagogy', (user.language1 || 'hindi').toLowerCase(), (user.language2 || 'english').toLowerCase()];
     if (user.level === 'primary') {
       userSubjects.push('math', 'evs');
     } else {
       userSubjects.push(user.subject_preference === 'science' ? 'science' : 'social');
     }
 
-    const questions = await Question.aggregate([
+    let questions = await Question.aggregate([
       { $match: { 
         level: user.level,
         subject: { $in: userSubjects },
@@ -248,6 +244,16 @@ router.get('/important', auth, async (req, res) => {
       } },
       { $sample: { size: 30 } }
     ]);
+
+    if (!questions || questions.length === 0) {
+      questions = await Question.aggregate([
+        { $match: { 
+          level: user.level,
+          subject: { $in: userSubjects }
+        } },
+        { $sample: { size: 30 } }
+      ]);
+    }
 
     const exam = new Exam({
       exam_id: uuidv4(),
@@ -266,4 +272,15 @@ router.get('/important', auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+router.get('/:examId', auth, async (req, res) => {
+  try {
+    const exam = await Exam.findOne({ exam_id: req.params.examId, user_id: req.user.id });
+    if (!exam) return res.status(404).json({ message: 'Exam not found' });
+    const questions = await Question.find({ question_id: { $in: exam.questions } });
+    res.json({ exam, questions });
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+});
+
+module.exports = router; 

@@ -97,7 +97,7 @@ const DailyExam = ({ type }) => {
     } catch (err) {
       clearInterval(intervalId);
       // Handled by global PremiumModal or specific error display
-      if (err.response?.status !== 403) {
+      if (err.response?.status !== 403 || (err.response?.data?.message && err.response.data.message.includes('limit'))) {
         alert(err.response?.data?.message || 'Error starting exam');
       }
       navigate('/dashboard');
@@ -114,6 +114,9 @@ const DailyExam = ({ type }) => {
         setConfig({ qCount: 150, timeLimit: 150 });
         startExam();
       } else if (type === 'important') {
+        setConfig({ qCount: 30, timeLimit: 30 });
+        startExam();
+      } else if (type === 'daily') {
         setConfig({ qCount: 30, timeLimit: 30 });
         startExam();
       }
