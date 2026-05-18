@@ -3,7 +3,8 @@ import api from '../services/api';
 import { 
   Users, Database, ShieldCheck, Activity, BarChart2, Clock, Save, 
   Search, Trash2, Send, CheckCircle, AlertTriangle, UserMinus,
-  Sparkles, Settings, ShieldAlert, Trophy, Zap, FilePlus, LogOut
+  Sparkles, Settings, ShieldAlert, Trophy, Zap, FilePlus, LogOut,
+  Edit2, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -30,20 +31,38 @@ const AdminDashboard = () => {
   const [inspectedUser, setInspectedUser] = useState(null);
   const [maintenanceEnabled, setMaintenanceEnabled] = useState(false);
 
+  // User Management State
+  const [usersList, setUsersList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [editingName, setEditingName] = useState('');
+
+  const fetchUsers = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await api.get('/api/admin/users', { headers: { 'x-auth-token': token } });
+      setUsersList(res.data);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const [statsRes, contestRes, premiumRes] = await Promise.all([
+        const [statsRes, contestRes, premiumRes, usersRes] = await Promise.all([
           api.get('/api/admin/stats', { headers: { 'x-auth-token': token } }),
           api.get('/api/admin/contest-settings', { headers: { 'x-auth-token': token } }),
-          api.get('/api/admin/premium-status', { headers: { 'x-auth-token': token } })
+          api.get('/api/admin/premium-status', { headers: { 'x-auth-token': token } }),
+          api.get('/api/admin/users', { headers: { 'x-auth-token': token } })
         ]);
         setStats(statsRes.data);
         setContestSettings(contestRes.data);
         setPremiumEnabled(premiumRes.data.premium_service_enabled);
         setSystemMessage(premiumRes.data.system_message || '');
         setMaintenanceEnabled(premiumRes.data.is_maintenance_mode || false);
+        setUsersList(usersRes.data);
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -52,6 +71,39 @@ const AdminDashboard = () => {
     };
     fetchData();
   }, []);
+
+  const handleEditName = (user) => {
+    setEditingUserId(user._id);
+    setEditingName(user.name);
+  };
+
+  const handleSaveName = async (userId) => {
+    if (!editingName.trim()) return alert('Name cannot be empty');
+    try {
+      const token = localStorage.getItem('token');
+      await api.put(`/api/admin/users/${userId}`, { name: editingName }, { headers: { 'x-auth-token': token } });
+      alert('User name updated successfully!');
+      setEditingUserId(null);
+      fetchUsers();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to update user name');
+    }
+  };
+
+  const handleDeleteUser = async (userId, userName) => {
+    if (!window.confirm(`Are you absolutely sure you want to permanently delete user "${userName}"? This will delete all their exam records and contest registrations.`)) return;
+    try {
+      const token = localStorage.getItem('token');
+      await api.delete(`/api/admin/users/${userId}`, { headers: { 'x-auth-token': token } });
+      alert('User deleted successfully!');
+      fetchUsers();
+      // Also update overall stats count
+      const statsRes = await api.get('/api/admin/stats', { headers: { 'x-auth-token': token } });
+      setStats(statsRes.data);
+    } catch (err) {
+      alert('Failed to delete user');
+    }
+  };
 
   const handleTogglePremium = async () => {
     try {
@@ -343,50 +395,131 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* User Inspector */}
+      {/* User Directory & Management */}
       <div className="space-y-3">
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">User Lookup & Inspection</h3>
+        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
+          <Users size={12} /> User Directory & Management
+        </h3>
         <div className="glass-card space-y-4">
-          <div className="flex gap-2">
+          <div className="relative">
             <input 
-              type="email" 
-              placeholder="User Email" 
-              className="bg-white/5 border border-white/10 flex-1 rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] outline-none focus:border-sky-500/50 transition-all"
-              value={inspectEmail}
-              onChange={e => setInspectEmail(e.target.value)}
+              type="text" 
+              placeholder="Search users by name or email..." 
+              className="bg-white/5 border border-white/10 w-full rounded-xl pl-10 pr-4 py-3 text-sm text-[var(--text-primary)] outline-none focus:border-sky-500/50 transition-all font-medium"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
             />
-            <button 
-              onClick={handleInspectUser}
-              className="bg-emerald-500 text-white px-6 py-3 rounded-xl font-black text-xs hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20"
-            >
-              Inspect
-            </button>
+            <Search className="absolute left-3.5 top-3.5 text-slate-500" size={16} />
           </div>
-          
-          {inspectedUser && (
-            <div className="mt-4 p-4 rounded-xl bg-slate-900/50 border border-white/10 space-y-3 animate-fade-in text-sm">
-              <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                <span className="text-slate-400 font-medium">Name:</span>
-                <span className="text-white font-black">{inspectedUser.name}</span>
+
+          <div className="max-h-[350px] overflow-y-auto pr-1 space-y-2.5 custom-scrollbar">
+            {usersList
+              .filter(user => 
+                user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                user.email?.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map(user => (
+                <div key={user._id} className="p-3.5 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors flex flex-col gap-3">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400/20 to-indigo-600/20 border border-sky-500/20 flex items-center justify-center font-black text-sky-400 text-sm">
+                        {user.name?.[0]?.toUpperCase()}
+                      </div>
+                      <div>
+                        {editingUserId === user._id ? (
+                          <div className="flex items-center gap-2 mt-1">
+                            <input 
+                              type="text" 
+                              value={editingName} 
+                              onChange={e => setEditingName(e.target.value)}
+                              className="bg-slate-900 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white font-bold outline-none focus:border-sky-500"
+                            />
+                            <button 
+                              onClick={() => handleSaveName(user._id)}
+                              className="p-1 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-colors"
+                            >
+                              <CheckCircle size={14} />
+                            </button>
+                            <button 
+                              onClick={() => setEditingUserId(null)}
+                              className="p-1 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/30 transition-colors"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5">
+                            <h4 className="font-black text-sm text-[var(--text-primary)] leading-tight">{user.name}</h4>
+                            <button 
+                              onClick={() => handleEditName(user)}
+                              className="text-slate-500 hover:text-sky-400 transition-colors"
+                              title="Edit Name"
+                            >
+                              <Edit2 size={12} />
+                            </button>
+                          </div>
+                        )}
+                        <p className="text-[10px] text-slate-500 font-bold lowercase tracking-wide mt-0.5">{user.email}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${user.role === 'admin' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-sky-500/20 text-sky-400 border border-sky-500/30'}`}>
+                        {user.role}
+                      </span>
+                      <button 
+                        onClick={() => handleDeleteUser(user._id, user.name)}
+                        className="text-rose-500 hover:text-rose-400 p-1 rounded-lg bg-rose-500/10 border border-rose-500/20 transition-all hover:bg-rose-500/20"
+                        title="Delete User"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-4 gap-2 pt-2 border-t border-white/5">
+                    <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
+                      <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Solved</div>
+                      <div className="text-xs font-black text-[var(--text-primary)]">{user.questions_solved || 0}</div>
+                    </div>
+                    <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
+                      <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Points</div>
+                      <div className="text-xs font-black text-sky-400">{user.rank_points || 0}</div>
+                    </div>
+                    <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
+                      <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Exams</div>
+                      <div className="text-xs font-black text-purple-400">{user.examsTaken || 0}</div>
+                    </div>
+                    <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
+                      <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Avg Score</div>
+                      <div className="text-xs font-black text-emerald-400">{user.avgScore || 0}%</div>
+                    </div>
+                  </div>
+
+                  {/* Detail pills */}
+                  <div className="flex gap-2 flex-wrap items-center">
+                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded border border-white/5">
+                      Level: {user.level || 'primary'}
+                    </span>
+                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded border border-white/5">
+                      Lang: {user.language1}/{user.language2}
+                    </span>
+                    <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${user.is_premium ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-700/30 text-slate-400 border border-slate-700/30'}`}>
+                      {user.is_premium ? 'Premium' : 'Free Trial'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            {usersList.filter(user => 
+              user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+              user.email?.toLowerCase().includes(searchQuery.toLowerCase())
+            ).length === 0 && (
+              <div className="text-center py-8 text-slate-500 font-bold text-xs">
+                No users found matching your search.
               </div>
-              <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                <span className="text-slate-400 font-medium">Role:</span>
-                <span className={`font-black uppercase tracking-wider text-[10px] px-2 py-1 rounded-md ${inspectedUser.role === 'admin' ? 'bg-amber-500/20 text-amber-400' : 'bg-sky-500/20 text-sky-400'}`}>{inspectedUser.role}</span>
-              </div>
-              <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                <span className="text-slate-400 font-medium">Status:</span>
-                <span className={`font-black uppercase tracking-wider text-[10px] px-2 py-1 rounded-md ${inspectedUser.is_premium ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-500/20 text-slate-400'}`}>{inspectedUser.is_premium ? 'Premium' : 'Free Trial'}</span>
-              </div>
-              <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                <span className="text-slate-400 font-medium">Questions Solved:</span>
-                <span className="text-white font-black">{inspectedUser.questions_solved}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-400 font-medium">Rank Points:</span>
-                <span className="text-white font-black">{inspectedUser.rank_points}</span>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 

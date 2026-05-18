@@ -230,4 +230,82 @@ router.post('/revoke-premium', [auth, adminAuth], async (req, res) => {
   } catch (err) { res.status(500).send('Server Error'); }
 });
 
+// @desc    Get All Users with Stats (Admin)
+router.get('/users', [auth, adminAuth], async (req, res) => {
+  try {
+    const users = await User.find().sort({ created_at: -1 }).select('-password_hash');
+    
+    // Efficiently aggregate exam counts and average score per user
+    const examStats = await Exam.aggregate([
+      { $match: { completed: true } },
+      { $group: {
+          _id: "$user_id",
+          examsTaken: { $sum: 1 },
+          avgScore: { $avg: { $cond: [ { $gt: [ { $size: "$questions" }, 0 ] }, { $divide: [ "$score", { $size: "$questions" } ] }, 0 ] } }
+        }
+      }
+    ]);
+    
+    const statsMap = {};
+    examStats.forEach(stat => {
+      statsMap[stat._id] = {
+        examsTaken: stat.examsTaken,
+        avgScore: Math.round((stat.avgScore || 0) * 100)
+      };
+    });
+
+    const usersWithStats = users.map(user => {
+      const stats = statsMap[user.user_id] || { examsTaken: 0, avgScore: 0 };
+      return {
+        ...user._doc,
+        examsTaken: stats.examsTaken,
+        avgScore: stats.avgScore
+      };
+    });
+
+    res.json(usersWithStats);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @desc    Edit user name (Admin)
+router.put('/users/:id', [auth, adminAuth], async (req, res) => {
+  const { name } = req.body;
+  if (!name || name.trim() === '') {
+    return res.status(400).json({ message: 'Name is required' });
+  }
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    user.name = name.trim();
+    await user.save();
+    
+    res.json({ message: 'User name updated successfully', user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @desc    Delete user (Admin)
+router.delete('/users/:id', [auth, adminAuth], async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    
+    // Cascade deletion
+    await Exam.deleteMany({ user_id: user.user_id });
+    await ContestRegistration.deleteMany({ user_id: user.user_id });
+    await User.deleteOne({ _id: req.params.id });
+    
+    res.json({ message: 'User deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;

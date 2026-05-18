@@ -97,7 +97,7 @@ router.get('/', auth, async (req, res) => {
 // @desc    Update level and language preferences
 // @access  Private
 router.put('/settings', auth, async (req, res) => {
-  const { level, language1, language2, subject_preference } = req.body;
+  const { level, language1, language2, subject_preference, name } = req.body;
   try {
     let user = await User.findOne({ user_id: req.user.id });
     if (user) {
@@ -105,9 +105,13 @@ router.put('/settings', auth, async (req, res) => {
       if (language1) user.language1 = language1;
       if (language2) user.language2 = language2;
       if (subject_preference) user.subject_preference = subject_preference;
+      if (name) user.name = name.trim();
       
       await user.save();
-      return res.json(user);
+      
+      const userData = user._doc;
+      if (userData.password_hash) delete userData.password_hash;
+      return res.json(userData);
     }
     res.status(404).json({ msg: 'User not found' });
   } catch (err) {

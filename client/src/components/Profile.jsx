@@ -3,8 +3,10 @@ import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { Crown, Zap, Calendar, ChevronRight, ShieldCheck } from 'lucide-react';
 import translations from '../translations';
+import { useAuth } from '../context/AuthContext';
 
 const Profile = () => {
+  const { setUser } = useAuth();
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
   const [profile, setProfile] = useState({
@@ -64,13 +66,16 @@ const Profile = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await api.put('/api/profile/settings', profile, {
+      const res = await api.put('/api/profile/settings', profile, {
         headers: { 'x-auth-token': token }
       });
+      localStorage.setItem('user', JSON.stringify(res.data));
+      setUser(res.data);
       setMessage('Settings updated successfully!');
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
       console.error(err);
+      setMessage('Error updating settings');
     }
   };
 
@@ -161,6 +166,18 @@ const Profile = () => {
 
       <form onSubmit={handleUpdate} className="flex flex-col gap-8">
         <div className="glass-card p-6 space-y-6">
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-2">Username</label>
+            <input 
+              type="text"
+              value={profile.name || ''}
+              onChange={e => setProfile({...profile, name: e.target.value})}
+              className="glass-input w-full rounded-2xl py-4 px-5 text-sm font-bold text-[var(--text-primary)] focus:ring-4 focus:ring-sky-500/10 shadow-inner"
+              placeholder="Username"
+              required
+            />
+          </div>
+
           <div className="space-y-2">
             <label className="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-2">Exam Level</label>
             <select 
