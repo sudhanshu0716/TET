@@ -270,9 +270,9 @@ router.get('/users', [auth, adminAuth], async (req, res) => {
   }
 });
 
-// @desc    Edit user name (Admin)
+// @desc    Edit user name, level, and languages (Admin)
 router.put('/users/:id', [auth, adminAuth], async (req, res) => {
-  const { name } = req.body;
+  const { name, level, language1, language2 } = req.body;
   if (!name || name.trim() === '') {
     return res.status(400).json({ message: 'Name is required' });
   }
@@ -281,9 +281,14 @@ router.put('/users/:id', [auth, adminAuth], async (req, res) => {
     if (!user) return res.status(404).json({ message: 'User not found' });
     
     user.name = name.trim();
+    if (level && (level === 'primary' || level === 'junior')) {
+      user.level = level;
+    }
+    if (language1) user.language1 = language1;
+    if (language2) user.language2 = language2;
     await user.save();
     
-    res.json({ message: 'User name updated successfully', user });
+    res.json({ message: 'User updated successfully', user });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');

@@ -36,6 +36,9 @@ const AdminDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [editingUserId, setEditingUserId] = useState(null);
   const [editingName, setEditingName] = useState('');
+  const [editingLevel, setEditingLevel] = useState('');
+  const [editingLanguage1, setEditingLanguage1] = useState('');
+  const [editingLanguage2, setEditingLanguage2] = useState('');
 
   const fetchUsers = async () => {
     try {
@@ -75,18 +78,21 @@ const AdminDashboard = () => {
   const handleEditName = (user) => {
     setEditingUserId(user._id);
     setEditingName(user.name);
+    setEditingLevel(user.level || 'primary');
+    setEditingLanguage1(user.language1 || 'Hindi');
+    setEditingLanguage2(user.language2 || 'English');
   };
 
   const handleSaveName = async (userId) => {
     if (!editingName.trim()) return alert('Name cannot be empty');
     try {
       const token = localStorage.getItem('token');
-      await api.put(`/api/admin/users/${userId}`, { name: editingName }, { headers: { 'x-auth-token': token } });
-      alert('User name updated successfully!');
+      await api.put(`/api/admin/users/${userId}`, { name: editingName, level: editingLevel, language1: editingLanguage1, language2: editingLanguage2 }, { headers: { 'x-auth-token': token } });
+      alert('User updated successfully!');
       setEditingUserId(null);
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update user name');
+      alert(err.response?.data?.message || 'Failed to update user');
     }
   };
 
@@ -434,6 +440,31 @@ const AdminDashboard = () => {
                               onChange={e => setEditingName(e.target.value)}
                               className="bg-slate-900 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white font-bold outline-none focus:border-sky-500"
                             />
+                            <select
+                              value={editingLevel}
+                              onChange={e => setEditingLevel(e.target.value)}
+                              className="bg-slate-900 border border-white/20 rounded-lg px-2 py-1 text-xs text-white font-bold outline-none focus:border-sky-500"
+                            >
+                              <option value="primary">Primary</option>
+                              <option value="junior">Junior</option>
+                            </select>
+                            <select
+                              value={editingLanguage1}
+                              onChange={e => setEditingLanguage1(e.target.value)}
+                              className="bg-slate-900 border border-white/20 rounded-lg px-2 py-1 text-xs text-white font-bold outline-none focus:border-sky-500"
+                            >
+                              <option value="Hindi">Hindi</option>
+                              <option value="English">English</option>
+                            </select>
+                            <select
+                              value={editingLanguage2}
+                              onChange={e => setEditingLanguage2(e.target.value)}
+                              className="bg-slate-900 border border-white/20 rounded-lg px-2 py-1 text-xs text-white font-bold outline-none focus:border-sky-500"
+                            >
+                              <option value="English">English</option>
+                              <option value="Sanskrit">Sanskrit</option>
+                              <option value="Urdu">Urdu</option>
+                            </select>
                             <button 
                               onClick={() => handleSaveName(user._id)}
                               className="p-1 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-colors"
