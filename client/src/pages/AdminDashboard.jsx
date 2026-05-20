@@ -16,6 +16,9 @@ const AdminDashboard = () => {
     dailyActive: 0,
     contestRegs: 0
   });
+  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [subjectBreakdown, setSubjectBreakdown] = useState([]);
+  const [loadingBreakdown, setLoadingBreakdown] = useState(false);
   const [contestSettings, setContestSettings] = useState({ start_time: '20:30', duration: 30 });
   const [premiumEnabled, setPremiumEnabled] = useState(false);
   const [grantEmail, setGrantEmail] = useState('');
@@ -221,10 +224,32 @@ const AdminDashboard = () => {
 
   const adminCards = [
     { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-    { label: 'Total Questions', value: stats.totalQuestions, icon: Database, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
     { label: 'Daily Active', value: stats.dailyActive, icon: Activity, color: 'text-amber-400', bg: 'bg-amber-500/10' },
     { label: 'Contest Regs', value: stats.contestRegs, icon: ShieldCheck, color: 'text-purple-400', bg: 'bg-purple-500/10' },
   ];
+
+  const fetchBreakdown = async () => {
+    if (subjectBreakdown.length > 0) { setShowBreakdown(v => !v); return; }
+    setShowBreakdown(true);
+    setLoadingBreakdown(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await api.get('/api/admin/question-breakdown', { headers: { 'x-auth-token': token } });
+      setSubjectBreakdown(res.data);
+    } catch (err) { console.error(err); }
+    finally { setLoadingBreakdown(false); }
+  };
+
+  const subjectColors = {
+    pedagogy: 'bg-violet-500', hindi: 'bg-rose-500', english: 'bg-sky-500',
+    math: 'bg-amber-500', evs: 'bg-green-500', science: 'bg-cyan-500',
+    social: 'bg-orange-500', sanskrit: 'bg-pink-500', urdu: 'bg-teal-500'
+  };
+  const subjectLabels = {
+    pedagogy: 'Pedagogy', hindi: 'Hindi', english: 'English',
+    math: 'Math', evs: 'EVS', science: 'Science',
+    social: 'Social', sanskrit: 'Sanskrit', urdu: 'Urdu'
+  };
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
@@ -255,6 +280,55 @@ const AdminDashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-3">
+
+        {/* Total Questions — Expandable Card */}
+        <div
+          className="glass-card cursor-pointer select-none transition-all"
+          onClick={fetchBreakdown}
+        >
+          <div className="flex items-center gap-5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400">
+              <Database size={22} />
+            </div>
+            <div className="flex-1">
+              <span className="text-2xl font-black text-[var(--text-primary)]">{stats.totalQuestions.toLocaleString()}</span>
+              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Questions</div>
+            </div>
+            <div className={`text-slate-400 transition-transform duration-300 ${showBreakdown ? 'rotate-180' : ''}`}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+
+          {/* Expandable Subject Breakdown */}
+          {showBreakdown && (
+            <div className="mt-4 pt-4 border-t border-white/5 space-y-2.5">
+              {loadingBreakdown ? (
+                <div className="text-center text-slate-500 text-xs py-2 animate-pulse">Loading breakdown...</div>
+              ) : (
+                subjectBreakdown.map((item) => {
+                  const maxCount = Math.max(...subjectBreakdown.map(x => x.count), 1);
+                  const pct = Math.round((item.count / maxCount) * 100);
+                  return (
+                    <div key={item.subject}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs font-bold text-[var(--text-primary)] capitalize">{subjectLabels[item.subject] || item.subject}</span>
+                        <span className="text-xs font-black text-emerald-400">{item.count.toLocaleString()}</span>
+                      </div>
+                      <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${subjectColors[item.subject] || 'bg-slate-500'} transition-all duration-700`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Other stat cards */}
         {adminCards.map((card, i) => (
           <div key={i} className="glass-card flex items-center gap-5">
             <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${card.bg} ${card.color}`}>

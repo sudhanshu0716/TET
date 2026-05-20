@@ -120,6 +120,9 @@ const DailyExam = ({ type }) => {
       } else if (type === 'daily') {
         setConfig({ qCount: 30, timeLimit: 30 });
         startExam();
+      } else if (type === 'year') {
+        setConfig({ qCount: 30, timeLimit: 30 });
+        startExam();
       }
     }
   }, [type]);
@@ -625,7 +628,7 @@ const DailyExam = ({ type }) => {
                 {q.subject}
               </span>
               <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
-                {q.year || 'PREVIOUS YEAR'}
+                {q.source || q.year || 'PREVIOUS YEAR'}
               </span>
             </div>
             <h3 className="text-lg font-bold text-[var(--text-primary)] leading-relaxed text-pretty">

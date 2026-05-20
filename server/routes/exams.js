@@ -311,6 +311,79 @@ router.get('/important', auth, async (req, res) => {
   }
 });
 
+// @route   GET api/exams/year/:year
+// @desc    Get/Create a year-wise exam based on level & year
+router.get('/year/:year', auth, async (req, res) => {
+  try {
+    const hasAccess = await checkAccess(req.user.id);
+    if (!hasAccess) return res.status(403).json({ message: 'Trial expired.' });
+
+    const targetYear = parseInt(req.params.year);
+    const user = await User.findOne({ user_id: req.user.id });
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+
+    // Build subject list based on user's profile
+    const userSubjects = ['pedagogy', (user.language1 || 'hindi').toLowerCase(), (user.language2 || 'english').toLowerCase()];
+    if (user.level === 'primary') {
+      userSubjects.push('math', 'evs');
+    } else {
+      userSubjects.push(user.subject_preference === 'science' ? 'science' : 'social');
+    }
+
+    let questions = await Question.aggregate([
+      { $match: { 
+        level: user.level,
+        subject: { $in: userSubjects },
+        language: 'hindi',
+        year: targetYear
+      } },
+      { $sample: { size: 30 } }
+    ]);
+
+    // Fallback: if we don't have enough questions for this specific year + level + subjects combination,
+    // let's relax the subject filter or just search by year and level
+    if (!questions || questions.length === 0) {
+      questions = await Question.aggregate([
+        { $match: { 
+          level: user.level,
+          language: 'hindi',
+          year: targetYear
+        } },
+        { $sample: { size: 30 } }
+      ]);
+    }
+
+    // Secondary fallback: if still 0, just get any 30 questions from that year
+    if (!questions || questions.length === 0) {
+      questions = await Question.aggregate([
+        { $match: { 
+          year: targetYear
+        } },
+        { $sample: { size: 30 } }
+      ]);
+    }
+
+    if (!questions || questions.length === 0) {
+      return res.status(404).json({ message: `No questions found for the year ${targetYear}.` });
+    }
+
+    const exam = new Exam({
+      exam_id: uuidv4(),
+      user_id: req.user.id,
+      exam_type: 'year-wise',
+      questions: questions.map(q => q.question_id),
+      duration: 30,
+      date: new Date()
+    });
+
+    await exam.save();
+    res.json({ exam, questions });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
 router.get('/:examId', auth, async (req, res) => {
   try {
     const exam = await Exam.findOne({ exam_id: req.params.examId, user_id: req.user.id });

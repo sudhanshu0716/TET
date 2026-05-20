@@ -39,6 +39,20 @@ router.get('/stats', [auth, adminAuth], async (req, res) => {
   } catch (err) { res.status(500).send('Server Error'); }
 });
 
+// @desc    Get Question Breakdown by Subject
+router.get('/question-breakdown', [auth, adminAuth], async (req, res) => {
+  try {
+    const subjects = ['pedagogy', 'hindi', 'english', 'math', 'evs', 'science', 'social', 'sanskrit', 'urdu'];
+    const breakdown = await Promise.all(
+      subjects.map(async (s) => ({
+        subject: s,
+        count: await Question.countDocuments({ subject: s })
+      }))
+    );
+    res.json(breakdown);
+  } catch (err) { res.status(500).send('Server Error'); }
+});
+
 // @desc    Get Recent App Activity
 router.get('/recent-activity', [auth, adminAuth], async (req, res) => {
   try {

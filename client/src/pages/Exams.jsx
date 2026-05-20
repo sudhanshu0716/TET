@@ -133,8 +133,8 @@ const Exams = () => {
       {/* Previous Year Papers */}
       <div className="mt-4 space-y-4">
         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Previous Year Papers</h4>
-        <div className="grid grid-cols-3 gap-3">
-          {[2018, 2019, 2020, 2021, 2022, 2023].map((year) => (
+        <div className="grid grid-cols-4 gap-2">
+          {[2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011].map((year) => (
             <button 
               key={year}
               onClick={() => navigate(`/year-test/${year}`)}
