@@ -84,6 +84,15 @@ const Dashboard = () => {
     };
     fetchActiveCount();
   }, []);
+  useEffect(() => {
+    if (user && window.location.hash === '#subjects') {
+      setTimeout(() => {
+        const el = document.getElementById('subjects-grid');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+  }, [user]);
+
 
   const handleRegister = async () => {
     try {
@@ -354,7 +363,7 @@ const Dashboard = () => {
     </div>
 
       {/* Subject-wise MCQ Menu */}
-      <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">{t.subjectWise}</h4>
+      <h4 id="subjects-grid" className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">{t.subjectWise}</h4>
       <div className="grid grid-cols-3 gap-3">
         {subjects.map(sub => (
           <div 

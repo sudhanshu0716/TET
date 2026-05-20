@@ -500,87 +500,109 @@ const AdminDashboard = () => {
               )
               .map(user => (
                 <div key={user._id} className="p-3.5 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors flex flex-col gap-3">
-                  <div className="flex justify-between items-start">
+                  <div className="flex justify-between items-start w-full">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400/20 to-indigo-600/20 border border-sky-500/20 flex items-center justify-center font-black text-sky-400 text-sm">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400/20 to-indigo-600/20 border border-sky-500/20 flex items-center justify-center font-black text-sky-400 text-sm shrink-0">
                         {user.name?.[0]?.toUpperCase()}
                       </div>
                       <div>
-                        {editingUserId === user._id ? (
-                          <div className="flex items-center gap-2 mt-1">
-                            <input 
-                              type="text" 
-                              value={editingName} 
-                              onChange={e => setEditingName(e.target.value)}
-                              className="bg-slate-900 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white font-bold outline-none focus:border-sky-500"
-                            />
-                            <select
-                              value={editingLevel}
-                              onChange={e => setEditingLevel(e.target.value)}
-                              className="bg-slate-900 border border-white/20 rounded-lg px-2 py-1 text-xs text-white font-bold outline-none focus:border-sky-500"
-                            >
-                              <option value="primary">Primary</option>
-                              <option value="junior">Junior</option>
-                            </select>
-                            <select
-                              value={editingLanguage1}
-                              onChange={e => setEditingLanguage1(e.target.value)}
-                              className="bg-slate-900 border border-white/20 rounded-lg px-2 py-1 text-xs text-white font-bold outline-none focus:border-sky-500"
-                            >
-                              <option value="Hindi">Hindi</option>
-                              <option value="English">English</option>
-                            </select>
-                            <select
-                              value={editingLanguage2}
-                              onChange={e => setEditingLanguage2(e.target.value)}
-                              className="bg-slate-900 border border-white/20 rounded-lg px-2 py-1 text-xs text-white font-bold outline-none focus:border-sky-500"
-                            >
-                              <option value="English">English</option>
-                              <option value="Sanskrit">Sanskrit</option>
-                              <option value="Urdu">Urdu</option>
-                            </select>
-                            <button 
-                              onClick={() => handleSaveName(user._id)}
-                              className="p-1 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-colors"
-                            >
-                              <CheckCircle size={14} />
-                            </button>
-                            <button 
-                              onClick={() => setEditingUserId(null)}
-                              className="p-1 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 hover:bg-rose-500/30 transition-colors"
-                            >
-                              <X size={14} />
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1.5">
-                            <h4 className="font-black text-sm text-[var(--text-primary)] leading-tight">{user.name}</h4>
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="font-black text-sm text-[var(--text-primary)] leading-tight">{user.name}</h4>
+                          {editingUserId !== user._id && (
                             <button 
                               onClick={() => handleEditName(user)}
                               className="text-slate-500 hover:text-sky-400 transition-colors"
-                              title="Edit Name"
+                              title="Edit User"
                             >
                               <Edit2 size={12} />
                             </button>
-                          </div>
-                        )}
+                          )}
+                        </div>
                         <p className="text-[10px] text-slate-500 font-bold lowercase tracking-wide mt-0.5">{user.email}</p>
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
-                      <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${user.role === 'admin' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-sky-500/20 text-sky-400 border border-sky-500/30'}`}>
+                    <div className="flex gap-2 shrink-0">
+                      <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded h-fit ${user.role === 'admin' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-sky-500/20 text-sky-400 border border-sky-500/30'}`}>
                         {user.role}
                       </span>
                       <button 
                         onClick={() => handleDeleteUser(user._id, user.name)}
-                        className="text-rose-500 hover:text-rose-400 p-1 rounded-lg bg-rose-500/10 border border-rose-500/20 transition-all hover:bg-rose-500/20"
+                        className="text-rose-500 hover:text-rose-400 p-1 rounded-lg bg-rose-500/10 border border-rose-500/20 transition-all hover:bg-rose-500/20 h-fit"
                         title="Delete User"
                       >
                         <Trash2 size={12} />
                       </button>
                     </div>
                   </div>
+
+                  {editingUserId === user._id && (
+                    <div className="flex flex-col gap-3 mt-1 bg-slate-950/40 p-3 rounded-xl border border-white/5 w-full max-w-full">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Name</label>
+                        <input 
+                          type="text" 
+                          value={editingName} 
+                          onChange={e => setEditingName(e.target.value)}
+                          className="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Level</label>
+                          <select
+                            value={editingLevel}
+                            onChange={e => setEditingLevel(e.target.value)}
+                            className="w-full bg-slate-900 border border-white/10 rounded-xl px-2 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
+                          >
+                            <option value="primary">Primary</option>
+                            <option value="junior">Junior</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Lang I</label>
+                          <select
+                            value={editingLanguage1}
+                            onChange={e => setEditingLanguage1(e.target.value)}
+                            className="w-full bg-slate-900 border border-white/10 rounded-xl px-2 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
+                          >
+                            <option value="Hindi">Hindi</option>
+                            <option value="English">English</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Lang II</label>
+                          <select
+                            value={editingLanguage2}
+                            onChange={e => setEditingLanguage2(e.target.value)}
+                            className="w-full bg-slate-900 border border-white/10 rounded-xl px-2 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
+                          >
+                            <option value="English">English</option>
+                            <option value="Sanskrit">Sanskrit</option>
+                            <option value="Urdu">Urdu</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 justify-end pt-1">
+                        <button 
+                          onClick={() => setEditingUserId(null)}
+                          className="px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5"
+                        >
+                          <X size={12} /> Cancel
+                        </button>
+                        <button 
+                          onClick={() => handleSaveName(user._id)}
+                          className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5"
+                        >
+                          <CheckCircle size={12} /> Save
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Stats Grid */}
                   <div className="grid grid-cols-4 gap-2 pt-2 border-t border-white/5">

@@ -88,15 +88,7 @@ const Exams = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
             onClick={() => {
-              if (mode.isAnchor) {
-                navigate('/dashboard');
-                setTimeout(() => {
-                  const el = document.getElementById('subjects-grid');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-              } else {
-                navigate(mode.path);
-              }
+              navigate(mode.path);
             }}
             className={`glass-card group relative overflow-hidden cursor-pointer active:scale-[0.98] transition-all border-2 ${mode.border} bg-gradient-to-br ${mode.color} !p-5`}
           >
