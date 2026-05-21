@@ -1,39 +1,52 @@
-# 💻 UPTET/CTET Prep - Frontend Client
+# 💻 UPTET/CTET Prep — Frontend Client
 
-This is the frontend React client for the UPTET/CTET Prep Application, built using **React 19**, **Vite**, **Tailwind CSS v4**, **Framer Motion**, and **Recharts**. It is designed with a premium, mobile-first glassmorphic UI optimized for seamless preparation.
+The frontend React client for the UPTET/CTET Prep Application, built using **React 19**, **Vite**, **Tailwind CSS v4**, **Framer Motion**, and **Recharts**. Designed with a premium mobile-first glassmorphic UI.
 
 ---
 
 ## 🚀 Key Modules & UI Features
 
 ### 1. 📱 Responsive Navigation
-- **Navbar**: Sticky header featuring the app branding, notification alerts, user profile badge, and the global bilingual language toggle (English/Hindi).
-- **Bottom Navigation**: Sticky bottom bar on mobile views containing quick links:
-  - **Home**: Main dashboard with challenges and study goals.
-  - **Practice**: Subject tests, mocks, repeated PYQs, and flashcards.
-  - **Leaderboard**: Global ranks and live contest standings.
-  - **Profile**: Progress overview, personal settings, and premium plans.
+- **Navbar**: Sticky top header with app branding, user profile badge, and a bilingual language toggle (English / Hindi).
+- **Bottom Navigation**: Mobile sticky footer with quick links:
+  - **Home**: Dashboard with daily challenges and study goals.
+  - **Practice**: Subject tests, full mocks, PYQs, and flashcards.
+  - **Leaderboard**: Global rankings and live contest standings.
+  - **Profile**: Progress overview, personal settings, and subscription management.
 
-### 2. ⚡ Timer-Based Exam Room (`/exam/:examType/:subject?`)
-- **Bilingual Support**: Toggle the language of the exam questions on-the-fly.
-- **Navigator Sidebar**: Visual index showing visited, marked for review, answered, and skipped question statuses.
-- **Automatic Auto-Submit**: Triggers submission once the 150-minute exam timer reaches zero.
-- **Interactive Review**: Instantly displays score breakdown, correct answers list, and explanatory guides.
+### 2. ⚡ Exam Engine (`DailyExam.jsx`)
+- Handles all exam types: `daily`, `subject`, `full-mock`, `important`, `year`, `contest`.
+- **Fixed Navigation**: Previous / Next buttons are always visible — no scrolling needed.
+- **Last Question Fix**: Final question shows "Review & Submit" instead of jumping straight to the results page.
+- **Auto-Submit**: Triggers submission when the countdown timer reaches zero.
+- **50-Question Default**: Daily and practice sessions load up to 50 questions by default.
+- **No Limits**: Per-day attempt restrictions removed for all exam types.
+- **Smart Result Grading**: Performance labels are dynamically selected based on the score percentage — low scores no longer incorrectly show "Brilliant".
+- **Bilingual**: Toggle question language between English and Hindi on-the-fly.
 
-### 3. 🛡️ Admin Dashboard (`/admin`)
-- **Control Center**: Dynamic control board accessible only to administrative accounts:
-  - **Question Bank**: Admin interface to add new MCQs, filter questions by subject/level, and delete records.
-  - **User Controller**: Live table of all registered users with tools to toggle admin access, reset subscription tiers, and edit profile credentials.
-  - **Contest Scheduler**: Panel to initialize live contests, monitor registrations, and end active mock sessions.
-  - **Maintenance Switch**: Global configuration toggle to activate/deactivate the site maintenance mode.
+### 3. 🧭 Onboarding Tutorial (`AppTutorial.jsx`)
+- **New-User Only**: Triggers automatically after first registration. Returning users who log in are never shown it.
+- **Per-User Key**: Stored as `hasSeenTutorial_<userId>` in localStorage — switching accounts on shared devices works correctly.
+- **Spotlight Overlays**: Framer Motion animations highlight key UI elements with a glowing border + ripple pulse.
+- **Progress Dots**: Navigation dots let users jump to any step or skip ahead.
+- **Bilingual**: Full English and Hindi support.
+- **Replay**: Users can re-watch the tutorial from the Profile page.
 
-### 4. 💳 Subscription Page (`/subscription`)
-- **Pricing Cards**: Renders four plans:
-  - **Monthly**: ₹29 (1 Month)
-  - **Quarterly**: ₹59 (3 Months)
-  - **Half-Yearly**: ₹99 (6 Months)
-  - **Yearly**: ₹149 (12 Months)
-- **Razorpay Integration**: Calls the backend order creator and invokes the client SDK modal, updating the user context on payment validation success.
+### 4. 🛡️ Admin Dashboard (`/admin`)
+- **Question Bank**: Add MCQs, filter by subject/level, delete records.
+- **User Controller**: Toggle admin access, reset subscriptions, edit credentials.
+- **Contest Scheduler**: Initialize live contests, monitor registrations, end active sessions.
+- **Maintenance Switch**: Global toggle to activate/deactivate site maintenance mode.
+
+### 5. 💳 Subscription Page (`/subscription`)
+| Plan | Price | Duration |
+|------|-------|----------|
+| Monthly | ₹29 | 1 Month |
+| Quarterly | ₹59 | 3 Months |
+| Half-Yearly | ₹99 | 6 Months |
+| Yearly | ₹149 | 12 Months |
+
+Razorpay Checkout modal launched on click; user context updated on successful payment verification.
 
 ---
 
@@ -44,36 +57,45 @@ client/
 ├── public/                 # Static assets (favicons, logos)
 ├── src/
 │   ├── components/         # Reusable UI components
+│   │   ├── AppTutorial.jsx      # Interactive onboarding guided tour
 │   │   ├── AdminQuestions.jsx   # Question editor control
 │   │   ├── AdminUsers.jsx       # User administration grid
-│   │   ├── AppTutorial.jsx      # Guided tour walkthrough
 │   │   ├── BottomNav.jsx        # Mobile footer navigation bar
-│   │   ├── MaintenanceMode.jsx  # Fallback maintenance screen
+│   │   ├── ErrorBoundary.jsx    # Graceful crash fallback
+│   │   ├── Leaderboard.jsx      # Global rankings view
 │   │   ├── Navbar.jsx           # Global top header
-│   │   ├── PaymentButton.jsx    # Razorpay button component
-│   │   ├── SVGCharts.jsx        # SVG Performance Radar charts
-│   │   └── ...
+│   │   ├── PaymentButton.jsx    # Razorpay button wrapper
+│   │   ├── PremiumModal.jsx     # Expired trial prompt modal
+│   │   ├── Profile.jsx          # Settings, stats & tutorial replay
+│   │   ├── ProtectedRoute.jsx   # Auth guard for private routes
+│   │   └── SVGCharts.jsx        # SVG Performance Radar charts
 │   ├── context/            # React global state contexts
-│   │   ├── AuthContext.jsx      # Credentials, level, and preferences
-│   │   └── ThemeContext.jsx     # Visual styling configurations
+│   │   ├── AuthContext.jsx      # Login/register + per-user tutorial flag
+│   │   └── ThemeContext.jsx     # Visual styling (dark mode)
 │   ├── pages/              # Primary route screens
-│   │   ├── AdminDashboard.jsx   # Administrative center
+│   │   ├── AdminDashboard.jsx   # Administrative control centre
+│   │   ├── Cheatsheets.jsx      # Revision notes library
+│   │   ├── CommunityUpload.jsx  # User-contributed content
 │   │   ├── Dashboard.jsx        # Main study dashboard
-│   │   ├── ExamPage.jsx         # Live exam session page
-│   │   ├── Leaderboard.jsx      # Global rankings
-│   │   ├── Profile.jsx          # Settings and stats
-│   │   ├── Subscription.jsx     # Subscription premium portal
-│   │   └── ...
-│   ├── services/           # API request services (Axios wrappers)
-│   │   ├── api.js               # Common API connection client
+│   │   ├── DailyExam.jsx        # Exam engine (all types)
+│   │   ├── Exams.jsx            # Exam type selector
+│   │   ├── Flashcards.jsx       # Active recall flashcard viewer
+│   │   ├── Home.jsx             # Landing page
+│   │   ├── Login.jsx            # Sign in page
+│   │   ├── Progress.jsx         # Progress & analytics screen
+│   │   ├── Register.jsx         # Registration page
+│   │   ├── ResultAnalysis.jsx   # Detailed exam result review
+│   │   └── Subscription.jsx     # Premium subscription portal
+│   ├── services/           # Axios API service wrappers
+│   │   ├── api.js               # Common HTTP client
 │   │   └── paymentService.js    # Payment handling requests
 │   ├── translations.js     # Bilingual dictionary (English & Hindi)
-│   ├── App.jsx             # React router and app entry-wrapper
-│   ├── index.css           # Custom variables and styling rules
+│   ├── App.jsx             # React router + global state wrapper
+│   ├── index.css           # Tailwind CSS + custom design tokens
 │   └── main.jsx            # DOM mounting root
-├── index.html              # Core HTML structure
-├── vite.config.js          # Vite custom build settings
-└── package.json            # Client dependency configuration
+├── index.html              # HTML entry point
+├── vite.config.js          # Vite build config
+└── package.json            # Client dependencies
 ```
 
 ---
@@ -81,27 +103,33 @@ client/
 ## ⚙️ Development Guide
 
 ### 1. Requirements
-Ensure you have Node.js (v18+) installed.
+Node.js v18+ must be installed.
 
 ### 2. Environment Setup
-Create a `.env` file in the `client` directory:
+Create a `.env` file in the `client/` directory:
 ```env
-VITE_API_URL=http://localhost:5005
+VITE_API_URL=http://localhost:5000
 VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
 ```
 
 ### 3. Startup & Dev Server
-Install packages and boot the local dev server:
 ```bash
 npm install
 npm run dev
 ```
-The client will be running on [http://localhost:5173](http://localhost:5173).
+Client runs at [http://localhost:5173](http://localhost:5173).
 
 ---
 
 ## 🛠️ Key Libraries Used
-- **React**: Modern components architecture and state hooks.
-- **Framer Motion**: Smooth entry-fade effects, modal slide transitions, and flipping flashcards.
-- **Recharts**: Responsive SVG Radar charts showing subject metrics.
-- **Axios**: HTTP communication layer with automatic authorization header attachment.
+
+| Library | Purpose |
+|---------|---------|
+| React 19 | Component architecture & hooks |
+| Vite 8 | Ultra-fast dev server & build tool |
+| Tailwind CSS v4 | Utility-first styling system |
+| Framer Motion | Animations, spotlight overlays, page transitions |
+| Recharts | Responsive SVG Radar chart for subject analytics |
+| Lucide React | Icon library |
+| Axios | HTTP client with auto auth headers |
+| React Router v7 | Client-side routing |

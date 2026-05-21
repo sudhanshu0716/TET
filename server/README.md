@@ -1,59 +1,82 @@
-# ⚙️ UPTET/CTET Prep - Backend Server
+# ⚙️ UPTET/CTET Prep — Backend Server
 
-This is the Node.js / Express backend server that powers the UPTET/CTET Prep application. It connects to MongoDB Atlas using Mongoose and integrates with Razorpay for secure premium subscription management.
+The Node.js / Express backend for the UPTET/CTET Prep application. Connects to MongoDB Atlas via Mongoose and integrates with Razorpay for secure premium subscription management.
 
 ---
 
 ## 🔒 Key Server Functionalities & Security
 
 ### 1. Payment Verification & Anti-Tampering Flow
-To prevent client-side payment manipulation (such as a user editing the client code to purchase a 12-month tier at the price of a 1-month tier), the server enforces the following strict flow:
-- **Order Creation**: The user requests an order creation passing `amount` and `planId`. The backend initiates the order via the Razorpay SDK, embedding the `planId` inside the order `notes` metadata.
-- **HMAC Verification**: Once payment is completed, the frontend returns the transaction identifiers. The server constructs an HMAC-SHA256 signature using the server-side `RAZORPAY_KEY_SECRET` and compares it with the payment signature.
-- **Order Fetching**: If the signature matches, the server fetches the original order details directly from Razorpay's API (`razorpay.orders.fetch(orderId)`).
-- **Date Calculation**: The server retrieves the verified `planId` from the fetched order `notes` (falling back to payment `amount` if missing) and calculates the correct subscription expiry date:
-  - `plan_1_month` (₹29) -> +1 Month
-  - `plan_3_months` (₹59) -> +3 Months
-  - `plan_6_months` (₹99) -> +6 Months
-  - `plan_12_months` (₹149) -> +12 Months
-- **DB Updates**: Sets `is_premium = true` and saves `subscription_end_date` to the user's database document.
+To prevent client-side payment manipulation (e.g., buying a 12-month plan at the 1-month price):
 
-### 2. Maintenance Mode & Admin Controls
-- Admins can toggle a global maintenance mode setting in the DB.
-- If maintenance mode is active, standard requests to protected APIs return a `503 Service Unavailable` status, showing the maintenance interface. Administrative users bypass this limitation to allow debugging on live sites.
+- **Order Creation**: Backend initiates the Razorpay order embedding `planId` in order `notes` — the user never controls the plan tier.
+- **HMAC Verification**: On payment completion, the server constructs an HMAC-SHA256 signature using `RAZORPAY_KEY_SECRET` and compares it with the returned payment signature.
+- **Order Fetching**: If the signature matches, the server fetches the original order directly from Razorpay's API to read the verified `planId`.
+- **Date Calculation**: Subscription end date calculated server-side:
+  - `plan_1_month` (₹29) → +1 Month
+  - `plan_3_months` (₹59) → +3 Months
+  - `plan_6_months` (₹99) → +6 Months
+  - `plan_12_months` (₹149) → +12 Months
+- **DB Update**: Sets `is_premium = true` and saves `subscription_end_date`.
+
+### 2. Exam Question Serving (Updated)
+- **50-Question Default**: `/api/exams/start` now returns up to 50 questions per session (previously capped at 30).
+- **No Daily Limits**: All per-day attempt restrictions removed — users can practise unlimited times.
+- All exam types (`daily`, `subject`, `full-mock`, `important`, `year`, `contest`) served via the same route with `type` and `subject` query parameters.
+
+### 3. Maintenance Mode & Admin Controls
+- Admins can toggle a global maintenance mode flag in the DB.
+- If active, standard protected API requests return `503 Service Unavailable`. Admin accounts bypass this restriction.
 
 ---
 
 ## 📡 REST API Endpoint Routes
 
 ### 🔐 Authentication (`/api/auth`)
-- `POST /register`: Registers a new student, hashes passwords using `bcryptjs`, and sets a 3-day trial period.
-- `POST /login`: Validates user credentials and signs a payload-carrying JWT.
-- `GET /user`: Returns user information, configuration levels, and subscription statuses.
-- `POST /update-profile`: Updates user options (exam level, languages, stream preferences).
-- `POST /change-password`: Encrypts and updates the user's login password.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/register` | Registers a new student, hashes password, sets 3-day trial |
+| POST | `/login` | Validates credentials, returns signed JWT |
+| GET | `/profile` | Returns full user profile (auth required) |
+| GET | `/stats` | Returns exam stats summary (auth required) |
+| POST | `/change-password` | Encrypts and updates login password |
 
 ### 📝 Exams & Tests (`/api/exams`)
-- `GET /daily-challenge`: Personalized daily challenge sheet matching the user's level.
-- `POST /submit`: Processes and saves results for full mocks, daily challenges, PYQs, and subject exams.
-- `GET /history`: Retrieves history logs of all exams completed by the user.
-- `GET /review/:examId`: Provides detailed score reviews, option selections, and solutions.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/start` | Returns up to 50 questions for the requested exam type |
+| POST | `/submit` | Processes and saves results for all exam types |
+| GET | `/history` | All completed exams for the current user |
+| GET | `/review/:examId` | Detailed per-question review with explanations |
 
 ### 🏆 Contests & Rooms (`/api/contests`)
-- `GET /active`: Fetches upcoming or running live contests scheduled for the day.
-- `POST /register`: Enrolls user in a specific live contest.
-- `GET /leaderboard/:contestId`: Lists global real-time standings for a contest.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/active` | Fetches active or upcoming contests for today |
+| POST | `/register` | Enrols user in a contest |
+| GET | `/leaderboard/:contestId` | Real-time standings for a contest |
 
 ### 💳 Payments & Billing (`/api/payment`)
-- `POST /create-order`: Prepares a new subscription payment order with a plan tier.
-- `POST /verify-payment`: Confirms verification signature and calculates subscription periods.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/create-order` | Creates a new Razorpay order with plan tier |
+| POST | `/verify-payment` | Verifies signature & updates subscription |
 
 ### 👑 Admin Control Panel (`/api/admin`)
-- `GET /users`: Lists all users registered in the database.
-- `POST /users/update`: Allows admins to modify roles, subscription statuses, or user fields.
-- `POST /maintenance-mode`: Switches maintenance mode on or off.
-- `POST /questions/add`: Appends a new question to the MCQ database bank.
-- `DELETE /questions/:questionId`: Deletes a question from the MCQ database.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/users` | Lists all registered users |
+| POST | `/users/update` | Modify roles, subscriptions, or user fields |
+| POST | `/maintenance-mode` | Toggle maintenance mode on/off |
+| POST | `/questions/add` | Appends new MCQ to the database |
+| DELETE | `/questions/:questionId` | Removes a question from the bank |
+
+### 👤 Profile & Leaderboard (`/api/profile`)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Returns full profile + analytics |
+| PUT | `/settings` | Updates user preferences (level, language, etc.) |
+| GET | `/leaderboard` | Global leaderboard ranking |
 
 ---
 
@@ -61,30 +84,31 @@ To prevent client-side payment manipulation (such as a user editing the client c
 
 ```text
 server/
-├── middleware/             # Request interceptors
-│   └── auth.js                 # JWT check and Admin privilege verification
-├── models/                 # Mongoose Database models
-│   ├── Exam.js                 # Schema for exams/history
-│   ├── Maintenance.js          # Schema for global app switches
-│   ├── Question.js             # Schema for exam questions
-│   ├── User.js                 # Schema for user data & subscriptions
+├── middleware/
+│   └── auth.js                 # JWT validation & admin privilege checks
+├── models/
+│   ├── ContestRegistration.js  # Contest registration records
+│   ├── ContestSettings.js      # Contest schedule configuration
+│   ├── Cheatsheet.js           # Revision note documents
+│   ├── Exam.js                 # Exam history records
+│   ├── GlobalSettings.js       # App-wide settings (maintenance, etc.)
+│   ├── Question.js             # MCQ question bank
+│   └── User.js                 # User auth, profile & subscription data
+├── routes/
+│   ├── admin.js                # Admin-only operations
+│   ├── auth.js                 # Login, register, change password
+│   ├── cheatsheets.js          # Study note retrieval
+│   ├── contests.js             # Live mock exam scheduling & results
+│   ├── exams.js                # Exam serving (50Q, no limits) & submission
+│   ├── payment.js              # Razorpay order & secure verification
+│   └── profile.js              # Analytics, radar data & leaderboard
+├── seeds/                      # Question seed scripts by subject
+│   ├── questions_pedagogy.js
+│   ├── questions_math.js
 │   └── ...
-├── routes/                 # Express REST endpoint modules
-│   ├── admin.js                # Administration actions
-│   ├── auth.js                 # Login, signup, and settings
-│   ├── cheatsheets.js          # Retrieval of study guides
-│   ├── contests.js             # Live mock exams and timings
-│   ├── exams.js                # Practice mocks and challenge submissions
-│   ├── payment.js              # Payment order creation and dynamic verification
-│   └── profile.js              # Analytics, radar charts, and leaderboards
-├── seeds/                  # Question seeds organized by subject
-│   ├── questions_math.js       # Math PYQ list
-│   ├── questions_pedagogy.js   # Pedagogy questions list
-│   └── ...
-├── index.js                # Express entry-point & MongoDB connection
-├── seed_admin.js           # Independent script to create first Admin user
-├── start_project.bat       # Helper batch file to boot frontend/backend concurrently
-└── package.json            # Server dependencies configuration
+├── index.js                    # Express entry point & MongoDB connection
+├── seed_admin.js               # One-time admin account creation script
+└── package.json
 ```
 
 ---
@@ -92,13 +116,13 @@ server/
 ## 🛠️ Local Installation & Launch
 
 ### 1. Prerequisites
-- Node.js (v18+)
-- Local MongoDB installation or a MongoDB Atlas cloud URL connection string.
+- Node.js v18+
+- MongoDB Atlas connection string (or local MongoDB)
 
 ### 2. Environment Setup
-Create a `.env` file in the `server` directory:
+Create a `.env` in the `server/` directory:
 ```env
-PORT=5005
+PORT=5000
 MONGODB_URI=mongodb+srv://...
 JWT_SECRET=your_jwt_signing_key
 RAZORPAY_KEY_ID=your_razorpay_key_id
@@ -106,19 +130,27 @@ RAZORPAY_KEY_SECRET=your_razorpay_secret_key
 ```
 
 ### 3. Execution
-Install dependencies and run the server locally:
 ```bash
 npm install
 npm run dev
 ```
-The server will bind to [http://localhost:5005](http://localhost:5005).
+Server runs at [http://localhost:5000](http://localhost:5000).
 
 ### 4. Database Seeding
-Seed admin accounts and questions:
 ```bash
-# Seed initial administrator credentials
+# Create admin account
 node seed_admin.js
 
-# Seed question banks
+# Seed question banks (repeat per subject)
 node seeds/questions_pedagogy.js
+node seeds/questions_math.js
 ```
+
+---
+
+## 📋 Recent Server-Side Changes
+
+### v2.0 — May 2026
+- **50-Question Default**: `exams.js` updated to return up to 50 questions per session (was 30).
+- **Limits Removed**: All `dailyLimit` checks stripped from exam serving logic.
+- **Unused Code Cleanup**: Dead routes and unused seed scripts removed.
