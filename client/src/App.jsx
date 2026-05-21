@@ -9,7 +9,6 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import DailyExam from './pages/DailyExam';
 import Cheatsheets from './pages/Cheatsheets';
-import ProfileSetup from './pages/ProfileSetup';
 import AdminDashboard from './pages/AdminDashboard';
 import CommunityUpload from './pages/CommunityUpload';
 import ResultAnalysis from './pages/ResultAnalysis';
