@@ -4,43 +4,31 @@ import { Target } from 'lucide-react';
 import api from '../services/api';
 import translations from '../translations';
 
-const PerformanceRadar = () => {
+const PerformanceRadar = ({ insights, loading }) => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
 
   useEffect(() => {
-    const fetchInsights = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await api.get('/api/exams/insights', {
-          headers: { 'x-auth-token': token }
-        });
-        
-        // Transform data for Radar Chart
-        // Ensure we have at least 3 points for a good radar look
-        const transformed = res.data.map(item => {
-          const rawId = item._id || 'Unknown';
-          return {
-            subject: (t.subjects && t.subjects[rawId]) ? t.subjects[rawId] : rawId.charAt(0).toUpperCase() + rawId.slice(1),
-            score: Math.round((item.correct / item.total) * 100),
+    if (insights) {
+      const transformed = insights.map(item => {
+        const rawId = item._id || 'Unknown';
+        return {
+          subject: (t.subjects && t.subjects[rawId]) ? t.subjects[rawId] : rawId.charAt(0).toUpperCase() + rawId.slice(1),
+          score: Math.round((item.correct / item.total) * 100),
           fullMark: 100
-          };
-        });
+        };
+      });
+      setData(transformed);
+    }
+  }, [t, insights]);
 
-        setData(transformed);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching insights:', err);
-        setLoading(false);
-      }
-    };
+  if (loading) return (
+    <div className="glass-card animate-pulse h-[250px] flex items-center justify-center">
+      <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">{lang === 'HI' ? 'चार्ट लोड हो रहा है...' : 'Loading Radar Chart...'}</span>
+    </div>
+  );
 
-    fetchInsights();
-  }, [t]);
-
-  if (loading) return null;
   if (data.length < 3) return (
     <div className="glass-card p-6 flex flex-col items-center justify-center gap-3 text-center min-h-[200px]">
       <div className="w-12 h-12 rounded-full bg-sky-500/10 flex items-center justify-center text-xl">📊</div>

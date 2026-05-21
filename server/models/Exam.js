@@ -16,4 +16,9 @@ const examSchema = new mongoose.Schema({
   completed: { type: Boolean, default: false }
 });
 
+examSchema.index({ user_id: 1 });
+examSchema.index({ completed: 1 });
+examSchema.index({ date: -1 });
+examSchema.index({ user_id: 1, completed: 1, date: -1 });
+
 module.exports = mongoose.model('Exam', examSchema);

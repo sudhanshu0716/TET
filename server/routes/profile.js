@@ -135,13 +135,20 @@ router.get('/ranking', async (req, res) => {
     const istDate = new Date(d.getTime() + (d.getTimezoneOffset() * 60000) + istOffset);
     istDate.setHours(0, 0, 0, 0);
 
-    const rankingWithSolvedToday = await Promise.all(topUsers.map(async (u) => {
-      const examsToday = await Exam.find({
-        user_id: u.user_id,
-        completed: true,
-        date: { $gte: istDate }
-      });
-      const solvedToday = examsToday.reduce((sum, ex) => sum + (ex.answers ? ex.answers.length : 0), 0);
+    const topUserIds = topUsers.map(u => u.user_id);
+    const examsToday = await Exam.find({
+      user_id: { $in: topUserIds },
+      completed: true,
+      date: { $gte: istDate }
+    });
+
+    const solvedTodayMap = new Map();
+    for (const ex of examsToday) {
+      const count = ex.answers ? ex.answers.length : 0;
+      solvedTodayMap.set(ex.user_id, (solvedTodayMap.get(ex.user_id) || 0) + count);
+    }
+
+    const rankingWithSolvedToday = topUsers.map((u) => {
       return {
         _id: u._id,
         user_id: u.user_id,
@@ -150,9 +157,9 @@ router.get('/ranking', async (req, res) => {
         rank_points: u.rank_points,
         level: u.level,
         last_active: u.last_active,
-        solvedToday
+        solvedToday: solvedTodayMap.get(u.user_id) || 0
       };
-    }));
+    });
 
     res.json(rankingWithSolvedToday);
   } catch (err) {

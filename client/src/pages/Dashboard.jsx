@@ -17,20 +17,40 @@ const Dashboard = () => {
   const t = translations[lang] || translations.EN;
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchDashboardData = async () => {
+      const token = localStorage.getItem('token');
       try {
-        const token = localStorage.getItem('token');
-        const res = await api.get('/api/profile', {
-          headers: { 'x-auth-token': token }
-        });
-        if (res.data) {
-          setUser(res.data);
-          setAuthUser(res.data);
-          localStorage.setItem('user', JSON.stringify(res.data));
+        const [profileRes, contestRes, historyRes, activeRes] = await Promise.all([
+          api.get('/api/profile', { headers: { 'x-auth-token': token } }),
+          api.get('/api/contests/status', { headers: { 'x-auth-token': token } }).catch(e => { console.error(e); return { data: null }; }),
+          api.get('/api/exams/history', { headers: { 'x-auth-token': token } }).catch(e => { console.error(e); return { data: [] }; }),
+          api.get('/api/profile/active-count').catch(e => { console.error(e); return { data: { count: 0 } }; })
+        ]);
+
+        if (profileRes.data) {
+          setUser(profileRes.data);
+          setAuthUser(profileRes.data);
+          localStorage.setItem('user', JSON.stringify(profileRes.data));
         }
 
-        // Access Check
-        
+        if (contestRes.data) {
+          setContestStatus(contestRes.data);
+        }
+
+        if (historyRes.data) {
+          setHistory(historyRes.data);
+          
+          // Calculate today's solved questions
+          const today = new Date().toLocaleDateString();
+          const count = historyRes.data
+            .filter(ex => new Date(ex.date).toLocaleDateString() === today)
+            .reduce((sum, ex) => sum + (ex.answers?.length || 0), 0);
+          setTodaySolved(count);
+        }
+
+        if (activeRes.data) {
+          setActiveCount(activeRes.data.count);
+        }
       } catch (err) {
         console.error(err);
         setError(true);
@@ -40,47 +60,8 @@ const Dashboard = () => {
         }
       }
     };
-    fetchUser();
-  }, []);
-
-  useEffect(() => {
-    const fetchStatus = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await api.get('/api/contests/status', { headers: { 'x-auth-token': token } });
-        setContestStatus(res.data);
-      } catch (err) { console.error(err); }
-    };
-    fetchStatus();
-  }, []);
-  
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await api.get('/api/exams/history', { headers: { 'x-auth-token': token } });
-        setHistory(res.data);
-        
-        // Calculate today's solved questions
-        const today = new Date().toLocaleDateString();
-        const count = res.data
-          .filter(ex => new Date(ex.date).toLocaleDateString() === today)
-          .reduce((sum, ex) => sum + (ex.answers?.length || 0), 0);
-        setTodaySolved(count);
-      } catch (err) { console.error(err); }
-    };
-    fetchHistory();
-  }, []);
-
-  useEffect(() => {
-    const fetchActiveCount = async () => {
-      try {
-        const res = await api.get('/api/profile/active-count');
-        setActiveCount(res.data.count);
-      } catch (err) { console.error(err); }
-    };
-    fetchActiveCount();
-  }, []);
+    fetchDashboardData();
+  }, [navigate, setAuthUser]);
 
 
   const handleRegister = async () => {

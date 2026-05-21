@@ -23,5 +23,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.index({ last_active: -1 });
+userSchema.index({ questions_solved: -1 });
+userSchema.index({ rank_points: -1 });
 
 module.exports = mongoose.model('User', userSchema);

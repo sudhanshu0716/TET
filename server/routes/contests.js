@@ -198,14 +198,24 @@ router.get('/leaderboard', auth, async (req, res) => {
       .sort({ score: -1, date: 1 })
       .limit(20);
 
-    const leaderboard = await Promise.all(results.map(async (r) => {
-      const u = await User.findOne({ user_id: r.user_id });
-      const examsToday = await Exam.find({
-        user_id: r.user_id,
-        completed: true,
-        date: { $gte: today }
-      });
-      const solvedToday = examsToday.reduce((sum, ex) => sum + (ex.answers ? ex.answers.length : 0), 0);
+    const userIds = results.map(r => r.user_id);
+    const users = await User.find({ user_id: { $in: userIds } });
+    const userMap = new Map(users.map(u => [u.user_id, u]));
+
+    const examsToday = await Exam.find({
+      user_id: { $in: userIds },
+      completed: true,
+      date: { $gte: today }
+    });
+
+    const solvedTodayMap = new Map();
+    for (const ex of examsToday) {
+      const count = ex.answers ? ex.answers.length : 0;
+      solvedTodayMap.set(ex.user_id, (solvedTodayMap.get(ex.user_id) || 0) + count);
+    }
+
+    const leaderboard = results.map((r) => {
+      const u = userMap.get(r.user_id);
       return { 
         name: u?.name || 'User', 
         level: u?.level || 'primary',
@@ -213,9 +223,9 @@ router.get('/leaderboard', auth, async (req, res) => {
         timeSpent: r.duration, // Optional: show duration
         date: r.date,
         last_active: u?.last_active || null,
-        solvedToday
+        solvedToday: solvedTodayMap.get(r.user_id) || 0
       };
-    }));
+    });
 
     res.json(leaderboard);
   } catch (err) { res.status(500).send('Server Error'); }

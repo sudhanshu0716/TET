@@ -18,4 +18,7 @@ const questionSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now }
 });
 
+questionSchema.index({ subject: 1 });
+questionSchema.index({ level: 1, subject: 1, language: 1 });
+
 module.exports = mongoose.model('Question', questionSchema);

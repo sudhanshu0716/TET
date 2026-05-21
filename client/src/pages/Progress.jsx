@@ -4,37 +4,57 @@ import api from '../services/api';
 import translations from '../translations';
 import TopicInsights from '../components/TopicInsights';
 import PerformanceRadar from '../components/PerformanceRadar';
+import { useAuth } from '../context/AuthContext';
 
 const Progress = () => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user: authUser } = useAuth();
+  const [user, setUser] = useState(authUser || null);
+  const [insights, setInsights] = useState([]);
+  const [loadingProfile, setLoadingProfile] = useState(!authUser);
+  const [loadingInsights, setLoadingInsights] = useState(true);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await api.get('/api/profile', {
-          headers: { 'x-auth-token': token }
-        });
-        if (res.data) {
-          setUser(res.data);
-        }
+        
+        const profilePromise = api.get('/api/profile', { headers: { 'x-auth-token': token } })
+          .then(res => {
+            if (res.data) {
+              setUser(res.data);
+            }
+          })
+          .catch(err => {
+            console.error("Profile fetch error:", err);
+            if (err.response?.status === 401) {
+              localStorage.removeItem('token');
+              navigate('/login');
+            }
+          })
+          .finally(() => setLoadingProfile(false));
+
+        const insightsPromise = api.get('/api/exams/insights', { headers: { 'x-auth-token': token } })
+          .then(res => {
+            if (res.data) {
+              setInsights(res.data);
+            }
+          })
+          .catch(err => {
+            console.error("Insights fetch error:", err);
+          })
+          .finally(() => setLoadingInsights(false));
+
+        await Promise.all([profilePromise, insightsPromise]);
       } catch (err) {
         console.error(err);
         setError(true);
-        if (err.response?.status === 401) {
-          localStorage.removeItem('token');
-          navigate('/login');
-        }
-      } finally {
-        setLoading(false);
       }
     };
-    fetchUser();
+    fetchData();
   }, [navigate]);
 
   if (error) return (
@@ -53,7 +73,7 @@ const Progress = () => {
     </div>
   );
 
-  if (loading) return (
+  if (loadingProfile && !user) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-5 max-w-md mx-auto w-full">
       <div className="w-10 h-10 border-4 border-sky-500/20 border-t-sky-500 rounded-full animate-spin"></div>
       <p className="text-slate-500 font-bold animate-pulse">{t.loadingStats || 'Loading your stats...'}</p>
@@ -111,9 +131,9 @@ const Progress = () => {
       {/* Performance Analysis Group */}
       <div className="space-y-6 pt-2">
         <div id="tut-radar">
-          <PerformanceRadar />
+          <PerformanceRadar insights={insights} loading={loadingInsights} />
         </div>
-        <TopicInsights />
+        <TopicInsights insights={insights} loading={loadingInsights} />
       </div>
     </div>
   );

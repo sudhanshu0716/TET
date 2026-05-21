@@ -1,26 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 
-const TopicInsights = () => {
+const TopicInsights = ({ insights: propInsights, loading }) => {
   const [insights, setInsights] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchInsights = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await api.get('/api/exams/insights', {
-          headers: { 'x-auth-token': token }
-        });
-        setInsights(res.data);
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-        setLoading(false);
-      }
-    };
-    fetchInsights();
-  }, []);
+    if (propInsights) {
+      setInsights(propInsights);
+    }
+  }, [propInsights]);
 
   if (loading) return (
     <div className="glass-card animate-pulse h-48 flex items-center justify-center">
@@ -28,7 +16,7 @@ const TopicInsights = () => {
     </div>
   );
 
-  if (insights.length === 0) return null;
+  if (!insights || insights.length === 0) return null;
 
   return (
     <div className="glass-card !p-5 space-y-4">

@@ -189,9 +189,13 @@ router.post(['/submit', '/submit/:examId'], auth, async (req, res) => {
 
     let score = 0;
     const graded = [];
-    if (Array.isArray(answers)) {
+    if (Array.isArray(answers) && answers.length > 0) {
+      const questionIds = answers.map(ans => ans.question_id);
+      const questionsList = await Question.find({ question_id: { $in: questionIds } });
+      const questionsMap = new Map(questionsList.map(q => [q.question_id, q]));
+
       for (const ans of answers) {
-        const q = await Question.findOne({ question_id: ans.question_id });
+        const q = questionsMap.get(ans.question_id);
         const is_correct = q ? (q.correct_answer === ans.selected_option) : false;
         if (is_correct) score++;
         graded.push({
