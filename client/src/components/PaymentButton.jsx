@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import paymentService from '../services/paymentService';
 
-const PaymentButton = ({ amount, user, onSuccess, onFailure, label = 'Pay Now' }) => {
+const PaymentButton = ({ amount, planId, user, onSuccess, onFailure, label = 'Pay Now' }) => {
   const [loading, setLoading] = useState(false);
 
   const handlePayment = async () => {
@@ -14,7 +14,7 @@ const PaymentButton = ({ amount, user, onSuccess, onFailure, label = 'Pay Now' }
       setLoading(true);
       
       // 1. Create order on backend
-      const orderData = await paymentService.createOrder(amount);
+      const orderData = await paymentService.createOrder(amount, planId);
       console.log('Order created:', orderData);
       
       const options = {

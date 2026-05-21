@@ -21,7 +21,7 @@ try {
 // @access  Private
 router.post('/create-order', auth, async (req, res) => {
   try {
-    const { amount, currency = 'INR', receipt = `receipt_${Date.now()}` } = req.body;
+    const { amount, planId, currency = 'INR', receipt = `receipt_${Date.now()}` } = req.body;
 
     // Minimum amount validation (100 paise = 1 INR)
     if (!amount || amount < 100) {
@@ -32,6 +32,9 @@ router.post('/create-order', auth, async (req, res) => {
       amount: Math.round(amount), // amount in the smallest currency unit
       currency,
       receipt,
+      notes: {
+        planId: planId !== undefined ? String(planId) : ""
+      }
     };
 
     const order = await razorpay.orders.create(options);
@@ -72,14 +75,43 @@ router.post('/verify-payment', auth, async (req, res) => {
     if (expectedSignature === razorpay_signature) {
       // Payment is verified
       // Update user subscription/status in database
-      const oneYear = new Date();
-      oneYear.setFullYear(oneYear.getFullYear() + 1);
+      // Fetch order details to securely retrieve planId and amount
+      let planId;
+      let orderAmount = 0;
+      try {
+        const order = await razorpay.orders.fetch(razorpay_order_id);
+        if (order) {
+          planId = order.notes?.planId;
+          orderAmount = order.amount;
+        }
+      } catch (err) {
+        console.error('Failed to fetch Razorpay order details:', err);
+      }
+
+      let durationMonths = 1; // Default to 1 month
+      if (planId !== undefined && planId !== "") {
+        const pId = parseInt(planId, 10);
+        if (pId === 0) durationMonths = 1;
+        else if (pId === 1) durationMonths = 3;
+        else if (pId === 2) durationMonths = 6;
+        else if (pId === 3) durationMonths = 12;
+      } else {
+        // Fallback to amount-based calculation if planId is missing
+        // orderAmount is in paise (e.g. 14900 for 149 INR)
+        if (orderAmount === 14900) durationMonths = 12;
+        else if (orderAmount === 9900) durationMonths = 6;
+        else if (orderAmount === 5900) durationMonths = 3;
+        else durationMonths = 1;
+      }
+
+      const subscriptionEndDate = new Date();
+      subscriptionEndDate.setMonth(subscriptionEndDate.getMonth() + durationMonths);
 
       await User.findOneAndUpdate(
         { user_id: req.user.id },
         {
           is_premium: true,
-          subscription_end_date: oneYear
+          subscription_end_date: subscriptionEndDate
         }
       );
 

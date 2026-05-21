@@ -97,6 +97,7 @@ const Subscription = () => {
 
       <PaymentButton 
         amount={Math.round(plans[selectedPlan].price * 100)} 
+        planId={plans[selectedPlan].id}
         user={user}
         onSuccess={handleSuccess}
         onFailure={handleFailure}
