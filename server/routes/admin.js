@@ -327,4 +327,107 @@ router.delete('/users/:id', [auth, adminAuth], async (req, res) => {
   }
 });
 
+// @route   POST api/admin/reset-subject-stats
+// @desc    Remove stats for specific subjects for a user
+// @access  Private (Admin only)
+router.post('/reset-subject-stats', [auth, adminAuth], async (req, res) => {
+  const { email, subjects } = req.body;
+  if (!email || !subjects || !Array.isArray(subjects) || subjects.length === 0) {
+    return res.status(400).json({ message: 'Email and subjects array are required' });
+  }
+
+  try {
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      return res.status(404).json({ message: `User with email ${email} not found` });
+    }
+
+    const normalizedSubjects = subjects.map(s => s.toLowerCase().trim());
+
+    // 1. Find all question IDs belonging to the target subjects
+    const targetQuestions = await Question.find({ subject: { $in: normalizedSubjects } }).select('question_id');
+    const targetQuestionIds = new Set(targetQuestions.map(q => q.question_id));
+
+    if (targetQuestionIds.size === 0) {
+      return res.status(400).json({ message: `No questions found for the specified subjects: ${subjects.join(', ')}` });
+    }
+
+    // 2. Fetch all exams for this user
+    const exams = await Exam.find({ user_id: user.user_id });
+    
+    let examsUpdatedCount = 0;
+    let examsDeletedCount = 0;
+    let answersRemovedCount = 0;
+
+    for (let exam of exams) {
+      const originalAnswersCount = exam.answers ? exam.answers.length : 0;
+      
+      // Filter out target questions from exam questions and answers
+      if (exam.questions && exam.questions.length > 0) {
+        exam.questions = exam.questions.filter(qid => !targetQuestionIds.has(qid));
+      }
+      
+      if (exam.answers && exam.answers.length > 0) {
+        const remainingAnswers = exam.answers.filter(ans => !targetQuestionIds.has(ans.question_id));
+        answersRemovedCount += (originalAnswersCount - remainingAnswers.length);
+        exam.answers = remainingAnswers;
+      }
+
+      // If the exam has no remaining questions/answers, delete it
+      if (!exam.questions || exam.questions.length === 0 || !exam.answers || exam.answers.length === 0) {
+        await Exam.deleteOne({ _id: exam._id });
+        examsDeletedCount++;
+      } else {
+        // If the exam is completed, we must recalculate its score
+        if (exam.completed) {
+          exam.score = exam.answers.filter(ans => ans.is_correct).length;
+        }
+        await exam.save();
+        examsUpdatedCount++;
+      }
+    }
+
+    // 3. Recalculate user statistics
+    const remainingCompletedExams = await Exam.find({ user_id: user.user_id, completed: true });
+    
+    let newQuestionsSolved = 0;
+    let newRankPoints = 0;
+
+    remainingCompletedExams.forEach(exam => {
+      newQuestionsSolved += (exam.answers ? exam.answers.length : 0);
+      newRankPoints += (exam.score || 0) * 10;
+    });
+
+    const oldQuestionsSolved = user.questions_solved;
+    const oldRankPoints = user.rank_points;
+
+    user.questions_solved = newQuestionsSolved;
+    user.rank_points = newRankPoints;
+    await user.save();
+
+    res.json({
+      message: `Successfully reset stats for subjects: ${subjects.join(', ')}`,
+      user: {
+        name: user.name,
+        email: user.email,
+        old_questions_solved: oldQuestionsSolved,
+        new_questions_solved: newQuestionsSolved,
+        old_rank_points: oldRankPoints,
+        new_rank_points: newRankPoints
+      },
+      stats: {
+        examsUpdated: examsUpdatedCount,
+        examsDeleted: examsDeletedCount,
+        answersRemoved: answersRemovedCount
+      }
+    });
+
+  } catch (err) {
+    console.error('Reset subject stats error:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;
+

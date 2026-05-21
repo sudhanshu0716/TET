@@ -128,8 +128,33 @@ router.get('/ranking', async (req, res) => {
     const topUsers = await User.find()
       .sort({ questions_solved: -1 })
       .limit(10)
-      .select('name questions_solved rank_points level');
-    res.json(topUsers);
+      .select('user_id name questions_solved rank_points level last_active');
+
+    const d = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC + 5:30
+    const istDate = new Date(d.getTime() + (d.getTimezoneOffset() * 60000) + istOffset);
+    istDate.setHours(0, 0, 0, 0);
+
+    const rankingWithSolvedToday = await Promise.all(topUsers.map(async (u) => {
+      const examsToday = await Exam.find({
+        user_id: u.user_id,
+        completed: true,
+        date: { $gte: istDate }
+      });
+      const solvedToday = examsToday.reduce((sum, ex) => sum + (ex.answers ? ex.answers.length : 0), 0);
+      return {
+        _id: u._id,
+        user_id: u.user_id,
+        name: u.name,
+        questions_solved: u.questions_solved,
+        rank_points: u.rank_points,
+        level: u.level,
+        last_active: u.last_active,
+        solvedToday
+      };
+    }));
+
+    res.json(rankingWithSolvedToday);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

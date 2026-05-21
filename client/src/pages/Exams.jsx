@@ -18,6 +18,18 @@ const Exams = () => {
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
 
+  const subjects = [
+    { name: t.subjects?.pedagogy || 'Pedagogy', id: 'pedagogy', icon: '🧠' },
+    { name: t.subjects?.hindi || 'Hindi', id: 'hindi', icon: '📖' },
+    { name: t.subjects?.english || 'English', id: 'english', icon: '🔤' },
+    { name: t.subjects?.math || 'Math', id: 'math', icon: '➗' },
+    { name: t.subjects?.evs || 'EVS', id: 'evs', icon: '🌱' },
+    { name: t.subjects?.science || 'Science', id: 'science', icon: '🔬' },
+    { name: t.subjects?.social || 'Social Science', id: 'social', icon: '⚖️' },
+    { name: t.subjects?.sanskrit || 'Sanskrit', id: 'sanskrit', icon: '🕉️' },
+    { name: t.subjects?.urdu || 'Urdu', id: 'urdu', icon: '🖋️' }
+  ];
+
   const examModes = [
     {
       id: 'contest',
@@ -64,7 +76,7 @@ const Exams = () => {
       title: t.subjectWise || 'Subject Practice',
       desc: 'Focus on your weak areas with subject-wise tests.',
       icon: <Target className="text-emerald-400" size={24} />,
-      path: '/dashboard#subjects', // Scroll to subjects on dashboard
+      path: '#subjects-practice',
       color: 'from-emerald-500/20 to-emerald-500/5',
       border: 'border-emerald-500/20',
       isAnchor: true
@@ -88,7 +100,14 @@ const Exams = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
             onClick={() => {
-              navigate(mode.path);
+              if (mode.isAnchor) {
+                const el = document.getElementById('subjects-practice');
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth' });
+                }
+              } else {
+                navigate(mode.path);
+              }
             }}
             className={`glass-card group relative overflow-hidden cursor-pointer active:scale-[0.98] transition-all border-2 ${mode.border} bg-gradient-to-br ${mode.color} !p-5`}
           >
@@ -168,6 +187,23 @@ const Exams = () => {
               <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Cheat Sheets</p>
             </div>
           </button>
+        </div>
+      </div>
+
+      {/* Subject-wise MCQ Menu */}
+      <div id="subjects-practice" className="mt-4 space-y-4 scroll-mt-6">
+        <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">{t.subjectWise}</h4>
+        <div className="grid grid-cols-3 gap-3">
+          {subjects.map(sub => (
+            <div 
+              key={sub.id} 
+              className="glass-card !p-3 flex flex-col items-center justify-center gap-2 cursor-pointer active:scale-90 transition-all hover:border-sky-500/30"
+              onClick={() => navigate(`/practice/${sub.id}`)}
+            >
+              <span className="text-2xl">{sub.icon}</span>
+              <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-tighter text-center">{sub.name}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

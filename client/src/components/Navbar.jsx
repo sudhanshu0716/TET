@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { LogOut, Sun, Moon } from 'lucide-react';
+import translations from '../translations';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -9,6 +11,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [lang, setLang] = React.useState(localStorage.getItem('appLang') || 'EN');
+  const t = translations[lang] || translations.EN;
 
   const handleLogout = () => {
     logout();
@@ -35,16 +38,23 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Enhanced Visibility Theme Toggle */}
           <button 
             onClick={toggleTheme}
-            className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-lg hover:bg-white/10 transition-colors"
+            className="w-9 h-9 rounded-lg bg-amber-500/5 border border-amber-500/40 text-amber-500 flex items-center justify-center hover:bg-amber-500/10 hover:border-amber-400 hover:text-amber-400 transition-all shadow-[0_0_12px_rgba(245,158,11,0.15)] active:scale-95 cursor-pointer"
+            aria-label="Toggle Theme"
+            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
-            {isDarkMode ? '🌙' : '☀️'}
+            {isDarkMode ? (
+              <Sun className="w-5 h-5 text-amber-500 fill-amber-500/10" />
+            ) : (
+              <Moon className="w-5 h-5 text-amber-500 fill-amber-500/15" />
+            )}
           </button>
 
           <button 
             onClick={toggleLang}
-            className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[var(--text-primary)] text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors"
+            className="h-9 px-3 rounded-lg bg-white/5 border border-white/10 text-[var(--text-primary)] text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors flex items-center justify-center cursor-pointer"
           >
             {lang === 'EN' ? 'हिंदी' : 'English'}
           </button>
@@ -52,18 +62,20 @@ const Navbar = () => {
           {user?.role === 'admin' && (
             <button 
               onClick={() => navigate('/admin')}
-              className="px-3 py-1.5 rounded-lg bg-sky-500 text-white text-[10px] font-black uppercase tracking-widest hover:bg-sky-600 transition-colors shadow-lg shadow-sky-500/20"
+              className="h-9 px-3 rounded-lg bg-sky-500 text-white text-[10px] font-black uppercase tracking-widest hover:bg-sky-600 transition-colors shadow-lg shadow-sky-500/20 flex items-center justify-center cursor-pointer"
             >
-              Admin
+              {t.admin}
             </button>
           )}
 
           {token && (
             <button 
               onClick={handleLogout}
-              className="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-widest hover:bg-red-500/20 transition-colors"
+              className="w-9 h-9 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 hover:border-rose-500/30 transition-all flex items-center justify-center active:scale-95 cursor-pointer"
+              aria-label={t.logout}
+              title={t.logout}
             >
-              Logout
+              <LogOut className="w-4 h-4" strokeWidth={2.5} />
             </button>
           )}
         </div>

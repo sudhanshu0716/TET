@@ -14,8 +14,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import CommunityUpload from './pages/CommunityUpload';
 import ResultAnalysis from './pages/ResultAnalysis';
 import Flashcards from './pages/Flashcards';
-import Subscription from './pages/Subscription';
 import Exams from './pages/Exams';
+import Progress from './pages/Progress';
+import Subscription from './pages/Subscription';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Profile from './components/Profile';
@@ -120,6 +121,7 @@ function AppContent() {
             
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/progress" element={<Progress />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/exams" element={<Exams />} />

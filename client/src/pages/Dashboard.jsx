@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import translations from '../translations';
-import TopicInsights from '../components/TopicInsights';
-import PerformanceRadar from '../components/PerformanceRadar';
-
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
@@ -84,14 +81,6 @@ const Dashboard = () => {
     };
     fetchActiveCount();
   }, []);
-  useEffect(() => {
-    if (user && window.location.hash === '#subjects') {
-      setTimeout(() => {
-        const el = document.getElementById('subjects-grid');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 300);
-    }
-  }, [user]);
 
 
   const handleRegister = async () => {
@@ -126,17 +115,6 @@ const Dashboard = () => {
     </div>
   );
 
-  const subjects = [
-    { name: 'Pedagogy', id: 'pedagogy', icon: '🧠' },
-    { name: 'Hindi', id: 'hindi', icon: '📖' },
-    { name: 'English', id: 'english', icon: '🔤' },
-    { name: 'Math', id: 'math', icon: '➗' },
-    { name: 'EVS', id: 'evs', icon: '🌱' },
-    { name: 'Science', id: 'science', icon: '🔬' },
-    { name: 'Social', id: 'social', icon: '⚖️' },
-    { name: 'Sanskrit', id: 'sanskrit', icon: '🕉️' },
-    { name: 'Urdu', id: 'urdu', icon: '🖋️' }
-  ];
 
   return (
     <div className="flex flex-col gap-6 px-5 pt-4 pb-32 max-w-md mx-auto w-full animate-fade-in">
@@ -280,45 +258,6 @@ const Dashboard = () => {
         <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed">"{t.tipBody}"</p>
       </div>
 
-      {/* Performance Predictor */}
-      <div className="glass-card bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border-indigo-500/20 relative overflow-hidden">
-        <div className="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 blur-2xl rounded-full" />
-        <h4 className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-4">Exam Score Predictor 📈</h4>
-        <div className="flex items-end gap-4">
-          <div className="text-5xl font-black text-[var(--text-primary)] leading-none">
-            {Math.round((user?.avgScore || 0) * 1.5)}
-            <span className="text-lg text-slate-500 font-bold ml-1">/150</span>
-          </div>
-          <div className="pb-1">
-            <div className={`text-[10px] font-black px-2 py-0.5 rounded-full ${user?.avgScore > 60 ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'}`}>
-              {user?.avgScore > 60 ? 'Trending Up ↑' : 'Steady ⚡'}
-            </div>
-          </div>
-        </div>
-        <p className="text-[10px] text-slate-500 font-medium mt-3 leading-relaxed">
-          Based on your last {user?.examsTaken || 0} exams, this is your estimated score for the real TET exam. 
-          <span className="text-indigo-400 font-bold"> Keep practicing to reach 125+!</span>
-        </p>
-      </div>
-
-      {/* Performance Summary */}
-      <div className="glass-card relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 blur-3xl rounded-full -mr-16 -mt-16" />
-        <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-5">{t.perf}</h4>
-        <div className="grid grid-cols-2 gap-4 relative z-10">
-          <div className="space-y-1">
-            <div className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-indigo-400">{user.avgScore || 0}%</div>
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t.accuracy}</div>
-          </div>
-          <div className="space-y-1 text-right">
-            <div className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-l from-emerald-400 to-teal-400">{user.examsTaken || 0}</div>
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t.examsDone}</div>
-          </div>
-        </div>
-        <div className="progress-bar-container mt-6 relative z-10">
-          <div className="progress-bar-fill shadow-lg shadow-sky-500/30 bg-gradient-to-r from-sky-500 to-indigo-500" style={{ width: `${user.avgScore || 0}%` }}></div>
-        </div>
-      </div>
 
       {/* Main Action: Daily Exam */}
       <div className="glass-card bg-gradient-to-br from-sky-600 to-indigo-900 relative overflow-hidden group">
@@ -340,50 +279,6 @@ const Dashboard = () => {
         <div className="absolute right-[-20px] bottom-[-20px] text-9xl opacity-10 group-hover:scale-110 transition-transform duration-500">🔥</div>
       </div>
 
-      {/* Secondary Actions */}
-      <div id="tut-modes">
-        <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">{t.practiceModes}</h4>
-        <div className="grid grid-cols-2 gap-4">
-        <div className="glass-card cursor-pointer active:scale-95 transition-all" onClick={() => navigate('/full-mock')}>
-          <div className="text-3xl mb-3">🏆</div>
-          <h5 className="text-sm font-bold text-[var(--text-primary)] mb-1">{t.fullMock}</h5>
-          <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">150 Qs | 150 Mins</div>
-        </div>
-        <div className="glass-card cursor-pointer active:scale-95 transition-all" onClick={() => navigate('/important')}>
-          <div className="text-3xl mb-3">⭐</div>
-          <h5 className="text-sm font-bold text-[var(--text-primary)] mb-1">{t.important}</h5>
-          <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t.repeated}</div>
-        </div>
-        <div className="glass-card cursor-pointer active:scale-95 transition-all bg-gradient-to-br from-amber-500/10 to-transparent border-amber-500/20" onClick={() => navigate('/flashcards')}>
-          <div className="text-3xl mb-3">🎴</div>
-          <h5 className="text-sm font-bold text-[var(--text-primary)] mb-1">Flashcards</h5>
-          <div className="text-[10px] text-amber-500 font-bold uppercase tracking-wider">Quick Revision</div>
-        </div>
-      </div>
-    </div>
-
-      {/* Subject-wise MCQ Menu */}
-      <h4 id="subjects-grid" className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">{t.subjectWise}</h4>
-      <div className="grid grid-cols-3 gap-3">
-        {subjects.map(sub => (
-          <div 
-            key={sub.id} 
-            className="glass-card !p-3 flex flex-col items-center justify-center gap-2 cursor-pointer active:scale-90 transition-all hover:border-sky-500/30"
-            onClick={() => navigate(`/practice/${sub.id}`)}
-          >
-            <span className="text-2xl">{sub.icon}</span>
-            <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-tighter text-center">{sub.name}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Performance Analysis Group */}
-      <div className="space-y-6 pt-4">
-        <div id="tut-radar">
-          <PerformanceRadar />
-        </div>
-        <TopicInsights />
-      </div>
 
       {/* Recent Exams History */}
       <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">Recent Activity</h4>

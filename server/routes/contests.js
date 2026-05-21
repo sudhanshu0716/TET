@@ -200,12 +200,20 @@ router.get('/leaderboard', auth, async (req, res) => {
 
     const leaderboard = await Promise.all(results.map(async (r) => {
       const u = await User.findOne({ user_id: r.user_id });
+      const examsToday = await Exam.find({
+        user_id: r.user_id,
+        completed: true,
+        date: { $gte: today }
+      });
+      const solvedToday = examsToday.reduce((sum, ex) => sum + (ex.answers ? ex.answers.length : 0), 0);
       return { 
         name: u?.name || 'User', 
         level: u?.level || 'primary',
         score: r.score, 
         timeSpent: r.duration, // Optional: show duration
-        date: r.date 
+        date: r.date,
+        last_active: u?.last_active || null,
+        solvedToday
       };
     }));
 

@@ -33,6 +33,8 @@ const AdminDashboard = () => {
   const [inspectEmail, setInspectEmail] = useState('');
   const [inspectedUser, setInspectedUser] = useState(null);
   const [maintenanceEnabled, setMaintenanceEnabled] = useState(false);
+  const [cleanStatsEmail, setCleanStatsEmail] = useState('');
+  const [cleanSelectedSubjects, setCleanSelectedSubjects] = useState([]);
 
   // User Management State
   const [usersList, setUsersList] = useState([]);
@@ -221,6 +223,35 @@ const AdminDashboard = () => {
       alert(`Maintenance Mode is now ${res.data.is_maintenance_mode ? 'ON' : 'OFF'}`);
     } catch (err) { alert('Toggle failed'); }
   };
+
+  const handleResetSubjectStats = async () => {
+    if (!cleanStatsEmail) return alert('Enter email');
+    if (cleanSelectedSubjects.length === 0) return alert('Select at least one subject');
+    
+    const subjectList = cleanSelectedSubjects.map(s => subjectLabels[s] || s).join(', ');
+    if (!window.confirm(`Are you sure you want to completely remove stats for subjects (${subjectList}) for user ${cleanStatsEmail}? This cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await api.post('/api/admin/reset-subject-stats', {
+        email: cleanStatsEmail,
+        subjects: cleanSelectedSubjects
+      }, { headers: { 'x-auth-token': token } });
+      
+      alert(res.data.message);
+      setCleanStatsEmail('');
+      setCleanSelectedSubjects([]);
+      
+      // Refresh the users list so statistics update on screen
+      const usersRes = await api.get('/api/admin/users', { headers: { 'x-auth-token': token } });
+      setUsersList(usersRes.data);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Reset failed');
+    }
+  };
+
 
   const adminCards = [
     { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'text-blue-400', bg: 'bg-blue-500/10' },
@@ -720,6 +751,56 @@ const AdminDashboard = () => {
                 </button>
              </div>
              <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Removes premium & ends trial instantly</p>
+          </div>
+
+          <div className="glass-card p-4 space-y-4">
+             <h4 className="font-black text-[var(--text-primary)] text-sm border-b border-white/5 pb-2">Reset Stats by Subject</h4>
+             <div className="space-y-3">
+                <input 
+                  type="email" 
+                  placeholder="User Email to Reset" 
+                  className="w-full bg-white/5 rounded-xl px-3 py-2 text-xs font-semibold"
+                  value={cleanStatsEmail}
+                  onChange={e => setCleanStatsEmail(e.target.value)}
+                />
+                
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">Select Subjects to Remove</label>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {Object.entries(subjectLabels).map(([subKey, subLabel]) => {
+                      const isSelected = cleanSelectedSubjects.includes(subKey);
+                      return (
+                        <button
+                          key={subKey}
+                          onClick={() => {
+                            if (isSelected) {
+                              setCleanSelectedSubjects(prev => prev.filter(s => s !== subKey));
+                            } else {
+                              setCleanSelectedSubjects(prev => [...prev, subKey]);
+                            }
+                          }}
+                          type="button"
+                          className={`px-2 py-1 rounded-lg text-[9px] font-bold border transition-all ${
+                            isSelected 
+                              ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-sm' 
+                              : 'bg-white/5 text-slate-400 border-white/5 hover:border-white/10'
+                          }`}
+                        >
+                          {subLabel}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <button 
+                  onClick={handleResetSubjectStats}
+                  className="w-full bg-amber-500/10 text-amber-500 border border-amber-500/20 py-2 rounded-xl font-bold text-xs hover:bg-amber-500 hover:text-white transition-all active:scale-[0.98]"
+                >
+                  Reset Stats
+                </button>
+             </div>
+             <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Deletes subject exams & adjusts rankings</p>
           </div>
         </div>
       </div>

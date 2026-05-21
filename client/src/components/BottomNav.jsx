@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Trophy, FileText, User, LayoutGrid } from 'lucide-react';
+import { Home, Trophy, FileText, User, LayoutGrid, TrendingUp } from 'lucide-react';
 
 const BottomNav = () => {
   const location = useLocation();
@@ -17,6 +17,7 @@ const BottomNav = () => {
   const navItems = [
     { to: '/dashboard', label: 'Home', Icon: Home },
     { to: '/exams', label: 'Tests', Icon: LayoutGrid },
+    { to: '/progress', label: 'Progress', Icon: TrendingUp },
     { to: '/leaderboard', label: 'Rank', Icon: Trophy },
     { to: '/cheatsheets', label: 'Notes', Icon: FileText },
     { to: '/profile', label: 'Me', Icon: User },
@@ -30,7 +31,7 @@ const BottomNav = () => {
             key={to}
             to={to} 
             className={({ isActive }) => `
-              flex flex-col items-center justify-center gap-1 w-16 h-full transition-all duration-300 relative
+              flex flex-col items-center justify-center gap-1 flex-1 min-w-0 max-w-[80px] h-full transition-all duration-300 relative
               ${isActive ? 'text-sky-400' : 'text-[var(--text-secondary)] hover:opacity-80'}
             `}
           >
@@ -40,7 +41,7 @@ const BottomNav = () => {
                   <div className="absolute -top-1 w-12 h-1 bg-sky-400 rounded-full shadow-[0_0_12px_rgba(56,189,248,0.5)] animate-fade-in" />
                 )}
                 <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest truncate max-w-full px-1">{label}</span>
               </>
             )}
           </NavLink>
