@@ -6,27 +6,43 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const savedUser = localStorage.getItem('user');
+        if (savedUser && savedUser !== 'undefined') {
+          return JSON.parse(savedUser);
+        }
+      }
+    } catch (err) {
+      console.error("Auth sync init error:", err);
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const initAuth = () => {
+    const verifyAuth = () => {
       try {
         const token = localStorage.getItem('token');
         if (token) {
           const savedUser = localStorage.getItem('user');
-          if (savedUser && savedUser !== 'undefined') {
-            setUser(JSON.parse(savedUser));
+          if (!savedUser || savedUser === 'undefined') {
+            setUser(null);
           }
+        } else {
+          setUser(null);
         }
       } catch (err) {
-        console.error("Auth init error:", err);
+        console.error("Auth verification error:", err);
         localStorage.clear();
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
-    initAuth();
+    verifyAuth();
   }, []);
 
   const login = async (email, password) => {

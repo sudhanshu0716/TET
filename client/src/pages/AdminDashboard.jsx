@@ -19,7 +19,7 @@ const AdminDashboard = () => {
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [subjectBreakdown, setSubjectBreakdown] = useState([]);
   const [loadingBreakdown, setLoadingBreakdown] = useState(false);
-  const [contestSettings, setContestSettings] = useState({ start_time: '20:30', duration: 30 });
+  const [contestSettings, setContestSettings] = useState({ start_time: '20:30', duration: 50 });
   const [premiumEnabled, setPremiumEnabled] = useState(false);
   const [grantEmail, setGrantEmail] = useState('');
   const [grantMonths, setGrantMonths] = useState(1);

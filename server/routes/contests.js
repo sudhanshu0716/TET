@@ -37,13 +37,14 @@ const getOrUpdateContestSettings = async () => {
   const contestDate = getContestDate();
   let settings = await ContestSettings.findOne({ contest_date: contestDate });
   if (!settings) {
-    // Pick 20 random questions to fix for the day, prioritizing the main language
+    // Pick 50 random questions to fix for the day, prioritizing the main language
     const questions = await Question.aggregate([
       { $match: { language: 'hindi' } },
-      { $sample: { size: 20 } }
+      { $sample: { size: 50 } }
     ]);
     settings = new ContestSettings({
       contest_date: contestDate,
+      duration: 50,
       questions: questions.map(q => q.question_id)
     });
     await settings.save();

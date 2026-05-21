@@ -8,10 +8,38 @@ import { useAuth } from '../context/AuthContext';
 
 const Progress = () => {
   const { user: authUser } = useAuth();
-  const [user, setUser] = useState(authUser || null);
-  const [insights, setInsights] = useState([]);
-  const [loadingProfile, setLoadingProfile] = useState(!authUser);
-  const [loadingInsights, setLoadingInsights] = useState(true);
+  const [user, setUser] = useState(authUser || (() => {
+    try {
+      const cached = localStorage.getItem('user');
+      return cached ? JSON.parse(cached) : null;
+    } catch (e) {
+      return null;
+    }
+  }));
+  const [insights, setInsights] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_progress_insights');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [loadingProfile, setLoadingProfile] = useState(() => {
+    try {
+      const cached = localStorage.getItem('user');
+      return !authUser && !cached;
+    } catch (e) {
+      return true;
+    }
+  });
+  const [loadingInsights, setLoadingInsights] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_progress_insights');
+      return !cached;
+    } catch (e) {
+      return true;
+    }
+  });
   const [error, setError] = useState(false);
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
@@ -26,6 +54,7 @@ const Progress = () => {
           .then(res => {
             if (res.data) {
               setUser(res.data);
+              localStorage.setItem('user', JSON.stringify(res.data));
             }
           })
           .catch(err => {
@@ -41,6 +70,7 @@ const Progress = () => {
           .then(res => {
             if (res.data) {
               setInsights(res.data);
+              localStorage.setItem('cached_progress_insights', JSON.stringify(res.data));
             }
           })
           .catch(err => {

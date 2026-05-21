@@ -59,7 +59,7 @@ const Home = () => {
         {[
           {
             title: 'Daily Practice',
-            desc: '30 Fresh MCQs every day across all major subjects.',
+            desc: '50 Fresh MCQs every day across all major subjects.',
             icon: CheckCircle,
             color: 'text-emerald-400',
             bg: 'bg-emerald-400/10',

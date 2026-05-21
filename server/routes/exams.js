@@ -25,20 +25,8 @@ const checkAccess = async (userId) => {
 // @desc    Get/Create a daily exam based on profile settings (Level, L1, L2)
 router.get('/today', auth, async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const examCount = await Exam.countDocuments({
-      user_id: req.user.id,
-      date: { $gte: today }
-    });
-
-    if (examCount >= 5) {
-      return res.status(403).json({ message: 'Daily limit reached. You can take max 5 exams per day.' });
-    }
-
-    const qCount = parseInt(req.query.count) || 30;
-    const duration = parseInt(req.query.duration) || 30;
+    const qCount = parseInt(req.query.count) || 50;
+    const duration = parseInt(req.query.duration) || 50;
 
     const hasAccess = await checkAccess(req.user.id);
     if (!hasAccess) {
@@ -137,8 +125,8 @@ router.get('/subject/:subject', auth, async (req, res) => {
     const hasAccess = await checkAccess(req.user.id);
     if (!hasAccess) return res.status(403).json({ message: 'Trial expired.' });
 
-    const qCount = parseInt(req.query.count) || 30;
-    const duration = parseInt(req.query.duration) || 30;
+    const qCount = parseInt(req.query.count) || 50;
+    const duration = parseInt(req.query.duration) || 50;
     const user = await User.findOne({ user_id: req.user.id });
 
     const questions = await Question.aggregate([
@@ -284,7 +272,7 @@ router.get('/important', auth, async (req, res) => {
         language: 'hindi',
         year: { $exists: true, $ne: null } 
       } },
-      { $sample: { size: 30 } }
+      { $sample: { size: 50 } }
     ]);
 
     if (!questions || questions.length === 0) {
@@ -294,7 +282,7 @@ router.get('/important', auth, async (req, res) => {
           subject: { $in: userSubjects },
           language: 'hindi'
         } },
-        { $sample: { size: 30 } }
+        { $sample: { size: 50 } }
       ]);
     }
 
@@ -303,7 +291,7 @@ router.get('/important', auth, async (req, res) => {
       user_id: req.user.id,
       exam_type: 'important',
       questions: questions.map(q => q.question_id),
-      duration: 30,
+      duration: 50,
       date: new Date()
     });
 
@@ -341,7 +329,7 @@ router.get('/year/:year', auth, async (req, res) => {
         language: 'hindi',
         year: targetYear
       } },
-      { $sample: { size: 30 } }
+      { $sample: { size: 50 } }
     ]);
 
     // Fallback: if we don't have enough questions for this specific year + level + subjects combination,
@@ -353,17 +341,17 @@ router.get('/year/:year', auth, async (req, res) => {
           language: 'hindi',
           year: targetYear
         } },
-        { $sample: { size: 30 } }
+        { $sample: { size: 50 } }
       ]);
     }
 
-    // Secondary fallback: if still 0, just get any 30 questions from that year
+    // Secondary fallback: if still 0, just get any 50 questions from that year
     if (!questions || questions.length === 0) {
       questions = await Question.aggregate([
         { $match: { 
           year: targetYear
         } },
-        { $sample: { size: 30 } }
+        { $sample: { size: 50 } }
       ]);
     }
 
@@ -376,7 +364,7 @@ router.get('/year/:year', auth, async (req, res) => {
       user_id: req.user.id,
       exam_type: 'year-wise',
       questions: questions.map(q => q.question_id),
-      duration: 30,
+      duration: 50,
       date: new Date()
     });
 

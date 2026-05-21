@@ -6,12 +6,47 @@ import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
   const { user: authUser, setUser: setAuthUser } = useAuth();
-  const [user, setUser] = useState(authUser || null);
+  const [user, setUser] = useState(authUser || (() => {
+    try {
+      const cached = localStorage.getItem('user');
+      return cached ? JSON.parse(cached) : null;
+    } catch (e) {
+      return null;
+    }
+  }));
   const [error, setError] = useState(false);
-  const [history, setHistory] = useState([]);
-  const [todaySolved, setTodaySolved] = useState(0);
-  const [activeCount, setActiveCount] = useState(0);
-  const [contestStatus, setContestStatus] = useState({ status: 'upcoming', registered: false });
+  const [history, setHistory] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_dashboard_history');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [todaySolved, setTodaySolved] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_dashboard_todaySolved');
+      return cached ? parseInt(cached, 10) || 0 : 0;
+    } catch (e) {
+      return 0;
+    }
+  });
+  const [activeCount, setActiveCount] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_dashboard_activeCount');
+      return cached ? parseInt(cached, 10) || 0 : 0;
+    } catch (e) {
+      return 0;
+    }
+  });
+  const [contestStatus, setContestStatus] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_dashboard_contestStatus');
+      return cached ? JSON.parse(cached) : { status: 'upcoming', registered: false };
+    } catch (e) {
+      return { status: 'upcoming', registered: false };
+    }
+  });
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
@@ -35,10 +70,12 @@ const Dashboard = () => {
 
         if (contestRes.data) {
           setContestStatus(contestRes.data);
+          localStorage.setItem('cached_dashboard_contestStatus', JSON.stringify(contestRes.data));
         }
 
         if (historyRes.data) {
           setHistory(historyRes.data);
+          localStorage.setItem('cached_dashboard_history', JSON.stringify(historyRes.data));
           
           // Calculate today's solved questions
           const today = new Date().toLocaleDateString();
@@ -46,10 +83,12 @@ const Dashboard = () => {
             .filter(ex => new Date(ex.date).toLocaleDateString() === today)
             .reduce((sum, ex) => sum + (ex.answers?.length || 0), 0);
           setTodaySolved(count);
+          localStorage.setItem('cached_dashboard_todaySolved', count.toString());
         }
 
         if (activeRes.data) {
           setActiveCount(activeRes.data.count);
+          localStorage.setItem('cached_dashboard_activeCount', activeRes.data.count.toString());
         }
       } catch (err) {
         console.error(err);

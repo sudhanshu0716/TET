@@ -70,7 +70,7 @@ router.get('/contest-settings', [auth, adminAuth], async (req, res) => {
     const today = new Date(); today.setHours(0,0,0,0);
     let settings = await ContestSettings.findOne({ contest_date: today });
     if (!settings) {
-      settings = { start_time: "20:30", duration: 30 };
+      settings = { start_time: "20:30", duration: 50 };
     }
     res.json(settings);
   } catch (err) { res.status(500).send('Server Error'); }
@@ -88,11 +88,11 @@ router.post('/contest-settings', [auth, adminAuth], async (req, res) => {
       settings.duration = duration;
     } else {
       // If no settings exist yet for today, we might need questions too
-      const questions = await Question.aggregate([{ $sample: { size: 20 } }]);
+      const questions = await Question.aggregate([{ $sample: { size: 50 } }]);
       settings = new ContestSettings({
         contest_date: today,
         start_time,
-        duration,
+        duration: duration || 50,
         questions: questions.map(q => q.question_id)
       });
     }

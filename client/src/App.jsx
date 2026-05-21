@@ -36,6 +36,9 @@ function AppContent() {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const isAdmin = user?.role === 'admin';
   const location = useLocation();
+  const isExamPage = ['/daily-exam', '/practice', '/full-mock', '/important', '/year-test', '/contest-live'].some(path => 
+    location.pathname.startsWith(path)
+  );
 
   useEffect(() => {
     // Role-based redirection
@@ -112,7 +115,7 @@ function AppContent() {
   return (
     <ErrorBoundary>
       <div className="flex flex-col min-h-screen selection:bg-sky-500/30">
-        {!isAdmin && <Navbar />}
+        {!isAdmin && !isExamPage && <Navbar />}
         <main className="flex-1 w-full flex flex-col overflow-x-hidden">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -141,8 +144,8 @@ function AppContent() {
             </Route>
           </Routes>
         </main>
-        {!isAdmin && <BottomNav />}
-        {!isAdmin && <AppTutorial />}
+        {!isAdmin && !isExamPage && <BottomNav />}
+        {!isAdmin && !isExamPage && <AppTutorial />}
         <PremiumModal 
           isOpen={showPremiumModal} 
           user={user} 

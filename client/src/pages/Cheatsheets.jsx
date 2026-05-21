@@ -5,8 +5,22 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 const Cheatsheets = () => {
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [notes, setNotes] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_cheatsheets');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [loading, setLoading] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_cheatsheets');
+      return !cached;
+    } catch (e) {
+      return true;
+    }
+  });
   const [selectedNote, setSelectedNote] = useState(null);
   const [filter, setFilter] = useState('all');
   const [noteLang, setNoteLang] = useState('HI'); // Default language is Hindi ('HI')
@@ -21,6 +35,7 @@ const Cheatsheets = () => {
           headers: { 'x-auth-token': token }
         });
         setNotes(res.data);
+        localStorage.setItem('cached_cheatsheets', JSON.stringify(res.data));
         setLoading(false);
       } catch (err) {
         console.error(err);

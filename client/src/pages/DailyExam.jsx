@@ -464,7 +464,23 @@ const DailyExam = ({ type }) => {
       <div className="glass-card text-center relative overflow-hidden border-2 border-sky-500/30 shadow-[0_0_40px_rgba(14,165,233,0.2)]">
         <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle,rgba(14,165,233,0.1)_0%,transparent_70%)] animate-pulse pointer-events-none" />
         
-        <h2 className="text-3xl font-black text-[var(--text-primary)] mb-2 relative z-10">🎊 {t.brilliant}</h2>
+        {(() => {
+          const accuracyPct = questions.length > 0 ? (result.score / questions.length) * 100 : 0;
+          let headerText = t.brilliant || 'Brilliant!';
+          let emoji = '🎊';
+          if (accuracyPct < 50) {
+            headerText = t.keepPracticing || 'Keep Practicing!';
+            emoji = '💪';
+          } else if (accuracyPct < 75) {
+            headerText = t.goodJob || 'Good Attempt!';
+            emoji = '👍';
+          }
+          return (
+            <h2 className="text-3xl font-black text-[var(--text-primary)] mb-2 relative z-10">
+              {emoji} {headerText}
+            </h2>
+          );
+        })()}
         <p className="text-[var(--text-secondary)] text-sm font-medium relative z-10">{t.completed}</p>
         
         <div className="text-6xl font-black my-8 text-gradient relative z-10">
@@ -690,16 +706,16 @@ const DailyExam = ({ type }) => {
             {currentIndex === questions.length - 1 ? (
               <button 
                 onClick={() => setStep('summary')}
-                className="flex-1 h-14 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-sm shadow-xl shadow-emerald-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="premium-button flex-1 h-14 rounded-2xl font-black text-white text-sm shadow-xl shadow-sky-500/20 active:scale-95 flex items-center justify-center gap-2 group"
               >
-                Review Summary <CheckCircle2 size={18} />
+                {t.finishReview || 'Finish & Review Summary'} <CheckCircle2 size={18} />
               </button>
             ) : (
               <button 
                 onClick={() => setCurrentIndex(prev => prev + 1)}
                 className="premium-button flex-1 h-14 rounded-2xl font-black text-white text-sm shadow-xl shadow-sky-500/20 active:scale-95 flex items-center justify-center gap-2 group"
               >
-                Next Question <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                {t.nextQuestion || 'Next Question'} <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
             )}
           </div>
