@@ -6,7 +6,7 @@ import translations from '../translations';
 import { useAuth } from '../context/AuthContext';
 
 const Profile = () => {
-  const { setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
   const [profile, setProfile] = useState({
@@ -238,7 +238,9 @@ const Profile = () => {
 
           <div 
             onClick={() => {
-              localStorage.removeItem('hasSeenTutorial');
+              // Remove user-specific tutorial key so it replays for this user
+              const tutorialKey = user?.id ? `hasSeenTutorial_${user.id}` : 'hasSeenTutorial';
+              localStorage.removeItem(tutorialKey);
               navigate('/dashboard');
               window.location.reload();
             }}

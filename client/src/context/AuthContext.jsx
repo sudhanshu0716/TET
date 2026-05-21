@@ -49,6 +49,8 @@ export const AuthProvider = ({ children }) => {
     const res = await api.post('/api/auth/login', { email, password });
     localStorage.setItem('token', res.data.token);
     localStorage.setItem('user', JSON.stringify(res.data.user));
+    // Returning users should NEVER see the tutorial again
+    localStorage.setItem(`hasSeenTutorial_${res.data.user.id}`, 'true');
     setUser(res.data.user);
     return res.data;
   };

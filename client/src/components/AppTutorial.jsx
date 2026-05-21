@@ -1,9 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import translations from '../translations';
+import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Trophy, Target, BookOpen, Flame, Compass, ArrowRight, HelpCircle } from 'lucide-react';
+const cardVariants = {
+  initial: (active) => ({
+    opacity: 0,
+    scale: 0.95,
+    x: '-50%',
+    y: active ? 10 : '-45%'
+  }),
+  animate: (active) => ({
+    opacity: 1,
+    scale: 1,
+    x: '-50%',
+    y: active ? 0 : '-50%'
+  }),
+  exit: (active) => ({
+    opacity: 0,
+    scale: 0.95,
+    x: '-50%',
+    y: active ? -10 : '-55%'
+  })
+};
 
 const AppTutorial = () => {
+  const { user } = useAuth();
+  // Tutorial key is per-user so new logins from existing accounts are unaffected
+  const tutorialKey = user?.id ? `hasSeenTutorial_${user.id}` : 'hasSeenTutorial';
   const [step, setStep] = useState(-1); // -1 means checking if needed
   const [activeRect, setActiveRect] = useState(null);
   const lang = localStorage.getItem('appLang') || 'EN';
@@ -20,11 +44,13 @@ const AppTutorial = () => {
   ];
 
   useEffect(() => {
-    const hasSeen = localStorage.getItem('hasSeenTutorial');
+    // Only run after user is resolved
+    if (!user) return;
+    const hasSeen = localStorage.getItem(tutorialKey);
     if (!hasSeen) {
       setTimeout(() => setStep(0), 1200);
     }
-  }, []);
+  }, [user, tutorialKey]);
 
   useEffect(() => {
     if (step >= 0 && step < steps.length) {
@@ -58,13 +84,13 @@ const AppTutorial = () => {
     if (step < steps.length - 1) {
       setStep(step + 1);
     } else {
-      localStorage.setItem('hasSeenTutorial', 'true');
+      localStorage.setItem(tutorialKey, 'true');
       setStep(-2); // Finished
     }
   };
 
   const handleSkip = () => {
-    localStorage.setItem('hasSeenTutorial', 'true');
+    localStorage.setItem(tutorialKey, 'true');
     setStep(-2);
   };
 
@@ -144,17 +170,18 @@ const AppTutorial = () => {
       <AnimatePresence mode="wait">
         <motion.div 
           key={step}
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: -10 }}
+          custom={!!activeRect}
+          variants={cardVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
           transition={{ duration: 0.25 }}
           className={`absolute z-[10000] w-[90%] max-w-sm p-6 rounded-3xl border border-white/10 bg-slate-950/90 backdrop-blur-md shadow-2xl pointer-events-auto flex flex-col gap-4 ${
-            activeRect ? '' : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+            activeRect ? '' : 'top-1/2 left-1/2'
           }`}
           style={activeRect ? {
             top: activeRect.bottom + 24 > window.innerHeight - 240 ? activeRect.top - 230 : activeRect.bottom + 24,
-            left: '50%',
-            transform: 'translateX(-50%)'
+            left: '50%'
           } : {}}
         >
           {/* Floating AI Guide Label */}
