@@ -24,11 +24,11 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # Step 3: Set up Node.js (v20 matches your project's node engine)
+      # Step 3: Set up Node.js (v22 is required by Capacitor CLI)
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: client/package-lock.json
 
