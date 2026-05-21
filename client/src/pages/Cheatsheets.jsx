@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import translations from '../translations';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const Cheatsheets = () => {
   const [notes, setNotes] = useState([]);
@@ -77,12 +78,38 @@ const Cheatsheets = () => {
 
       {selectedNote ? (
         <div className="animate-fade-in">
-          <button 
-            onClick={() => setSelectedNote(null)}
-            className="text-sky-400 font-black text-sm mb-4 uppercase tracking-widest hover:text-sky-300 transition-colors cursor-pointer"
-          >
-            ← {t.backToNotes || "Back to Notes"}
-          </button>
+          <div className="flex justify-between items-center mb-4">
+            <button 
+              onClick={() => setSelectedNote(null)}
+              className="text-sky-400 font-black text-sm uppercase tracking-widest hover:text-sky-300 transition-colors cursor-pointer"
+            >
+              ← {t.backToNotes || "Back to Notes"}
+            </button>
+            
+            {/* Inline Language Selector Pill inside active note details */}
+            <div className="flex bg-white/5 border border-white/5 rounded-full p-0.5 shrink-0">
+              <button
+                onClick={() => setNoteLang('HI')}
+                className={`px-3 py-1 rounded-full text-[10px] font-black transition-all duration-200 cursor-pointer ${
+                  noteLang === 'HI'
+                    ? 'bg-sky-500 text-white shadow-sm shadow-sky-500/25'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                हिन्दी
+              </button>
+              <button
+                onClick={() => setNoteLang('EN')}
+                className={`px-3 py-1 rounded-full text-[10px] font-black transition-all duration-200 cursor-pointer ${
+                  noteLang === 'EN'
+                    ? 'bg-sky-500 text-white shadow-sm shadow-sky-500/25'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                EN
+              </button>
+            </div>
+          </div>
           
           <div className="glass-card space-y-4">
             <div className="flex justify-between items-center">
@@ -96,8 +123,8 @@ const Cheatsheets = () => {
               {noteLang === 'HI' ? (selectedNote.title_hi || selectedNote.title) : (selectedNote.title_en || selectedNote.title)}
             </h3>
             
-            <div className="text-sm text-[var(--text-secondary)] leading-loose font-medium markdown-body whitespace-pre-line">
-              <ReactMarkdown>
+            <div className="text-sm text-[var(--text-secondary)] leading-loose font-medium markdown-body">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {noteLang === 'HI' ? (selectedNote.content_hi || selectedNote.content) : (selectedNote.content_en || selectedNote.content)}
               </ReactMarkdown>
             </div>
