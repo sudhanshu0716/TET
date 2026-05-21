@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TET Prep</string>
+    <string name="title_activity_main">TET Prep</string>
+    <string name="package_name">com.tetprep.app</string>
+    <string name="custom_url_scheme">com.tetprep.app</string>
+</resources>

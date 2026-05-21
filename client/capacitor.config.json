@@ -1,0 +1,9 @@
+{
+  "appId": "com.tetprep.app",
+  "appName": "TET Prep",
+  "webDir": "dist",
+  "server": {
+    "url": "https://tet-exam-lake.vercel.app",
+    "cleartext": true
+  }
+}
