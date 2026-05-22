@@ -17,6 +17,7 @@ const SuperTricks = () => {
   
   const navigate = useNavigate();
   const synthRef = useRef(window.speechSynthesis);
+  const wakeLockRef = useRef(null);
   
   const appLang = localStorage.getItem('appLang') || 'EN';
   const t = translations[appLang] || translations.EN;
@@ -32,6 +33,28 @@ const SuperTricks = () => {
     sanskrit: { name: t.subjects.sanskrit, emoji: '📜', color: 'rose' },
     science: { name: t.subjects.science, emoji: '🔬', color: 'pink' },
     social: { name: t.subjects.social, emoji: '🌍', color: 'orange' }
+  };
+
+  // Request Screen Wake Lock to prevent screen sleep/lock while playing audio
+  const requestWakeLock = async () => {
+    try {
+      if ('wakeLock' in navigator && !wakeLockRef.current) {
+        wakeLockRef.current = await navigator.wakeLock.request('screen');
+      }
+    } catch (err) {
+      console.warn('Failed to acquire screen wake lock:', err.message);
+    }
+  };
+
+  const releaseWakeLock = async () => {
+    try {
+      if (wakeLockRef.current) {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      }
+    } catch (err) {
+      console.warn('Failed to release screen wake lock:', err.message);
+    }
   };
 
   useEffect(() => {
@@ -51,13 +74,32 @@ const SuperTricks = () => {
     };
     fetchTricks();
 
-    // Cleanup speech on unmount
+    // Cleanup speech and wake lock on unmount
     return () => {
       if (synthRef.current) {
         synthRef.current.cancel();
       }
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release().then(() => {
+          wakeLockRef.current = null;
+        }).catch(err => console.warn(err));
+      }
     };
   }, []);
+
+  // Handle visibility change to re-acquire wake lock if returning to tab while playing
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible' && playingId) {
+        await requestWakeLock();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [playingId]);
 
   // Handle Text to Speech
   const handlePlayVoice = (e, trick) => {
@@ -72,12 +114,14 @@ const SuperTricks = () => {
       // Toggle off if clicking the same button
       synthRef.current.cancel();
       setPlayingId(null);
+      releaseWakeLock();
       return;
     }
 
     // Cancel active speech
     synthRef.current.cancel();
     setPlayingId(trick.trick_id);
+    requestWakeLock();
 
     // Formulate read aloud content based on toggle language
     let textToSpeak = '';
@@ -109,10 +153,12 @@ const SuperTricks = () => {
 
     utterance.onend = () => {
       setPlayingId(null);
+      releaseWakeLock();
     };
 
     utterance.onerror = () => {
       setPlayingId(null);
+      releaseWakeLock();
     };
 
     synthRef.current.speak(utterance);
@@ -123,6 +169,7 @@ const SuperTricks = () => {
     if (synthRef.current) {
       synthRef.current.cancel();
       setPlayingId(null);
+      releaseWakeLock();
     }
   };
 
