@@ -191,7 +191,7 @@ const Flashcards = () => {
         >
           <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
             {/* Front */}
-            <div className="absolute w-full h-full backface-hidden glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-white/5 shadow-2xl">
+            <div className="absolute inset-0 w-full h-full backface-hidden glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-white/5 shadow-2xl">
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 mb-4 opacity-50">Who is / What is</span>
               <h3 className="text-3xl font-black text-[var(--text-primary)] leading-tight">{cards[currentIndex].term}</h3>
               <div className="h-px w-12 bg-slate-200 dark:bg-white/10 my-4" />
@@ -200,7 +200,7 @@ const Flashcards = () => {
             </div>
             
             {/* Back */}
-            <div className="absolute w-full h-full backface-hidden rotate-y-180 glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent overflow-y-auto">
+            <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent overflow-y-auto">
               <div className="space-y-6">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400 mb-2 block opacity-80">English</span>
@@ -242,10 +242,22 @@ const Flashcards = () => {
       </p>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        .perspective-1000 { perspective: 1000px; }
-        .transform-style-3d { transform-style: preserve-3d; }
-        .backface-hidden { backface-visibility: hidden; }
-        .rotate-y-180 { transform: rotateY(180deg); }
+        .perspective-1000 { 
+          perspective: 1000px; 
+          -webkit-perspective: 1000px;
+        }
+        .transform-style-3d { 
+          transform-style: preserve-3d; 
+          -webkit-transform-style: preserve-3d;
+        }
+        .backface-hidden { 
+          backface-visibility: hidden; 
+          -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 { 
+          transform: rotateY(180deg); 
+          -webkit-transform: rotateY(180deg);
+        }
       `}} />
     </div>
   );
