@@ -162,7 +162,16 @@ const translations = {
     connectionIssue: "Connection Issue",
     unableReachServer: "Unable to reach the server",
     retryConnection: "Retry Connection",
-    loadingStats: "Loading your stats..."
+    loadingStats: "Loading your stats...",
+    superTricks: "Super Memory Tricks",
+    superTricksDesc: "Quick acronyms, mnemonics & shortcuts",
+    backToTricks: "Back to Tricks",
+    speakTrick: "Listen to Trick",
+    stopSpeech: "Stop Voice",
+    dashboardBannerTitle: "🔥 Super Tricks Hub",
+    dashboardBannerDesc: "Learn 10x faster with mnemonics, formulas & audio read-aloud!",
+    noTricksFound: "No tricks found for this topic.",
+    searchPlaceholder: "Search tricks by topic or keyword..."
   },
   HI: {
     hello: "नमस्ते",
@@ -327,7 +336,16 @@ const translations = {
     connectionIssue: "कनेक्शन की समस्या",
     unableReachServer: "सर्वर तक पहुँचने में असमर्थ",
     retryConnection: "कनेक्शन पुन: प्रयास करें",
-    loadingStats: "आपके आँकड़े लोड हो रहे हैं..."
+    loadingStats: "आपके आँकड़े लोड हो रहे हैं...",
+    superTricks: "सुपर मेमोरी ट्रिक्स",
+    superTricksDesc: "याद रखने के जादुई सूत्र और शॉर्टकट ट्रिक्स",
+    backToTricks: "ट्रिक्स पर वापस जाएं",
+    speakTrick: "ट्रिक सुनें",
+    stopSpeech: "आवाज बंद करें",
+    dashboardBannerTitle: "🔥 सुपर ट्रिक्स हब",
+    dashboardBannerDesc: "स्मरण सूत्रों, सूत्रों और ऑडियो वाचन के साथ 10 गुना तेजी से सीखें!",
+    noTricksFound: "इस विषय के लिए कोई ट्रिक नहीं मिली।",
+    searchPlaceholder: "विषय या कीवर्ड खोजें..."
   }
 };
 

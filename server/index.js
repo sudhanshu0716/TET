@@ -39,6 +39,10 @@ app.use('/api/cheatsheets', require('./routes/cheatsheets'));
 const cheatsheetRoutes = require('./routes/cheatsheets');
 app.use('/api/cheatsheets', cheatsheetRoutes);
 
+// Super Tricks Routes
+const superTricksRoutes = require('./routes/supertricks');
+app.use('/api/super-tricks', superTricksRoutes);
+
 // Profile & Ranking Routes
 const profileRoutes = require('./routes/profile');
 app.use('/api/profile', profileRoutes);

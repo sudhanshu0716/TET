@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import translations from '../translations';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 const Cheatsheets = () => {
+  const navigate = useNavigate();
   const [notes, setNotes] = useState(() => {
     try {
       const cached = localStorage.getItem('cached_cheatsheets');
@@ -147,6 +149,27 @@ const Cheatsheets = () => {
         </div>
       ) : (
         <>
+          {/* Quick link to Super Tricks Hub */}
+          <div 
+            onClick={() => navigate('/super-tricks')}
+            className="glass-card bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 relative overflow-hidden flex items-center justify-between cursor-pointer hover:bg-white/10 active:scale-[0.98] transition-all p-5 mb-2 group"
+          >
+            <div className="space-y-1 relative z-10">
+              <span className="text-[9px] font-black uppercase tracking-widest text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-full w-fit">
+                {lang === 'HI' ? 'सुपर लर्निंग हब' : 'Super Learning Hub'}
+              </span>
+              <h4 className="text-sm font-black text-[var(--text-primary)] mt-2">
+                {lang === 'HI' ? '✨ सुपर ट्रिक्स आज़माएं!' : '✨ Try Super Tricks!'}
+              </h4>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-relaxed">
+                {lang === 'HI' ? 'स्मरण सूत्र, जादुई शॉर्टकट्स और ऑडियो वाचन!' : 'Mnemonics, Magic Shortcuts & Audio Read-Aloud!'}
+              </p>
+            </div>
+            <span className="text-3xl animate-pulse relative z-10 group-hover:scale-110 transition-transform duration-300">🔥</span>
+            {/* Subtle highlight overlay */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
+          </div>
+
           {/* Subject Filter Pills */}
           <div className="flex gap-2.5 overflow-x-auto pb-2 hide-scrollbar">
             {subjects.map(sub => (

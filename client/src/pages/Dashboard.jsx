@@ -205,6 +205,34 @@ const Dashboard = () => {
           {todaySolved >= 25 ? "Amazing! Goal reached. Keep it up! 🏆" : `Solve ${Math.max(0, 25 - todaySolved)} more to hit your daily goal!`}
         </p>
       </div>
+
+      {/* Super Tricks Hub Banner */}
+      <div 
+        onClick={() => navigate('/super-tricks')}
+        className="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white shadow-xl shadow-purple-500/20 border border-white/10 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all group"
+      >
+        <div className="space-y-1.5 relative z-10">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[9px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full text-white">
+              {lang === 'HI' ? 'नया फीचर' : 'New Feature'}
+            </span>
+            <span className="text-[9px] font-black uppercase tracking-widest bg-amber-500/30 text-amber-300 border border-amber-500/20 px-2 py-0.5 rounded-full">
+              Premium
+            </span>
+          </div>
+          <h3 className="text-xl font-black tracking-tight mt-1 flex items-center gap-1.5">
+            {t.dashboardBannerTitle || "🔥 Super Tricks Hub"}
+          </h3>
+          <p className="text-xs text-white/95 font-semibold max-w-[280px] leading-relaxed">
+            {t.dashboardBannerDesc || "Learn 10x faster with mnemonics, formulas & audio read-aloud!"}
+          </p>
+        </div>
+        <div className="text-4xl relative z-10 animate-pulse group-hover:scale-110 transition-transform duration-300">
+          ✨
+        </div>
+        {/* Subtle glassmorphic overlay */}
+        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
       
       {/* Daily Live Contest Card */}
       <div id="tut-contest" className={`glass-card relative overflow-hidden ${contestStatus.status === 'live' ? 'ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/20' : ''}`}>
