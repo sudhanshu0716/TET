@@ -330,7 +330,7 @@ const Dashboard = () => {
 
       {/* Recent Exams History */}
       <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2 mt-4 ml-1">Recent Activity</h4>
-      <div className="flex flex-col gap-3">
+      <div className="max-h-[320px] overflow-y-auto pr-1 flex flex-col gap-3">
         {history.length > 0 ? history.map(ex => (
           <div 
             key={ex.exam_id} 
