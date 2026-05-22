@@ -87,8 +87,9 @@ const DailyExam = ({ type }) => {
   const downloadOffline = async () => {
     try {
       const token = localStorage.getItem('token');
+      const apiLang = lang === 'HI' ? 'hindi' : 'english';
       // Fetch 50 questions based on user profile
-      const res = await api.get('/api/exams/today?count=50&duration=60', {
+      const res = await api.get(`/api/exams/today?count=50&duration=60&lang=${apiLang}`, {
         headers: { 'x-auth-token': token }
       });
       localStorage.setItem('offline_exam', JSON.stringify(res.data));
@@ -148,11 +149,12 @@ const DailyExam = ({ type }) => {
         }
       }
 
-      let url = `/api/exams/today?count=${config.qCount}&duration=${config.timeLimit}`;
-      if (type === 'full-mock') url = '/api/exams/full-mock';
-      if (type === 'subject') url = `/api/exams/subject/${subject}?count=${config.qCount}&duration=${config.timeLimit}`;
-      if (type === 'important') url = '/api/exams/important';
-      if (type === 'year') url = `/api/exams/year/${year}`;
+      const apiLang = lang === 'HI' ? 'hindi' : 'english';
+      let url = `/api/exams/today?count=${config.qCount}&duration=${config.timeLimit}&lang=${apiLang}`;
+      if (type === 'full-mock') url = `/api/exams/full-mock?lang=${apiLang}`;
+      if (type === 'subject') url = `/api/exams/subject/${subject}?count=${config.qCount}&duration=${config.timeLimit}&lang=${apiLang}`;
+      if (type === 'important') url = `/api/exams/important?lang=${apiLang}`;
+      if (type === 'year') url = `/api/exams/year/${year}?lang=${apiLang}`;
       if (type === 'contest') url = '/api/contests/join';
 
       const res = await api.get(url, { headers: { 'x-auth-token': token } });

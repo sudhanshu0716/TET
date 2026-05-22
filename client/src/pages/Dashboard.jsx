@@ -233,6 +233,34 @@ const Dashboard = () => {
         {/* Subtle glassmorphic overlay */}
         <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
+
+      {/* AI Oral Exam Bot (Voice Test) Banner */}
+      <div 
+        onClick={() => navigate('/voice-test')}
+        className="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-br from-cyan-600 via-sky-600 to-indigo-500 text-white shadow-xl shadow-cyan-500/20 border border-white/10 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all group"
+      >
+        <div className="space-y-1.5 relative z-10">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[9px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-full text-white">
+              {lang === 'HI' ? 'नया फीचर' : 'New Feature'}
+            </span>
+            <span className="text-[9px] font-black uppercase tracking-widest bg-emerald-500/30 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+              Voice AI
+            </span>
+          </div>
+          <h3 className="text-xl font-black tracking-tight mt-1 flex items-center gap-1.5">
+            {t.voiceBannerTitle || "🎙️ AI Oral Exam Bot"}
+          </h3>
+          <p className="text-xs text-white/95 font-semibold max-w-[280px] leading-relaxed">
+            {t.voiceBannerDesc || "Take a hands-free, voice-controlled practice test taken by Asha AI!"}
+          </p>
+        </div>
+        <div className="text-4xl relative z-10 animate-bounce group-hover:scale-110 transition-transform duration-300">
+          🎙️
+        </div>
+        {/* Subtle glassmorphic overlay */}
+        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
       
       {/* Daily Live Contest Card */}
       <div id="tut-contest" className={`glass-card relative overflow-hidden ${contestStatus.status === 'live' ? 'ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/20' : ''}`}>

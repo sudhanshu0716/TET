@@ -171,7 +171,23 @@ const translations = {
     dashboardBannerTitle: "🔥 Super Tricks Hub",
     dashboardBannerDesc: "Learn 10x faster with mnemonics, formulas & audio read-aloud!",
     noTricksFound: "No tricks found for this topic.",
-    searchPlaceholder: "Search tricks by topic or keyword..."
+    searchPlaceholder: "Search tricks by topic or keyword...",
+    voiceTest: "AI Voice Exam",
+    voiceTestDesc: "10 questions, completely hands-free voice test",
+    voiceBannerTitle: "🎙️ AI Oral Exam Bot",
+    voiceBannerDesc: "Take a hands-free, voice-controlled practice test taken by Asha AI!",
+    selectSubject: "Select Subject",
+    selectLanguage: "Select Language",
+    startVoiceTest: "Launch Voice Test",
+    voiceInstructions: "Instructions: Enable your microphone. The AI will speak the question and options. Wait for the microphone to glow, then speak your answer clearly (e.g. 'Option A', 'B', 'C', 'D').",
+    correct: "Correct!",
+    incorrect: "Incorrect!",
+    speaking: "Asha is speaking...",
+    listening: "Listening... Answer now",
+    processing: "Thinking...",
+    ready: "Ready",
+    voiceScore: "Your Voice Test Score",
+    restart: "Restart Test"
   },
   HI: {
     hello: "नमस्ते",
@@ -345,7 +361,23 @@ const translations = {
     dashboardBannerTitle: "🔥 सुपर ट्रिक्स हब",
     dashboardBannerDesc: "स्मरण सूत्रों, सूत्रों और ऑडियो वाचन के साथ 10 गुना तेजी से सीखें!",
     noTricksFound: "इस विषय के लिए कोई ट्रिक नहीं मिली।",
-    searchPlaceholder: "विषय या कीवर्ड खोजें..."
+    searchPlaceholder: "विषय या कीवर्ड खोजें...",
+    voiceTest: "एआई मौखिक परीक्षा",
+    voiceTestDesc: "10 प्रश्न, पूरी तरह से आवाज नियंत्रित टेस्ट",
+    voiceBannerTitle: "🎙️ एआई मौखिक परीक्षा बॉट",
+    voiceBannerDesc: "आशा एआई द्वारा लिया जाने वाला हैंड्स-फ्री, वॉयस-नियंत्रित टेस्ट दें!",
+    selectSubject: "विषय चुनें",
+    selectLanguage: "भाषा चुनें",
+    startVoiceTest: "मौखिक परीक्षा शुरू करें",
+    voiceInstructions: "निर्देश: अपना माइक्रोफ़ोन चालू करें। एआई प्रश्न और विकल्प पढ़ेगा। माइक्रोफ़ोन चमकने का इंतज़ार करें, फिर अपना उत्तर स्पष्ट रूप से बोलें (जैसे 'Option A', 'B', 'C', 'D').",
+    correct: "सही उत्तर!",
+    incorrect: "गलत उत्तर!",
+    speaking: "आशा बोल रही है...",
+    listening: "सुन रही हूँ... अभी उत्तर दें",
+    processing: "सोच रही हूँ...",
+    ready: "तैयार",
+    voiceScore: "आपका मौखिक परीक्षा स्कोर",
+    restart: "पुनः प्रयास करें"
   }
 };
 

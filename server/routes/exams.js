@@ -6,6 +6,7 @@ const Question = require('../models/Question');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 const GlobalSettings = require('../models/GlobalSettings');
+const axios = require('axios');
 
 // Helper to check if user has access
 const checkAccess = async (userId) => {
@@ -38,23 +39,24 @@ router.get('/today', auth, async (req, res) => {
 
     const size = Math.floor(qCount / 5) || 6;
 
+    const lang = (req.query.lang || 'hindi').toLowerCase();
     const l1Subject = (user.language1 || 'hindi').toLowerCase();
     const l2Subject = (user.language2 || 'english').toLowerCase();
 
     // Separate aggregates for each section (Following 647e588 pattern)
-    // Filter by language: 'hindi' to only serve Hindi-text questions
-    const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level, language: 'hindi' } }, { $sample: { size: size } }]);
-    const l1 = await Question.aggregate([{ $match: { subject: l1Subject, level: user.level, language: 'hindi' } }, { $sample: { size: size } }]);
-    const l2 = await Question.aggregate([{ $match: { subject: l2Subject, level: user.level, language: 'hindi' } }, { $sample: { size: size } }]);
+    // Filter by language parameter
+    const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level, language: lang } }, { $sample: { size: size } }]);
+    const l1 = await Question.aggregate([{ $match: { subject: l1Subject, level: user.level, language: l1Subject } }, { $sample: { size: size } }]);
+    const l2 = await Question.aggregate([{ $match: { subject: l2Subject, level: user.level, language: l2Subject } }, { $sample: { size: size } }]);
     
     let subQ = [];
     if (user.level === 'primary') {
-      const math = await Question.aggregate([{ $match: { subject: 'math', level: 'primary', language: 'hindi' } }, { $sample: { size: size } }]);
-      const evs = await Question.aggregate([{ $match: { subject: 'evs', level: 'primary', language: 'hindi' } }, { $sample: { size: size } }]);
+      const math = await Question.aggregate([{ $match: { subject: 'math', level: 'primary', language: lang } }, { $sample: { size: size } }]);
+      const evs = await Question.aggregate([{ $match: { subject: 'evs', level: 'primary', language: lang } }, { $sample: { size: size } }]);
       subQ = [...math, ...evs];
     } else {
       const subject = user.subject_preference === 'science' ? 'science' : 'social';
-      subQ = await Question.aggregate([{ $match: { subject, level: 'junior', language: 'hindi' } }, { $sample: { size: size * 2 } }]);
+      subQ = await Question.aggregate([{ $match: { subject, level: 'junior', language: lang } }, { $sample: { size: size * 2 } }]);
     }
 
     const questions = [...cdp, ...l1, ...l2, ...subQ];
@@ -84,21 +86,22 @@ router.get('/full-mock', auth, async (req, res) => {
 
     const user = await User.findOne({ user_id: req.user.id });
     
+    const lang = (req.query.lang || 'hindi').toLowerCase();
     const l1Subject = (user.language1 || 'hindi').toLowerCase();
     const l2Subject = (user.language2 || 'english').toLowerCase();
     
-    const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level, language: 'hindi' } }, { $sample: { size: 30 } }]);
-    const l1 = await Question.aggregate([{ $match: { subject: l1Subject, level: user.level, language: 'hindi' } }, { $sample: { size: 30 } }]);
-    const l2 = await Question.aggregate([{ $match: { subject: l2Subject, level: user.level, language: 'hindi' } }, { $sample: { size: 30 } }]);
+    const cdp = await Question.aggregate([{ $match: { subject: 'pedagogy', level: user.level, language: lang } }, { $sample: { size: 30 } }]);
+    const l1 = await Question.aggregate([{ $match: { subject: l1Subject, level: user.level, language: l1Subject } }, { $sample: { size: 30 } }]);
+    const l2 = await Question.aggregate([{ $match: { subject: l2Subject, level: user.level, language: l2Subject } }, { $sample: { size: 30 } }]);
     
     let subQ = [];
     if (user.level === 'primary') {
-      const math = await Question.aggregate([{ $match: { subject: 'math', level: 'primary', language: 'hindi' } }, { $sample: { size: 30 } }]);
-      const evs = await Question.aggregate([{ $match: { subject: 'evs', level: 'primary', language: 'hindi' } }, { $sample: { size: 30 } }]);
+      const math = await Question.aggregate([{ $match: { subject: 'math', level: 'primary', language: lang } }, { $sample: { size: 30 } }]);
+      const evs = await Question.aggregate([{ $match: { subject: 'evs', level: 'primary', language: lang } }, { $sample: { size: 30 } }]);
       subQ = [...math, ...evs];
     } else {
       const subject = user.subject_preference === 'science' ? 'science' : 'social';
-      subQ = await Question.aggregate([{ $match: { subject, level: 'junior', language: 'hindi' } }, { $sample: { size: 60 } }]);
+      subQ = await Question.aggregate([{ $match: { subject, level: 'junior', language: lang } }, { $sample: { size: 60 } }]);
     }
 
     const questions = [...cdp, ...l1, ...l2, ...subQ];
@@ -128,9 +131,14 @@ router.get('/subject/:subject', auth, async (req, res) => {
     const qCount = parseInt(req.query.count) || 50;
     const duration = parseInt(req.query.duration) || 50;
     const user = await User.findOne({ user_id: req.user.id });
+    if (!user) return res.status(404).json({ msg: 'User not found' });
+
+    const lang = (req.query.lang || 'hindi').toLowerCase();
+    const targetSubject = req.params.subject.toLowerCase();
+    const targetLang = (targetSubject === 'hindi' || targetSubject === 'english') ? targetSubject : lang;
 
     const questions = await Question.aggregate([
-      { $match: { subject: req.params.subject.toLowerCase(), level: user.level, language: 'hindi' } },
+      { $match: { subject: targetSubject, level: user.level, language: targetLang } },
       { $sample: { size: qCount } }
     ]);
 
@@ -257,19 +265,26 @@ router.get('/important', auth, async (req, res) => {
   try {
     const user = await User.findOne({ user_id: req.user.id });
     
-    // Build subject list based on user's profile
-    const userSubjects = ['pedagogy', (user.language1 || 'hindi').toLowerCase(), (user.language2 || 'english').toLowerCase()];
+    const lang = (req.query.lang || 'hindi').toLowerCase();
+    const l1Subject = (user.language1 || 'hindi').toLowerCase();
+    const l2Subject = (user.language2 || 'english').toLowerCase();
+
+    // Build general subjects based on user level
+    const generalSubjects = ['pedagogy'];
     if (user.level === 'primary') {
-      userSubjects.push('math', 'evs');
+      generalSubjects.push('math', 'evs');
     } else {
-      userSubjects.push(user.subject_preference === 'science' ? 'science' : 'social');
+      generalSubjects.push(user.subject_preference === 'science' ? 'science' : 'social');
     }
 
     let questions = await Question.aggregate([
       { $match: { 
         level: user.level,
-        subject: { $in: userSubjects },
-        language: 'hindi',
+        $or: [
+          { subject: { $in: generalSubjects }, language: lang },
+          { subject: l1Subject, language: l1Subject },
+          { subject: l2Subject, language: l2Subject }
+        ],
         year: { $exists: true, $ne: null } 
       } },
       { $sample: { size: 50 } }
@@ -279,8 +294,11 @@ router.get('/important', auth, async (req, res) => {
       questions = await Question.aggregate([
         { $match: { 
           level: user.level,
-          subject: { $in: userSubjects },
-          language: 'hindi'
+          $or: [
+            { subject: { $in: generalSubjects }, language: lang },
+            { subject: l1Subject, language: l1Subject },
+            { subject: l2Subject, language: l2Subject }
+          ]
         } },
         { $sample: { size: 50 } }
       ]);
@@ -314,19 +332,26 @@ router.get('/year/:year', auth, async (req, res) => {
     const user = await User.findOne({ user_id: req.user.id });
     if (!user) return res.status(404).json({ msg: 'User not found' });
 
-    // Build subject list based on user's profile
-    const userSubjects = ['pedagogy', (user.language1 || 'hindi').toLowerCase(), (user.language2 || 'english').toLowerCase()];
+    const lang = (req.query.lang || 'hindi').toLowerCase();
+    const l1Subject = (user.language1 || 'hindi').toLowerCase();
+    const l2Subject = (user.language2 || 'english').toLowerCase();
+
+    // Build general subjects based on user level
+    const generalSubjects = ['pedagogy'];
     if (user.level === 'primary') {
-      userSubjects.push('math', 'evs');
+      generalSubjects.push('math', 'evs');
     } else {
-      userSubjects.push(user.subject_preference === 'science' ? 'science' : 'social');
+      generalSubjects.push(user.subject_preference === 'science' ? 'science' : 'social');
     }
 
     let questions = await Question.aggregate([
       { $match: { 
         level: user.level,
-        subject: { $in: userSubjects },
-        language: 'hindi',
+        $or: [
+          { subject: { $in: generalSubjects }, language: lang },
+          { subject: l1Subject, language: l1Subject },
+          { subject: l2Subject, language: l2Subject }
+        ],
         year: targetYear
       } },
       { $sample: { size: 50 } }
@@ -338,7 +363,7 @@ router.get('/year/:year', auth, async (req, res) => {
       questions = await Question.aggregate([
         { $match: { 
           level: user.level,
-          language: 'hindi',
+          language: lang,
           year: targetYear
         } },
         { $sample: { size: 50 } }
@@ -373,6 +398,32 @@ router.get('/year/:year', auth, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/exams/tts
+// @desc    TTS proxy to fetch audio stream from Google Translate TTS
+router.get('/tts', async (req, res) => {
+  try {
+    const { text, lang } = req.query;
+    if (!text) return res.status(400).send('Text is required');
+    const targetLang = (lang || 'hi').toLowerCase();
+    const url = `https://translate.googleapis.com/translate_tts?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}&ie=UTF-8`;
+
+    const response = await axios({
+      method: 'get',
+      url: url,
+      responseType: 'stream'
+    });
+
+    res.set({
+      'Content-Type': 'audio/mpeg',
+      'Transfer-Encoding': 'chunked'
+    });
+    response.data.pipe(res);
+  } catch (err) {
+    console.error('TTS Proxy Error:', err.message);
+    res.status(500).send('TTS Proxy Error');
   }
 });
 
