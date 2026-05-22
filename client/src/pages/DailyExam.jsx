@@ -589,7 +589,7 @@ const DailyExam = ({ type }) => {
         />
       </div>
 
-      <div className="flex flex-col gap-6 px-5 pt-8 pb-32 max-w-md mx-auto w-full">
+      <div className="flex flex-col gap-6 px-5 pt-8 pb-44 max-w-md mx-auto w-full" style={{ paddingBottom: 'max(11rem, calc(10rem + env(safe-area-inset-bottom)))' }}>
         {/* Header Section */}
         <div className="flex justify-between items-center px-1">
           <button 
@@ -667,6 +667,7 @@ const DailyExam = ({ type }) => {
                     ? 'border-sky-500/50 bg-sky-500/10 shadow-[0_0_20px_rgba(14,165,233,0.1)]' 
                     : 'border-white/5 hover:border-white/20'
                 }`}
+                style={{ minHeight: '64px' }}
               >
                 {/* Option Letter/Circle */}
                 <div className={`h-10 w-10 shrink-0 rounded-full flex items-center justify-center text-sm font-black transition-all ${
@@ -688,9 +689,11 @@ const DailyExam = ({ type }) => {
           })}
         </div>
 
-        {/* Navigation Controls */}
-        <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[var(--bg-main)] via-[var(--bg-main)] to-transparent z-50 pointer-events-none">
-          <div className="max-w-md mx-auto flex gap-4 pointer-events-auto">
+        {/* Navigation Controls — fixed bottom bar with safe area inset support */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-[var(--bg-main)] via-[var(--bg-main)] to-transparent pointer-events-none"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+        >
+          <div className="px-6 pt-4 pb-6 max-w-md mx-auto flex gap-4 pointer-events-auto">
             <button 
               disabled={currentIndex === 0}
               onClick={() => setCurrentIndex(prev => prev - 1)}
