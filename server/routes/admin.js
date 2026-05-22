@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const Question = require('../models/Question');
 const ContestSettings = require('../models/ContestSettings');
@@ -242,6 +243,34 @@ router.post('/revoke-premium', [auth, adminAuth], async (req, res) => {
     
     res.json({ message: `Premium revoked and trial ended for ${user.email}.` });
   } catch (err) { res.status(500).send('Server Error'); }
+});
+
+// @desc    Reset a user's password (Admin) — returns a one-time temp password
+router.post('/reset-user-password', [auth, adminAuth], async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: 'Email is required' });
+
+  try {
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) return res.status(404).json({ message: 'No user found with this email' });
+
+    // Generate a readable temporary password: TET@ + 6 random digits
+    const tempPassword = 'TET@' + Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Hash and save it
+    const salt = await bcrypt.genSalt(10);
+    user.password_hash = await bcrypt.hash(tempPassword, salt);
+    await user.save();
+
+    res.json({
+      message: `Password reset successfully for ${user.name} (${user.email})`,
+      tempPassword,
+      note: 'Share this temporary password with the user. They should change it after logging in.'
+    });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).send('Server Error');
+  }
 });
 
 // @desc    Get All Users with Stats (Admin)

@@ -4,7 +4,7 @@ import {
   Users, Database, ShieldCheck, Activity, BarChart2, Clock, Save, 
   Search, Trash2, Send, CheckCircle, AlertTriangle, UserMinus,
   Sparkles, Settings, ShieldAlert, Trophy, Zap, FilePlus, LogOut,
-  Edit2, X
+  Edit2, X, KeyRound, Copy
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -36,7 +36,6 @@ const AdminDashboard = () => {
   const [cleanStatsEmail, setCleanStatsEmail] = useState('');
   const [cleanSelectedSubjects, setCleanSelectedSubjects] = useState([]);
 
-  // User Management State
   const [usersList, setUsersList] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingUserId, setEditingUserId] = useState(null);
@@ -44,6 +43,11 @@ const AdminDashboard = () => {
   const [editingLevel, setEditingLevel] = useState('');
   const [editingLanguage1, setEditingLanguage1] = useState('');
   const [editingLanguage2, setEditingLanguage2] = useState('');
+
+  // Password Reset State
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetResult, setResetResult] = useState(null); // { tempPassword, message }
+  const [resetting, setResetting] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -253,6 +257,24 @@ const AdminDashboard = () => {
   };
 
 
+  const handleResetUserPassword = async () => {
+    if (!resetEmail.trim()) return alert('Enter a user email');
+    if (!window.confirm(`Reset password for ${resetEmail}? A new temporary password will be generated.`)) return;
+    setResetting(true);
+    setResetResult(null);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await api.post('/api/admin/reset-user-password', { email: resetEmail }, { headers: { 'x-auth-token': token } });
+      setResetResult(res.data);
+      setResetEmail('');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Password reset failed');
+    } finally {
+      setResetting(false);
+    }
+  };
+
+  // User Management State label (no-op, just a comment marker for readability)
   const adminCards = [
     { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'text-blue-400', bg: 'bg-blue-500/10' },
     { label: 'Daily Active', value: stats.dailyActive, icon: Activity, color: 'text-amber-400', bg: 'bg-amber-500/10' },
@@ -751,6 +773,54 @@ const AdminDashboard = () => {
                 </button>
              </div>
              <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Removes premium & ends trial instantly</p>
+          </div>
+
+          {/* Reset User Password */}
+          <div className="glass-card p-4 space-y-4">
+            <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+              <KeyRound size={14} className="text-violet-400" />
+              <h4 className="font-black text-[var(--text-primary)] text-sm">Reset User Password</h4>
+            </div>
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <input 
+                  type="email" 
+                  placeholder="User Email" 
+                  className="bg-white/5 flex-1 rounded-xl px-3 py-2 text-xs font-semibold border border-white/10 outline-none focus:border-violet-500/50 transition-all"
+                  value={resetEmail}
+                  onChange={e => { setResetEmail(e.target.value); setResetResult(null); }}
+                />
+                <button 
+                  onClick={handleResetUserPassword}
+                  disabled={resetting}
+                  className="bg-violet-500/10 text-violet-400 border border-violet-500/20 px-3 py-2 rounded-xl font-black text-xs hover:bg-violet-500 hover:text-white transition-all disabled:opacity-50 whitespace-nowrap"
+                >
+                  {resetting ? '...' : 'Reset'}
+                </button>
+              </div>
+
+              {resetResult && (
+                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 space-y-2">
+                  <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">
+                    ✅ {resetResult.message}
+                  </p>
+                  <div className="flex items-center gap-2 bg-slate-900/80 rounded-lg px-3 py-2">
+                    <code className="text-sm font-black text-amber-400 flex-1 tracking-widest">
+                      {resetResult.tempPassword}
+                    </code>
+                    <button
+                      onClick={() => { navigator.clipboard.writeText(resetResult.tempPassword); alert('Copied!'); }}
+                      className="text-slate-400 hover:text-white transition-colors"
+                      title="Copy password"
+                    >
+                      <Copy size={14} />
+                    </button>
+                  </div>
+                  <p className="text-[9px] text-slate-500 font-bold">Share this with the user. Ask them to change it after logging in.</p>
+                </div>
+              )}
+              <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Generates a temporary password — user logs in and changes it</p>
+            </div>
           </div>
 
           <div className="glass-card p-4 space-y-4">
