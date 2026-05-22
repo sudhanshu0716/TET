@@ -34,6 +34,11 @@ A state-of-the-art, mobile-first full-stack application designed to empower cand
     - **Most Repeated Questions**: High-yield PYQs.
     - **Interactive Flashcards**: Front-and-back flip cards for active recall.
   - **Subject-Wise MCQs**: Specialised practice tests for Child Development & Pedagogy, Hindi, English, Sanskrit, Urdu, Math, EVS, Science, and Social Science.
+- **Super Tricks Hub**: 
+  - Access **100 high-yield tricks, shortcuts, and mnemonics** tailored specifically for UPTET and CTET exams.
+  - Choose topics by subject (Child Development & Pedagogy, Hindi, English, Sanskrit, Urdu, Math, EVS, Science, Social Science).
+  - Expandable, glassmorphic accordion-style interface for clean topic-wise learning.
+  - **Bilingual Text-to-Speech (TTS)**: Built-in speaker buttons to listen to tricks and explanations in English or Hindi (utilizing Web Speech API) with responsive visualizer equalizer animations.
 - **Bilingual Interface**: One-click toggle between English and Hindi throughout the entire app.
 - **AI-Powered Analytics**:
   - **Exam Score Predictor**: Estimates actual exam score out of 150 using performance-weighted accuracy history.
@@ -83,6 +88,7 @@ TET_PREP/
 │   │   ├── pages/              # Primary route screens
 │   │   │   ├── Dashboard.jsx       # Main study dashboard
 │   │   │   ├── DailyExam.jsx       # Exam engine (all types)
+│   │   │   ├── SuperTricks.jsx     # Super Tricks Hub (mnemonic learning + audio synthesizer)
 │   │   │   ├── AdminDashboard.jsx  # Administrative control centre
 │   │   │   └── ...
 │   │   ├── services/           # Axios HTTP services
@@ -92,7 +98,7 @@ TET_PREP/
 │   └── vite.config.js
 ├── server/                     # Express Node.js Backend
 │   ├── middleware/             # JWT auth validation
-│   ├── models/                 # Mongoose schemas (User, Exam, Question, etc.)
+│   ├── models/                 # Mongoose schemas (User, Exam, Question, SuperTrick, etc.)
 │   ├── routes/
 │   │   ├── admin.js            # Admin-only operations
 │   │   ├── auth.js             # Register / login / profile
@@ -100,8 +106,10 @@ TET_PREP/
 │   │   ├── contests.js         # Live contest scheduling
 │   │   ├── exams.js            # Exam setup, submission (50Q default, no limits)
 │   │   ├── payment.js          # Razorpay orders & verification
-│   │   └── profile.js          # Stats, leaderboard, user profiles
+│   │   ├── profile.js          # Stats, leaderboard, user profiles
+│   │   └── supertricks.js      # Super Tricks endpoints (premium protected)
 │   ├── seeds/                  # DB seeds for questions & admin
+│   ├── seed_supertricks.js     # Database seed file for 100 super tricks
 │   └── index.js                # App entry point & MongoDB init
 ├── vercel.json                 # Vercel routing configuration
 ├── start_project.bat           # One-click dev launcher (Windows)
@@ -190,6 +198,18 @@ sequenceDiagram
 | `answers` | Array | Stores per-question user answers & correctness |
 | `date` | Date | Completion timestamp |
 
+### 💡 SuperTrick Model (`supertricks`)
+| Field | Type | Description |
+|-------|------|-------------|
+| `trick_id` | String (Unique) | Unique identifier |
+| `subject` | String | Subject category (e.g. `pedagogy`, `math`, `evs`, `hindi`, `english`, `sanskrit`, `urdu`, `science`, `social`) |
+| `title_en` / `title_hi` | String | Trick title in English and Hindi |
+| `mnemonic_en` / `mnemonic_hi` | String | Short mnemonic keywords/shortcuts for quick recall |
+| `trick_en` / `trick_hi` | String | Core trick content in English and Hindi |
+| `explanation_en` / `explanation_hi` | String | Detailed explanation/background details |
+| `category_en` / `category_hi` | String | Specific chapter or domain category |
+| `created_at` | Date | Creation timestamp |
+
 ---
 
 ## 🛠️ Installation & Setup
@@ -238,6 +258,7 @@ npm run dev
 ```bash
 cd server
 node seed_admin.js
+node seed_supertricks.js
 node seeds/questions_pedagogy.js
 # Repeat for other subjects inside the seeds/ directory
 ```
@@ -264,6 +285,15 @@ The app is pre-configured for Vercel deployment:
 ---
 
 ## 📋 Recent Changes & Fixes
+
+### v2.1 — May 2026
+
+#### ✨ Super Tricks Hub & TTS Engine
+- **Super Tricks Portal**: Integrated a premium, interactive accordion-style hub featuring 100 high-yield shortcuts, mnemonics, and concepts for all UPTET/CTET subjects.
+- **Bilingual Text-To-Speech (TTS)**: Added audio speakers for both Hindi and English with seamless switching, speech synthesis configuration, and dynamic SVG equalizer animations playing in real-time.
+- **Premium Access Restriction**: Wrapped the API endpoints in a middleware check ensuring trial validity, active premium status, or admin role permissions.
+- **Entry Points & Funnels**: Added custom glassmorphic promotional cards on the main Dashboard and Cheatsheets portal to capture user interest and drive traffic.
+- **Seeding Database**: Created `seed_supertricks.js` containing 100 high-quality bilingual exam hacks.
 
 ### v2.0 — May 2026
 
