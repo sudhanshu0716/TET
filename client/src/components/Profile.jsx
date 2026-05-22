@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { Crown, Zap, Calendar, ChevronRight, ShieldCheck } from 'lucide-react';
 import translations from '../translations';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const Profile = () => {
   const { user, setUser } = useAuth();
+  const { uiVersion, setUiVersion } = useTheme();
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
   const [profile, setProfile] = useState({
@@ -163,6 +165,53 @@ const Profile = () => {
         <div className="flex items-center gap-1 text-amber-500 group-hover:translate-x-1 transition-transform">
           <span className="text-[10px] font-black uppercase tracking-widest">{t.viewPlans}</span>
           <ChevronRight size={16} />
+        </div>
+      </div>
+
+      {/* UI Theme Selection */}
+      <div className="glass-card p-6 flex flex-col gap-4 relative overflow-hidden">
+        <div>
+          <h4 className="text-sm font-black text-[var(--text-primary)]">
+            {t.uiExperience || "UI Theme"}
+          </h4>
+          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">
+            Switch between Classic and Modern UI designs
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-3 p-1 rounded-2xl bg-white/5 border border-white/5 relative">
+          <button
+            type="button"
+            onClick={() => setUiVersion('v1')}
+            className={`py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 relative z-10 flex items-center justify-center gap-2 ${
+              uiVersion === 'v1'
+                ? 'text-white'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <span>{t.classicUI || 'Classic (V1)'}</span>
+          </button>
+          
+          <button
+            type="button"
+            onClick={() => setUiVersion('v2')}
+            className={`py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 relative z-10 flex items-center justify-center gap-2 ${
+              uiVersion === 'v2'
+                ? 'text-white'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <span>{t.modernUI || 'Modern (V2)'}</span>
+          </button>
+          
+          <div 
+            className="absolute top-1 bottom-1 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 transition-all duration-300 ease-out"
+            style={{
+              left: uiVersion === 'v1' ? '4px' : 'calc(50% + 2px)',
+              width: 'calc(50% - 6px)',
+              background: uiVersion === 'v2' ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' : 'linear-gradient(135deg, #0ea5e9, #6366f1)'
+            }}
+          />
         </div>
       </div>
 

@@ -235,3 +235,367 @@ body {
   @apply bg-white/5 text-sky-400 font-mono text-xs px-1.5 py-0.5 rounded border border-white/5;
 }
 
+/* ========================================== */
+/* UI Theme V2 (Modern Purple-Pink Aesthetic)  */
+/* ========================================== */
+
+.theme-v2 {
+  /* Dark Mode V2 Defaults */
+  --bg-primary: #030307;
+  --bg-secondary: #080810;
+  --text-primary: #fafafa;
+  --text-secondary: #94a3b8;
+  --glass-bg: rgba(16, 16, 28, 0.5);
+  --glass-bg-hover: rgba(24, 24, 40, 0.7);
+  --glass-border: rgba(168, 85, 247, 0.15); /* violet-tinged borders */
+  --input-bg: rgba(8, 8, 16, 0.8);
+  --nav-bg: rgba(5, 5, 8, 0.9);
+  
+  /* Glowing Variables */
+  --primary-glow: rgba(139, 92, 246, 0.4); /* Violet */
+  --secondary-glow: rgba(236, 72, 153, 0.3); /* Pink */
+}
+
+/* Light Mode V2 Defaults */
+.theme-v2.light-mode {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --glass-bg: rgba(255, 255, 255, 0.82);
+  --glass-bg-hover: rgba(241, 245, 249, 0.95);
+  --glass-border: rgba(168, 85, 247, 0.1);
+  --input-bg: rgba(255, 255, 255, 0.9);
+  --nav-bg: rgba(255, 255, 255, 0.95);
+}
+
+/* Floating Gradient Blobs on the body */
+.theme-v2::before {
+  content: '';
+  position: fixed;
+  top: -10%;
+  right: -10%;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+  filter: blur(60px);
+  z-index: -10;
+  pointer-events: none;
+  animation: V2Float1 20s ease-in-out infinite alternate;
+}
+
+.theme-v2::after {
+  content: '';
+  position: fixed;
+  bottom: -10%;
+  left: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%);
+  filter: blur(50px);
+  z-index: -10;
+  pointer-events: none;
+  animation: V2Float2 15s ease-in-out infinite alternate;
+}
+
+.theme-v2.light-mode::before {
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.05) 0%, transparent 70%);
+}
+.theme-v2.light-mode::after {
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.04) 0%, transparent 70%);
+}
+
+@keyframes V2Float1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-30px, 20px) scale(1.1); }
+}
+@keyframes V2Float2 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(20px, -20px) scale(0.9); }
+}
+
+/* Component Overrides for V2 */
+.theme-v2 {
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.theme-v2 h1, 
+.theme-v2 h2, 
+.theme-v2 h3, 
+.theme-v2 h4, 
+.theme-v2 h5, 
+.theme-v2 h6 {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Custom Scrollbars in V2 */
+.theme-v2::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.25), rgba(236, 72, 153, 0.25)) !important;
+  border-radius: 10px;
+}
+.theme-v2::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.4), rgba(236, 72, 153, 0.4)) !important;
+}
+
+/* Redefine gradients to Violet/Magenta */
+.theme-v2 .text-gradient {
+  background-image: linear-gradient(to right, #c084fc, #f472b6) !important;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Premium Button Shine & Hover Glows */
+.theme-v2 .premium-button {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899) !important;
+  box-shadow: 0 4px 20px -2px rgba(139, 92, 246, 0.4) !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.theme-v2 .premium-button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 30%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(30deg);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  filter: blur(5px);
+  pointer-events: none;
+}
+
+.theme-v2 .premium-button:hover::after {
+  left: 120%;
+  opacity: 1;
+}
+
+.theme-v2 .premium-button:hover {
+  box-shadow: 0 10px 25px -1px rgba(139, 92, 246, 0.5) !important;
+  transform: translateY(-2px) scale(1.01) !important;
+}
+
+.theme-v2 .premium-button:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+/* Sleeker Card design with Glass Sheen Hover */
+.theme-v2 .glass-card {
+  border-radius: 22px !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid var(--glass-border) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.theme-v2 .glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  transition: left 0.75s ease-in-out;
+  pointer-events: none;
+}
+
+.theme-v2.light-mode .glass-card::before {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.theme-v2 .glass-card:hover::before {
+  left: 125%;
+}
+
+.theme-v2 .glass-card:hover {
+  border-color: rgba(168, 85, 247, 0.3) !important;
+  box-shadow: 0 20px 40px -12px rgba(139, 92, 246, 0.15) !important;
+  transform: translateY(-3px) !important;
+}
+
+/* Micro-interactions for interactive/clickable cards & rows */
+.theme-v2 .glass-card[onClick], 
+.theme-v2 [class*="cursor-pointer"],
+.theme-v2 a[class*="glass-card"] {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.theme-v2 .glass-card[onClick]:hover,
+.theme-v2 [class*="cursor-pointer"]:hover,
+.theme-v2 a[class*="glass-card"]:hover {
+  transform: translateY(-3px) scale(1.01) !important;
+  box-shadow: 0 15px 30px rgba(168, 85, 247, 0.15) !important;
+  border-color: rgba(168, 85, 247, 0.3) !important;
+}
+
+/* Selection and Selected Pulse Fills (for quiz options / checklist selectors) */
+.theme-v2 [class*="bg-sky-500/10"],
+.theme-v2 [class*="bg-sky-500/5"] {
+  background-image: radial-gradient(circle at center, rgba(168, 85, 247, 0.18) 0%, rgba(168, 85, 247, 0.05) 100%) !important;
+}
+
+.theme-v2 [class*="border-sky-500"] {
+  animation: V2SelectedPulse 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes V2SelectedPulse {
+  0% { transform: scale(0.98); }
+  50% { transform: scale(1.015); }
+  100% { transform: scale(1); }
+}
+
+/* Glass Inputs */
+.theme-v2 .glass-input {
+  border-radius: 18px !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+.theme-v2 .glass-input:focus {
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15) !important;
+}
+
+/* Bottom Nav bar */
+.theme-v2 .bottom-nav-bar {
+  border-radius: 24px !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 12px 40px -10px rgba(139, 92, 246, 0.2) !important;
+}
+
+/* Active Nav icons: override sky-blue/blue to violet/pink */
+.theme-v2 .text-sky-400 {
+  color: #c084fc !important; /* purple-400 */
+}
+.theme-v2 .bg-sky-500\/10 {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+.theme-v2 .border-sky-500\/20 {
+  border-color: rgba(168, 85, 247, 0.2) !important;
+}
+.theme-v2 .border-sky-500 {
+  border-color: #a855f7 !important;
+}
+.theme-v2 .text-sky-500 {
+  color: #a855f7 !important;
+}
+.theme-v2 .bg-sky-500 {
+  background-color: #a855f7 !important;
+}
+.theme-v2 .from-sky-400 {
+  --tw-gradient-from: #c084fc !important;
+  --tw-gradient-to: rgb(192 132 252 / 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.theme-v2 .to-indigo-500 {
+  --tw-gradient-to: #ec4899 !important;
+}
+.theme-v2 .to-indigo-600 {
+  --tw-gradient-to: #db2777 !important;
+}
+.theme-v2 .from-sky-500\/10 {
+  --tw-gradient-from: rgba(168, 85, 247, 0.1) !important;
+}
+
+/* Streak badge custom style */
+.theme-v2 .streak-badge {
+  background: rgba(168, 85, 247, 0.1) !important;
+  border: 1px solid rgba(168, 85, 247, 0.2) !important;
+  color: #c084fc !important;
+}
+
+/* Progress bar fill gradient */
+.theme-v2 .progress-bar-fill {
+  background: linear-gradient(90deg, #8b5cf6, #ec4899) !important;
+}
+
+/* Option Cards/Buttons in exams (e.g. border-sky-500, selected states) */
+.theme-v2 .border-sky-500 {
+  border-color: #a855f7 !important;
+}
+.theme-v2 .bg-sky-500\/20 {
+  background-color: rgba(168, 85, 247, 0.15) !important;
+}
+.theme-v2 .bg-sky-500\/30 {
+  background-color: rgba(168, 85, 247, 0.25) !important;
+}
+.theme-v2 .text-sky-300 {
+  color: #d8b4fe !important;
+}
+.theme-v2 .hover\:border-sky-500\/50:hover {
+  border-color: rgba(168, 85, 247, 0.5) !important;
+}
+
+/* Loader Top border color */
+.theme-v2 .border-t-sky-500 {
+  border-top-color: #a855f7 !important;
+}
+.theme-v2 .border-sky-500\/20 {
+  border-color: rgba(168, 85, 247, 0.2) !important;
+}
+.theme-v2 .text-sky-400 {
+  color: #c084fc !important;
+}
+
+/* Waiting Room specifically - sky/blue overlays */
+.theme-v2 .bg-sky-950\/20 {
+  background-color: rgba(88, 28, 135, 0.2) !important;
+}
+.theme-v2 .border-sky-500\/30 {
+  border-color: rgba(168, 85, 247, 0.3) !important;
+}
+.theme-v2 .shadow-sky-500\/10 {
+  box-shadow: 0 10px 15px -3px rgba(168, 85, 247, 0.1), 0 4px 6px -4px rgba(168, 85, 247, 0.1) !important;
+}
+.theme-v2 .shadow-sky-500\/20 {
+  box-shadow: 0 20px 25px -5px rgba(168, 85, 247, 0.2), 0 8px 10px -6px rgba(168, 85, 247, 0.2) !important;
+}
+.theme-v2 .bg-sky-500\/10 {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+.theme-v2 .bg-sky-500\/5 {
+  background-color: rgba(168, 85, 247, 0.05) !important;
+}
+.theme-v2 .text-sky-100 {
+  color: #f3e8ff !important;
+}
+.theme-v2 .text-sky-200 {
+  color: #e9d5ff !important;
+}
+.theme-v2 .bg-sky-950 {
+  background-color: #1e1b4b !important;
+}
+.theme-v2 .from-sky-950\/50 {
+  --tw-gradient-from: rgba(30, 27, 75, 0.5) !important;
+}
+.theme-v2 .bg-sky-400 {
+  background-color: #a855f7 !important;
+}
+.theme-v2 .shadow-\[0_0_12px_rgba\(56\,189\,248\,0\.5\)\] {
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5) !important;
+}
+.theme-v2 .shadow-sky-500\/20 {
+  box-shadow: 0 12px 30px -1px rgba(168, 85, 247, 0.4) !important;
+}

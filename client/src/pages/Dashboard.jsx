@@ -329,17 +329,6 @@ const Dashboard = () => {
           </div>
         )}
       </div>
-
-      {/* Stats Quick View */}
-      <div className="glass-card border-dashed border-slate-800 bg-transparent flex justify-between items-center mt-4">
-        <div>
-          <h5 className="text-sm font-bold text-[var(--text-primary)]">{t.ranking}</h5>
-          <p className="text-[10px] text-slate-500 font-medium">{t.top10}</p>
-        </div>
-        <Link to="/leaderboard" className="text-xs font-black text-sky-400 uppercase tracking-widest hover:text-sky-300 transition-colors">
-          {t.viewAll}
-        </Link>
-      </div>
     </div>
   );
 };
