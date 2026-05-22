@@ -191,7 +191,7 @@ const Flashcards = () => {
         >
           <div className={`absolute inset-0 w-full h-full transition-transform duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
             {/* Front */}
-            <div className="absolute inset-0 w-full h-full backface-hidden glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-white/5 shadow-2xl">
+            <div className={`absolute inset-0 w-full h-full backface-hidden card-front-3d glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-white/5 shadow-2xl transition-all duration-500 ${flipped ? 'opacity-0 invisible pointer-events-none' : 'opacity-100 visible'}`}>
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 mb-4 opacity-50">Who is / What is</span>
               <h3 className="text-3xl font-black text-[var(--text-primary)] leading-tight">{cards[currentIndex].term}</h3>
               <div className="h-px w-12 bg-slate-200 dark:bg-white/10 my-4" />
@@ -200,7 +200,7 @@ const Flashcards = () => {
             </div>
             
             {/* Back */}
-            <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
+            <div className={`absolute inset-0 w-full h-full backface-hidden card-back-3d glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent transition-all duration-500 ${flipped ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
               <div className="w-full max-h-full overflow-y-auto space-y-6 pr-1">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400 mb-2 block opacity-80">English</span>
@@ -257,6 +257,33 @@ const Flashcards = () => {
         .rotate-y-180 { 
           transform: rotateY(180deg); 
           -webkit-transform: rotateY(180deg);
+        }
+        .card-front-3d {
+          transform: rotateY(0deg) translateZ(1px);
+          -webkit-transform: rotateY(0deg) translateZ(1px);
+        }
+        .card-back-3d {
+          transform: rotateY(180deg) translateZ(1px);
+          -webkit-transform: rotateY(180deg) translateZ(1px);
+        }
+        
+        /* Overrides to prevent global glass-card styles from breaking the absolute 3D structure and rotation of flashcard faces */
+        .glass-card.card-front-3d,
+        .glass-card.card-back-3d {
+          position: absolute !important;
+          overflow: visible !important;
+        }
+        
+        .glass-card.card-front-3d:hover,
+        .glass-card.card-front-3d[onClick]:hover {
+          transform: rotateY(0deg) translateZ(1px) !important;
+          -webkit-transform: rotateY(0deg) translateZ(1px) !important;
+        }
+        
+        .glass-card.card-back-3d:hover,
+        .glass-card.card-back-3d[onClick]:hover {
+          transform: rotateY(180deg) translateZ(1px) !important;
+          -webkit-transform: rotateY(180deg) translateZ(1px) !important;
         }
       `}} />
     </div>
