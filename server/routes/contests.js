@@ -108,6 +108,7 @@ router.get('/status', auth, async (req, res) => {
       registered: !!registered,
       attempted: !!attempted,
       startTime: start,
+      startTimeIST: settings.start_time, // plain "HH:mm" IST string — always correct regardless of server timezone
       endTime: end,
       duration: settings.duration,
       registrationCount

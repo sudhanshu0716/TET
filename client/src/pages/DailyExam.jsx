@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import translations from '../translations';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, CheckCircle2, Clock, ListChecks, X, Trophy } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle2, Clock, ListChecks, X, Trophy, RotateCcw } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const DailyExam = ({ type }) => {
   const { subject, year } = useParams();
+  const { user } = useAuth();
   const [step, setStep] = useState('config');
   const [config, setConfig] = useState({ qCount: 30, timeLimit: 30 });
   const [questions, setQuestions] = useState([]);
@@ -20,15 +22,67 @@ const DailyExam = ({ type }) => {
   const [submitting, setSubmitting] = useState(false);
   const [participants, setParticipants] = useState([]);
   const [contestData, setContestData] = useState(null);
+  const [resumeData, setResumeData] = useState(null); // saved session to resume
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
   const [loadingText, setLoadingText] = useState(t?.preparing || 'Preparing your questions...');
 
+  // Build a unique key per exam type+subject+user so different exams don't clash
+  const resumeKey = `examResume_${type}_${subject || 'none'}_${year || 'none'}_${user?.id || 'guest'}`;
+
+  // Countdown helpers — defined at top level to avoid Rules-of-Hooks violation
+  const getSecondsToStart = (data) => {
+    if (!data?.startTimeIST) return null;
+    const [h, m] = data.startTimeIST.split(':').map(Number);
+    const now = new Date();
+    const istOffsetMs = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + istOffsetMs);
+    const target = new Date(nowIST);
+    target.setHours(h, m, 0, 0);
+    return Math.max(0, Math.floor((target - nowIST) / 1000));
+  };
+  const fmtCountdown = (s) => {
+    if (s === null || s === undefined) return '--:--:--';
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  };
+  const [countdown, setCountdown] = useState(() => getSecondsToStart(contestData));
+
   useEffect(() => {
     const saved = localStorage.getItem('offline_exam');
     if (saved) setOfflineExam(JSON.parse(saved));
+
+    // Check for a saved resume session (skip for contest — those can't resume)
+    if (type !== 'contest') {
+      const savedSession = localStorage.getItem(resumeKey);
+      if (savedSession) {
+        try {
+          const parsed = JSON.parse(savedSession);
+          // Only resume if saved within last 3 hours
+          const ageMs = Date.now() - (parsed.savedAt || 0);
+          if (ageMs < 3 * 60 * 60 * 1000) {
+            setResumeData(parsed);
+          } else {
+            localStorage.removeItem(resumeKey); // stale — discard
+          }
+        } catch (e) {
+          localStorage.removeItem(resumeKey);
+        }
+      }
+    }
   }, []);
+
+  // Countdown tick — runs at top level, only meaningful when step === 'contest-waiting'
+  useEffect(() => {
+    if (step !== 'contest-waiting') return;
+    const iv = setInterval(() => {
+      setCountdown(getSecondsToStart(contestData));
+    }, 1000);
+    return () => clearInterval(iv);
+  }, [step, contestData]);
 
   const downloadOffline = async () => {
     try {
@@ -46,7 +100,22 @@ const DailyExam = ({ type }) => {
     }
   };
 
+  const clearResumeData = () => localStorage.removeItem(resumeKey);
+
+  const resumeExam = () => {
+    if (!resumeData) return;
+    setQuestions(resumeData.questions);
+    setExam(resumeData.exam);
+    setAnswers(resumeData.answers);
+    setCurrentIndex(resumeData.currentIndex);
+    setTimeLeft(resumeData.timeLeft);
+    setConfig(resumeData.config || { qCount: 30, timeLimit: 30 });
+    setResumeData(null);
+    setStep('exam');
+  };
+
   const startExam = async () => {
+    clearResumeData(); // Fresh start clears any saved session
     setStep('loading');
     
     // Cycle loading text to keep user engaged while Render wakes up
@@ -105,25 +174,28 @@ const DailyExam = ({ type }) => {
     }
   };
 
-  // Auto-start for specific exam types
+  // Auto-start for specific exam types — but ONLY if there's no saved resume session
   useEffect(() => {
-    if (step === 'config') {
-      if (type === 'contest') {
-        setConfig({ qCount: 20, timeLimit: 30 });
-        startExam();
-      } else if (type === 'full-mock') {
-        setConfig({ qCount: 150, timeLimit: 150 });
-        startExam();
-      } else if (type === 'important') {
-        setConfig({ qCount: 30, timeLimit: 30 });
-        startExam();
-      } else if (type === 'daily') {
-        setConfig({ qCount: 30, timeLimit: 30 });
-        startExam();
-      } else if (type === 'year') {
-        setConfig({ qCount: 30, timeLimit: 30 });
-        startExam();
-      }
+    if (step !== 'config') return;
+    // If a resume session exists, stay on config so the resume banner is shown
+    const savedSession = localStorage.getItem(resumeKey);
+    if (savedSession) return; // let the banner handle it
+
+    if (type === 'contest') {
+      setConfig({ qCount: 20, timeLimit: 30 });
+      startExam();
+    } else if (type === 'full-mock') {
+      setConfig({ qCount: 150, timeLimit: 150 });
+      startExam();
+    } else if (type === 'important') {
+      setConfig({ qCount: 30, timeLimit: 30 });
+      startExam();
+    } else if (type === 'daily') {
+      setConfig({ qCount: 30, timeLimit: 30 });
+      startExam();
+    } else if (type === 'year') {
+      setConfig({ qCount: 30, timeLimit: 30 });
+      startExam();
     }
   }, [type]);
 
@@ -177,8 +249,42 @@ const DailyExam = ({ type }) => {
     return () => clearInterval(timer);
   }, [step, result, exam]);
 
+  // Auto-save exam progress every time answers or currentIndex changes
+  useEffect(() => {
+    if (step !== 'exam' || !exam || !questions.length) return;
+    const sessionData = {
+      questions,
+      exam,
+      answers,
+      currentIndex,
+      timeLeft,
+      config,
+      savedAt: Date.now()
+    };
+    localStorage.setItem(resumeKey, JSON.stringify(sessionData));
+  }, [answers, currentIndex, step]);
+
+  // Also save timeLeft every 10 seconds so timer stays roughly accurate
+  useEffect(() => {
+    if (step !== 'exam' || !exam || !questions.length) return;
+    const interval = setInterval(() => {
+      const sessionData = {
+        questions,
+        exam,
+        answers,
+        currentIndex,
+        timeLeft,
+        config,
+        savedAt: Date.now()
+      };
+      localStorage.setItem(resumeKey, JSON.stringify(sessionData));
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [step, exam, questions, answers, currentIndex, timeLeft]);
+
   const handleSubmit = async () => {
     setSubmitting(true);
+    clearResumeData(); // Exam done — clear saved session
     try {
       const token = localStorage.getItem('token');
       const formattedAnswers = Object.entries(answers).map(([qid, opt]) => ({ question_id: qid, selected_option: opt }));
@@ -212,11 +318,11 @@ const DailyExam = ({ type }) => {
         
         <div className="space-y-3">
           <label className="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-1">{t.questions}</label>
-          <div className="flex gap-3">
-            {[10, 20, 30].map(n => (
+          <div className="flex gap-2">
+            {[10, 20, 30, 50].map(n => (
               <button 
                 key={n} 
-                className={`flex-1 py-4 rounded-2xl text-sm font-black transition-all border-2 ${
+                className={`flex-1 py-4 rounded-xl text-sm font-black transition-all border-2 ${
                   config.qCount === n 
                     ? 'border-sky-500 bg-sky-500/10 text-[var(--text-primary)] shadow-lg shadow-sky-500/10' 
                     : 'border-white/5 bg-white/5 text-[var(--text-secondary)] hover:border-white/10'
@@ -229,6 +335,7 @@ const DailyExam = ({ type }) => {
           </div>
         </div>
 
+
         <div className="space-y-3">
           <label className="text-[10px] uppercase tracking-widest text-slate-500 font-black ml-1">{t.timeLimit} (Minutes)</label>
           <input 
@@ -238,6 +345,40 @@ const DailyExam = ({ type }) => {
           />
           <div className="text-center text-lg font-black text-[var(--text-primary)]">{config.timeLimit} Minutes</div>
         </div>
+
+        {/* Resume Banner — shown if a previous session exists */}
+        {resumeData && (
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="text-2xl">⚡</div>
+              <div>
+                <h4 className="font-black text-amber-400 text-sm">
+                  {lang === 'HI' ? 'अधूरी परीक्षा मिली!' : 'Unfinished Exam Found!'}
+                </h4>
+                <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+                  {lang === 'HI'
+                    ? `${resumeData.currentIndex + 1}/${resumeData.questions?.length} प्रश्न पूरे — ⏱️ ${Math.floor((resumeData.timeLeft || 0) / 60)} मिनट बचे`
+                    : `Question ${resumeData.currentIndex + 1}/${resumeData.questions?.length} — ⏱️ ${Math.floor((resumeData.timeLeft || 0) / 60)} min left`
+                  }
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={resumeExam}
+                className="flex-1 py-3 rounded-xl bg-amber-500 text-white font-black text-xs flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-amber-500/20"
+              >
+                <RotateCcw size={14} /> {lang === 'HI' ? 'वहीं से जारी रखें' : 'Resume Exam'}
+              </button>
+              <button
+                onClick={() => { clearResumeData(); setResumeData(null); }}
+                className="px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-slate-400 font-black text-xs active:scale-95 transition-all"
+              >
+                {lang === 'HI' ? 'नई शुरुआत' : 'Start Fresh'}
+              </button>
+            </div>
+          </div>
+        )}
 
         <button 
           className="premium-button w-full py-5 rounded-2xl font-black text-white text-lg shadow-xl shadow-sky-500/20"
@@ -291,6 +432,7 @@ const DailyExam = ({ type }) => {
         <button 
           onClick={() => {
             if (window.confirm(t.confirmExit || "Quit exam? Your progress will be lost.")) {
+              clearResumeData();
               navigate('/dashboard');
             }
           }}
@@ -363,74 +505,162 @@ const DailyExam = ({ type }) => {
   );
 
   // CONTEST WAITING ROOM
-  if (step === 'contest-waiting') return (
-    <div className="flex flex-col gap-6 px-5 pt-8 pb-32 max-w-md mx-auto w-full animate-fade-in">
-      <div className="flex justify-start px-1">
-        <button 
-          onClick={() => navigate('/dashboard')}
-          className="text-[9px] font-black text-slate-500 uppercase tracking-widest bg-white/5 px-4 py-2 rounded-full border border-white/10"
-        >
-          ← {t.returnDash}
-        </button>
-      </div>
+  if (step === 'contest-waiting') {
 
-      <div className="glass-card text-center space-y-6 bg-gradient-to-br from-sky-500/10 to-indigo-500/10 border-sky-500/30 shadow-2xl">
-        <div className="w-20 h-20 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto animate-pulse">
-          <Trophy size={40} className="text-sky-400" />
-        </div>
-        
-        <div>
-          <h2 className="text-2xl font-black text-[var(--text-primary)]">{t.waitingRoom || 'Waiting Room'} 🛋️</h2>
-          <p className="text-sm text-slate-400 font-medium mt-1">
-            {t.timeToStart || 'Starts at'} {contestData?.startTime ? new Date(contestData.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'}
-          </p>
-        </div>
+    return (
+      <div className="flex flex-col min-h-screen bg-[var(--bg-main)] pb-10">
+        {/* Hero Header */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-indigo-900/80 via-sky-900/60 to-purple-900/80 px-5 pt-12 pb-10 flex flex-col items-center text-center gap-4">
+          {/* Animated background circles */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full bg-sky-500/10 blur-3xl animate-pulse pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-48 h-48 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none" />
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-            <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">{t.registeredUsers || 'Registered'}</div>
-            <div className="text-2xl font-black text-sky-400">{contestData?.registrationCount || 0}</div>
-          </div>
-          <div className="bg-white/5 rounded-2xl p-4 border border-white/5 relative group cursor-pointer active:scale-95 transition-all" onClick={() => startExam()}>
-            <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Status</div>
-            <div className="text-sm font-black text-emerald-400 flex items-center justify-center gap-1">
-              Ready <Clock size={12} className="animate-spin-slow" />
-            </div>
-            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-2xl transition-opacity">
-              <span className="text-[8px] font-black uppercase tracking-widest">Refresh</span>
+          {/* Back button */}
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="absolute top-4 left-4 text-[9px] font-black text-slate-400 uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all flex items-center gap-1.5"
+          >
+            ← Back
+          </button>
+
+          {/* Trophy icon */}
+          <div className="relative z-10">
+            <div className="absolute inset-0 bg-amber-400/30 blur-2xl rounded-full animate-pulse" />
+            <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 border-2 border-amber-400/30 flex items-center justify-center shadow-2xl shadow-amber-500/20">
+              <Trophy size={44} className="text-amber-400 drop-shadow-lg" />
             </div>
           </div>
+
+          {/* Title */}
+          <div className="relative z-10 space-y-1">
+            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-400">
+              {lang === 'HI' ? 'लाइव प्रतियोगिता' : 'Live Contest'}
+            </div>
+            <h1 className="text-3xl font-black text-white">
+              {lang === 'HI' ? 'प्रतीक्षा कक्ष' : 'Waiting Room'}
+            </h1>
+            <p className="text-slate-400 text-sm font-medium">
+              {lang === 'HI' ? 'प्रतियोगिता शुरू होने में' : 'Contest starts in'}
+            </p>
+          </div>
+
+          {/* Countdown Timer */}
+          <div className="relative z-10 bg-white/5 border border-white/10 rounded-3xl px-8 py-5 backdrop-blur-sm shadow-xl mt-1">
+            <div className="font-black text-4xl text-white tracking-widest tabular-nums">
+              {fmtCountdown(countdown)}
+            </div>
+            <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1 text-center">
+              HH : MM : SS
+            </div>
+          </div>
+
+          {/* Start time pill */}
+          <div className="relative z-10 flex items-center gap-2 bg-sky-500/10 border border-sky-500/20 px-4 py-2 rounded-full">
+            <Clock size={12} className="text-sky-400" />
+            <span className="text-xs font-black text-sky-400">
+              {lang === 'HI' ? 'शुरू होगा' : 'Starts at'} {contestData?.startTimeIST || '--:--'} IST
+            </span>
+          </div>
         </div>
 
-        <div className="space-y-3 text-left">
-          <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
-             <CheckCircle2 size={12} /> {lang === 'HI' ? 'लाइव छात्र' : 'Live Participants'}
-          </h4>
-          <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-1 custom-scrollbar">
-            {participants && participants.length > 0 ? participants.map((p, i) => (
-              <div key={i} className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-slate-300 flex items-center gap-1.5">
-                <div className={`w-1.5 h-1.5 rounded-full ${p.isAdmin ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
-                {p.name}
+        {/* Body */}
+        <div className="flex flex-col gap-4 px-5 pt-5 max-w-md mx-auto w-full">
+
+          {/* Stats Row */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="glass-card !p-4 text-center space-y-1">
+              <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                {lang === 'HI' ? 'पंजीकृत' : 'Registered'}
               </div>
-            )) : (
-              <p className="text-[10px] text-slate-500 italic ml-1">Fetching participants...</p>
+              <div className="text-3xl font-black text-sky-400">{contestData?.registrationCount || 0}</div>
+              <div className="text-[9px] text-slate-500 font-bold">
+                {lang === 'HI' ? 'छात्र' : 'Students'}
+              </div>
+            </div>
+            <div className="glass-card !p-4 text-center space-y-1">
+              <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                {lang === 'HI' ? 'अवधि' : 'Duration'}
+              </div>
+              <div className="text-3xl font-black text-emerald-400">{contestData?.duration || 50}</div>
+              <div className="text-[9px] text-slate-500 font-bold">
+                {lang === 'HI' ? 'मिनट' : 'Minutes'}
+              </div>
+            </div>
+          </div>
+
+          {/* Live Participants */}
+          <div className="glass-card space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-black text-[var(--text-primary)] flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse inline-block" />
+                {lang === 'HI' ? 'अभी ऑनलाइन' : 'Online Now'}
+              </h3>
+              <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                {participants?.length || 0} {lang === 'HI' ? 'लाइव' : 'live'}
+              </span>
+            </div>
+
+            {participants && participants.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {participants.map((p, i) => (
+                  <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-slate-300">
+                    <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${p.isAdmin ? 'bg-amber-400' : 'bg-emerald-400'}`} />
+                    {p.name}
+                    {p.isAdmin && <span className="text-[8px] text-amber-400 font-black">(Admin)</span>}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 py-2">
+                <div className="flex gap-1">
+                  {[0,1,2].map(i => (
+                    <div key={i} className="w-6 h-6 rounded-full bg-white/10 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
+                  ))}
+                </div>
+                <p className="text-[10px] text-slate-500 italic">{lang === 'HI' ? 'छात्र लोड हो रहे हैं...' : 'Loading participants...'}</p>
+              </div>
             )}
           </div>
-        </div>
 
-        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-500 font-bold leading-relaxed">
-          ⚠️ Please do not close this page. The test will automatically refresh when it goes live.
-        </div>
+          {/* Auto-refresh notice */}
+          <div className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4">
+            <span className="text-lg mt-0.5">⚡</span>
+            <div>
+              <p className="text-xs font-black text-amber-400 mb-0.5">
+                {lang === 'HI' ? 'यह पेज बंद न करें' : 'Do not close this page'}
+              </p>
+              <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                {lang === 'HI'
+                  ? 'जैसे ही प्रतियोगिता लाइव होगी, यह पेज अपने आप शुरू हो जाएगा।'
+                  : 'The exam will automatically launch the moment the contest goes live.'}
+              </p>
+            </div>
+          </div>
 
-        <button 
-          disabled
-          className="w-full py-5 rounded-2xl bg-slate-800 text-slate-500 font-black text-lg cursor-not-allowed border border-white/5"
-        >
-          Waiting for Live...
-        </button>
+          {/* Animated waiting button */}
+          <div className="relative rounded-2xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-sky-600/30 via-indigo-600/30 to-sky-600/30 animate-pulse" />
+            <button
+              disabled
+              className="relative w-full py-5 rounded-2xl font-black text-slate-400 text-sm border border-white/10 bg-white/5 flex items-center justify-center gap-3 cursor-not-allowed"
+            >
+              <div className="flex gap-1">
+                {[0,1,2].map(i => (
+                  <div
+                    key={i}
+                    className="w-2 h-2 rounded-full bg-sky-500 animate-bounce"
+                    style={{ animationDelay: `${i * 0.15}s` }}
+                  />
+                ))}
+              </div>
+              {lang === 'HI' ? 'लाइव होने की प्रतीक्षा में...' : 'Waiting for Contest to Go Live...'}
+            </button>
+          </div>
+
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
   if (step === 'loading') return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 px-5 max-w-md mx-auto w-full animate-fade-in">
       <div className="relative">
@@ -594,8 +824,13 @@ const DailyExam = ({ type }) => {
         <div className="flex justify-between items-center px-1">
           <button 
             onClick={() => {
-              if (window.confirm(t.confirmExit || "Quit exam? Your progress will be lost.")) {
-                navigate('/dashboard');
+              const choice = window.confirm(
+                lang === 'HI'
+                  ? 'परीक्षा छोड़ रहे हैं?\n\n✅ OK = बाहर जाएं (प्रगति सहेजी गई - वापस आने पर जारी रख सकते हैं)\n❌ Cancel = परीक्षा जारी रखें'
+                  : 'Exit Exam?\n\n✅ OK = Exit (progress saved — you can resume when you return)\n❌ Cancel = Continue exam'
+              );
+              if (choice) {
+                navigate('/dashboard'); // progress stays saved in localStorage
               }
             }}
             className="flex items-center gap-1.5 py-1.5 px-3 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/20 text-[10px] font-black uppercase tracking-wider active:scale-95 transition-all"
