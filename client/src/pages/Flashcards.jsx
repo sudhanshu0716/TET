@@ -186,10 +186,10 @@ const Flashcards = () => {
       <div className="flex-1 flex flex-col justify-center items-center gap-12">
         {/* Flashcard Container */}
         <div 
-          className="perspective-1000 w-full h-80 cursor-pointer"
+          className="relative perspective-1000 w-full h-80 cursor-pointer"
           onClick={() => setFlipped(!flipped)}
         >
-          <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
+          <div className={`absolute inset-0 w-full h-full transition-transform duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
             {/* Front */}
             <div className="absolute inset-0 w-full h-full backface-hidden glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-white/5 shadow-2xl">
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 mb-4 opacity-50">Who is / What is</span>
@@ -200,8 +200,8 @@ const Flashcards = () => {
             </div>
             
             {/* Back */}
-            <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent overflow-y-auto">
-              <div className="space-y-6">
+            <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180 glass-card flex flex-col items-center justify-center p-8 text-center border-2 border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
+              <div className="w-full max-h-full overflow-y-auto space-y-6 pr-1">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400 mb-2 block opacity-80">English</span>
                   <p className="text-sm font-bold text-[var(--text-primary)] leading-relaxed italic">
