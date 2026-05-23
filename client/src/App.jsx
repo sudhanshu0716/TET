@@ -11,6 +11,7 @@ import DailyExam from './pages/DailyExam';
 import Cheatsheets from './pages/Cheatsheets';
 import AdminDashboard from './pages/AdminDashboard';
 import CommunityUpload from './pages/CommunityUpload';
+import AutomationPanel from './pages/AutomationPanel';
 import ResultAnalysis from './pages/ResultAnalysis';
 import Flashcards from './pages/Flashcards';
 import Exams from './pages/Exams';
@@ -138,6 +139,7 @@ function AppContent() {
               <Route path="/cheatsheets" element={<Cheatsheets />} />
               <Route path="/exam-result/:examId" element={<ResultAnalysis />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/automation" element={<AutomationPanel />} />
               <Route path="/upload" element={<CommunityUpload />} />
               <Route path="/flashcards" element={<Flashcards />} />
               <Route path="/subscription" element={<Subscription />} />

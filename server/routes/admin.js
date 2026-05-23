@@ -458,5 +458,135 @@ router.post('/reset-subject-stats', [auth, adminAuth], async (req, res) => {
   }
 });
 
+// Helper to get GitHub Axios Client
+const getGithubClient = async () => {
+  let token = process.env.GITHUB_TOKEN;
+  let owner = process.env.GITHUB_OWNER;
+  let repo = process.env.GITHUB_REPO;
+
+  const settings = await GlobalSettings.findOne();
+  if (settings) {
+    if (!token && settings.github_token) token = settings.github_token;
+    if (!owner && settings.github_owner) owner = settings.github_owner;
+    if (!repo && settings.github_repo) repo = settings.github_repo;
+  }
+
+  if (!token || !owner || !repo) {
+    throw new Error('GitHub integration is not fully configured. Please set GITHUB_TOKEN, GITHUB_OWNER, and GITHUB_REPO.');
+  }
+
+  const axios = require('axios');
+  return {
+    token,
+    owner,
+    repo,
+    client: axios.create({
+      baseURL: `https://api.github.com/repos/${owner}/${repo}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'User-Agent': 'TET-Prep-App-Automation-Panel'
+      }
+    })
+  };
+};
+
+// @route   GET api/admin/automation/config
+// @desc    Get GitHub integration status
+router.get('/automation/config', [auth, adminAuth], async (req, res) => {
+  try {
+    let token = process.env.GITHUB_TOKEN || '';
+    let owner = process.env.GITHUB_OWNER || '';
+    let repo = process.env.GITHUB_REPO || '';
+
+    const settings = await GlobalSettings.findOne();
+    if (settings) {
+      if (!token && settings.github_token) token = settings.github_token;
+      if (!owner && settings.github_owner) owner = settings.github_owner;
+      if (!repo && settings.github_repo) repo = settings.github_repo;
+    }
+
+    res.json({
+      is_configured: !!(token && owner && repo),
+      owner,
+      repo,
+      has_token: !!token
+    });
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   POST api/admin/automation/config
+// @desc    Save GitHub integration settings
+router.post('/automation/config', [auth, adminAuth], async (req, res) => {
+  const { token, owner, repo } = req.body;
+  try {
+    let settings = await GlobalSettings.findOne();
+    if (!settings) settings = new GlobalSettings();
+
+    if (token) settings.github_token = token;
+    if (owner) settings.github_owner = owner;
+    if (repo) settings.github_repo = repo;
+    settings.last_updated = new Date();
+    
+    await settings.save();
+    res.json({ message: 'GitHub configuration updated successfully!' });
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/admin/automation/workflows
+// @desc    Get GitHub action workflows and runs
+router.get('/automation/workflows', [auth, adminAuth], async (req, res) => {
+  try {
+    const { client } = await getGithubClient();
+    const workflowsRes = await client.get('/actions/workflows');
+    const runsRes = await client.get('/actions/runs?per_page=15');
+    res.json({
+      workflows: workflowsRes.data.workflows || [],
+      runs: runsRes.data.workflow_runs || []
+    });
+  } catch (err) {
+    console.error('Workflows Fetch Error:', err.message);
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// @route   POST api/admin/automation/workflows/:workflowId/trigger
+// @desc    Trigger GitHub workflow dispatch
+router.post('/automation/workflows/:workflowId/trigger', [auth, adminAuth], async (req, res) => {
+  const { ref } = req.body;
+  try {
+    const { client } = await getGithubClient();
+    await client.post(`/actions/workflows/${req.params.workflowId}/dispatches`, {
+      ref: ref || 'main'
+    });
+    res.json({ message: 'Workflow trigger request sent successfully!' });
+  } catch (err) {
+    console.error('Workflow Trigger Error:', err.message);
+    res.status(400).json({ message: err.response?.data?.message || err.message });
+  }
+});
+
+// @route   GET api/admin/automation/runs/:runId/details
+// @desc    Get detailed jobs and steps for a workflow run
+router.get('/automation/runs/:runId/details', [auth, adminAuth], async (req, res) => {
+  try {
+    const { client } = await getGithubClient();
+    const runRes = await client.get(`/actions/runs/${req.params.runId}`);
+    const jobsRes = await client.get(`/actions/runs/${req.params.runId}/jobs`);
+    res.json({
+      run: runRes.data,
+      jobs: jobsRes.data.jobs || []
+    });
+  } catch (err) {
+    console.error('Run Details Error:', err.message);
+    res.status(400).json({ message: err.message });
+  }
+});
+
 module.exports = router;
 

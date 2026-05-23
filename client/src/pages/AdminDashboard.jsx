@@ -7,8 +7,10 @@ import {
   Edit2, X, KeyRound, Copy
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const { logout } = useAuth();
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -330,6 +332,28 @@ const AdminDashboard = () => {
           <LogOut size={20} />
         </button>
       </header>
+
+      {/* DevOps / Automation Panel Navigation */}
+      <div 
+        onClick={() => navigate('/admin/automation')}
+        className="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white shadow-xl shadow-purple-500/20 border border-white/10 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all group"
+      >
+        <div className="space-y-1 relative z-10">
+          <span className="text-[9px] font-black uppercase tracking-widest bg-white/20 px-2.5 py-0.5 rounded-full text-white">
+            DevOps & Actions Runs
+          </span>
+          <h3 className="text-lg font-black tracking-tight mt-1 flex items-center gap-2">
+            🤖 Automation Control Center
+          </h3>
+          <p className="text-[11px] text-white/90 font-medium leading-relaxed max-w-[280px]">
+            Trigger GitHub Action workflows and monitor build outputs in real-time.
+          </p>
+        </div>
+        <div className="text-3xl relative z-10 group-hover:rotate-12 transition-transform duration-300">
+          🚀
+        </div>
+        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-3">

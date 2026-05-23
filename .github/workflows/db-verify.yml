@@ -1,0 +1,32 @@
+name: DB Integrity Verification
+
+on:
+  workflow_dispatch: # Allows manual trigger from the UI/API
+
+jobs:
+  verify:
+    name: Verify Database Sanity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install Server Dependencies
+        run: |
+          cd server
+          npm install
+
+      - name: Verify Database Connectivity & Counts
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: |
+          cd server
+          node verify_db.js
+          node verify_questions.js

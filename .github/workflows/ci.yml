@@ -1,0 +1,58 @@
+name: CI Code Quality Check
+
+on:
+  push:
+    branches: [ main, asha-ai ]
+  pull_request:
+    branches: [ main, asha-ai ]
+  workflow_dispatch: # Allows manual trigger from the UI/API
+
+jobs:
+  validate-client:
+    name: Build Client
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install Client Dependencies
+        run: |
+          cd client
+          npm install
+
+      - name: Build Client
+        run: |
+          cd client
+          npm run build
+
+  validate-server:
+    name: Build Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install Server Dependencies
+        run: |
+          cd server
+          npm install
+
+      - name: Check Server Syntax
+        run: |
+          cd server
+          node -c index.js
+          node -c routes/*.js
