@@ -588,5 +588,18 @@ router.get('/automation/runs/:runId/details', [auth, adminAuth], async (req, res
   }
 });
 
+// @route   GET api/admin/automation/branches
+// @desc    Get repository branches
+router.get('/automation/branches', [auth, adminAuth], async (req, res) => {
+  try {
+    const { client } = await getGithubClient();
+    const branchesRes = await client.get('/branches');
+    res.json(branchesRes.data.map(b => b.name));
+  } catch (err) {
+    console.error('Branches Fetch Error:', err.message);
+    res.status(400).json({ message: err.message });
+  }
+});
+
 module.exports = router;
 

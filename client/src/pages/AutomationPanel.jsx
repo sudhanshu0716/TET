@@ -27,6 +27,7 @@ const AutomationPanel = () => {
   const [loadingWorkflows, setLoadingWorkflows] = useState(false);
   const [triggeringId, setTriggeringId] = useState(null);
   const [targetBranches, setTargetBranches] = useState({}); // mapping workflow.id -> branchName
+  const [branches, setBranches] = useState([]); // repository branches list
 
   // Detail Modal States
   const [activeRun, setActiveRun] = useState(null);
@@ -42,6 +43,19 @@ const AutomationPanel = () => {
     setTimeout(() => setToast(null), 4000);
   };
 
+  // Fetch branches from backend
+  const fetchBranches = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await api.get('/api/admin/automation/branches', {
+        headers: { 'x-auth-token': token }
+      });
+      setBranches(res.data || []);
+    } catch (err) {
+      console.error('Error fetching branches:', err);
+    }
+  };
+
   // 1. Fetch Config
   const fetchConfigStatus = async () => {
     try {
@@ -54,6 +68,7 @@ const AutomationPanel = () => {
         setShowConfigForm(true);
       } else {
         fetchWorkflowsAndRuns();
+        fetchBranches();
       }
     } catch (err) {
       console.error(err);
@@ -441,16 +456,33 @@ const AutomationPanel = () => {
                           <GitBranch className="text-purple-400 shrink-0" size={14} />
                           <div className="flex-1 min-w-0">
                             <label className="text-[7px] font-black text-slate-500 uppercase tracking-widest block">Branch Ref</label>
-                            <input
-                              type="text"
-                              value={targetBranches[workflow.id] || 'main'}
-                              onChange={(e) => setTargetBranches({
-                                ...targetBranches,
-                                [workflow.id]: e.target.value
-                              })}
-                              className="w-full bg-transparent text-[11px] font-bold text-slate-200 outline-none mt-0.5 border-none p-0 focus:ring-0"
-                              placeholder="e.g. main"
-                            />
+                            {branches.length > 0 ? (
+                              <select
+                                value={targetBranches[workflow.id] || 'main'}
+                                onChange={(e) => setTargetBranches({
+                                  ...targetBranches,
+                                  [workflow.id]: e.target.value
+                                })}
+                                className="w-full bg-transparent text-[11px] font-bold text-slate-200 outline-none mt-0.5 border-none p-0 focus:ring-0 cursor-pointer appearance-none"
+                              >
+                                {branches.map(branchName => (
+                                  <option key={branchName} value={branchName} className="bg-[#0B0F19] text-white">
+                                    {branchName}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                type="text"
+                                value={targetBranches[workflow.id] || 'main'}
+                                onChange={(e) => setTargetBranches({
+                                  ...targetBranches,
+                                  [workflow.id]: e.target.value
+                                })}
+                                className="w-full bg-transparent text-[11px] font-bold text-slate-200 outline-none mt-0.5 border-none p-0 focus:ring-0"
+                                placeholder="e.g. main"
+                              />
+                            )}
                           </div>
                         </div>
                       </div>
