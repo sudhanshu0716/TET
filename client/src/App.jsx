@@ -30,6 +30,7 @@ import { Settings, ShieldAlert, Sparkles, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PremiumModal from './components/PremiumModal';
 import { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 
 function AppContent() {
   const { user, loading } = useAuth();
@@ -164,6 +165,7 @@ function App() {
       <AuthProvider>
         <Router>
           <AppContent />
+          <Analytics />
         </Router>
       </AuthProvider>
     </ThemeProvider>
