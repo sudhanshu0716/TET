@@ -51,10 +51,8 @@ jobs:
         uses: grafana/k6-action@v0.3.1
         with:
           filename: tests/load/test.js
-          flags: |
-            --env TARGET_URL=${{ github.event.inputs.target_url != '' && github.event.inputs.target_url || 'https://tet-exam-lake.vercel.app' }}
-            --vus ${{ github.event.inputs.vus != '' && github.event.inputs.vus || '50' }}
-            --duration ${{ github.event.inputs.duration != '' && github.event.inputs.duration || '30s' }}
+          flags: --env TARGET_URL=${{ github.event.inputs.target_url != '' && github.event.inputs.target_url || 'https://tet-exam-lake.vercel.app' }} --vus ${{ github.event.inputs.vus != '' && github.event.inputs.vus || '50' }} --duration ${{ github.event.inputs.duration != '' && github.event.inputs.duration || '30s' }}
+
 
       - name: Check generated summary
         run: |
