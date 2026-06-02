@@ -1,0 +1,89 @@
+name: Load Test with k6
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: "Target URL to load test (e.g., Vercel deployment or staging API URL)"
+        required: true
+        default: "https://tet-exam-lake.vercel.app"
+      vus:
+        description: "Number of concurrent virtual users (VUs)"
+        required: true
+        default: "50"
+      duration:
+        description: "Test duration (e.g., 15s, 30s, 1m, 3m)"
+        required: true
+        default: "30s"
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    types: [ closed ]
+
+jobs:
+  k6-test:
+    name: High Concurrency Load Test
+    # Execute if manual trigger, push on main, or closed PR on main is merged
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Wait for Deployment to settle (3 minutes)
+        # Delay automatic runs to let the main branch live deployment complete and settle
+        if: github.event_name != 'workflow_dispatch'
+        run: |
+          echo "Waiting 3 minutes for deployment to settle on main branch..."
+          sleep 180
+
+      - name: Run k6 load test
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: tests/load/test.js
+          flags: |
+            --env TARGET_URL=${{ github.event.inputs.target_url != '' && github.event.inputs.target_url || 'https://tet-exam-lake.vercel.app' }}
+            --vus ${{ github.event.inputs.vus != '' && github.event.inputs.vus || '50' }}
+            --duration ${{ github.event.inputs.duration != '' && github.event.inputs.duration || '30s' }}
+
+      - name: Check generated summary
+        run: |
+          if [ -f summary.json ]; then
+            ls -lh summary.json
+          else
+            echo "❌ Error: summary.json was not created!"
+            exit 1
+          fi
+
+      - name: Compile Performance Report
+        if: always()
+        run: node tests/load/generate_report.js
+
+      - name: Check generated report HTML
+        if: always()
+        run: |
+          if [ -f load-test-report.html ]; then
+            ls -lh load-test-report.html
+          else
+            echo "❌ Error: load-test-report.html was not created!"
+          fi
+
+      - name: Upload Performance Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-load-test-performance-report
+          path: |
+            summary.json
+            load-test-report.html
+          retention-days: 30
