@@ -4,8 +4,10 @@ import { Volume2, VolumeX, Search, ArrowLeft, Sparkles, BookOpen, ChevronDown, C
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import translations from '../translations';
+import { useCustomModal } from '../context/ModalContext';
 
 const SuperTricks = () => {
+  const { showAlert } = useCustomModal();
   const [tricks, setTricks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -102,11 +104,11 @@ const SuperTricks = () => {
   }, [playingId]);
 
   // Handle Text to Speech
-  const handlePlayVoice = (e, trick) => {
+  const handlePlayVoice = async (e, trick) => {
     e.stopPropagation(); // Avoid card click expansion triggering
 
     if (!synthRef.current) {
-      alert("Text-to-speech is not supported in this browser.");
+      await showAlert("Text-to-speech is not supported in this browser.", "Not Supported");
       return;
     }
 

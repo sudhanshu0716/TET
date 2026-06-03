@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import translations from '../translations';
+import { useTheme } from '../context/ThemeContext';
+import { useCustomModal } from '../context/ModalContext';
 
 const ResultAnalysis = () => {
   const { examId } = useParams();
+  const { uiVersion } = useTheme();
+  const { showAlert } = useCustomModal();
   const [data, setData] = useState(null);
   const [reviewIndex, setReviewIndex] = useState(0);
   const navigate = useNavigate();
@@ -19,7 +23,7 @@ const ResultAnalysis = () => {
         setData(res.data);
       } catch (err) {
         console.error(err);
-        alert('Could not fetch exam result');
+        await showAlert('Could not fetch exam result', 'Error');
         navigate('/dashboard');
       }
     };
@@ -90,8 +94,16 @@ const ResultAnalysis = () => {
                   <div key={i} className={`p-4 rounded-xl border transition-all flex items-start gap-3 ${borderClass}`}>
                     <span className={`font-bold shrink-0 ${textClass}`}>{String.fromCharCode(65 + i)}.</span>
                     <span className={`text-xs font-medium ${isCorrect || isSelected ? textClass : 'text-[var(--text-secondary)]'}`}>{opt}</span>
-                    {isCorrect && <span className="ml-auto">✅</span>}
-                    {isSelected && !isCorrect && <span className="ml-auto">❌</span>}
+                    {isCorrect && (
+                      <span className={`ml-auto shrink-0 ${uiVersion === 'v3' ? 'chalk-check' : ''}`}>
+                        {uiVersion === 'v3' ? '' : '✅'}
+                      </span>
+                    )}
+                    {isSelected && !isCorrect && (
+                      <span className={`ml-auto shrink-0 ${uiVersion === 'v3' ? 'chalk-cross' : ''}`}>
+                        {uiVersion === 'v3' ? '' : '❌'}
+                      </span>
+                    )}
                   </div>
                 );
               })}

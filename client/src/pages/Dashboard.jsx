@@ -3,9 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import translations from '../translations';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useCustomModal } from '../context/ModalContext';
 
 const Dashboard = () => {
   const { user: authUser, setUser: setAuthUser } = useAuth();
+  const { uiVersion } = useTheme();
+  const { showAlert } = useCustomModal();
   const [user, setUser] = useState(authUser || (() => {
     try {
       const cached = localStorage.getItem('user');
@@ -122,8 +126,10 @@ const Dashboard = () => {
       const token = localStorage.getItem('token');
       await api.post('/api/contests/register', {}, { headers: { 'x-auth-token': token } });
       setContestStatus({ ...contestStatus, registered: true });
-      alert('Registered successfully! Join at 8:30 PM.');
-    } catch (err) { alert(err.response?.data?.message || 'Registration failed'); }
+      await showAlert('Registered successfully! Join at 8:30 PM.', 'Success');
+    } catch (err) {
+      await showAlert(err.response?.data?.message || 'Registration failed', 'Error');
+    }
   };
 
   if (error) return (
@@ -203,22 +209,74 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Daily Progress Goal */}
-      <div id="tut-daily" className="glass-card !py-4 space-y-3 bg-gradient-to-r from-emerald-500/10 to-transparent border-l-4 border-l-emerald-500">
-        <div className="flex justify-between items-center">
-          <h5 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Today's Goal</h5>
-          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{todaySolved}/25 Qs</span>
+      {/* Daily Progress Goal or V3 Notice Board */}
+      {uiVersion === 'v3' ? (
+        <div className="relative p-6 rounded-2xl bg-[#be9770] border-4 border-[#783f04] shadow-inner font-mono text-slate-900 overflow-hidden flex flex-col gap-4">
+          {/* Cork texture overlay using a subtle gradient pattern */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle,_#d7a87e_10%,_transparent_11%)] bg-[length:8px_8px] opacity-25 pointer-events-none" />
+          <div className="absolute inset-0 bg-black/5 pointer-events-none" />
+          <div className="absolute inset-0 border border-black/10 pointer-events-none" />
+
+          {/* Wooden border shadow */}
+          <div className="absolute inset-1 border-2 border-[#5c3003] opacity-20 pointer-events-none" />
+
+          {/* Notice Board Header with pushpins */}
+          <div className="text-center font-black uppercase text-xs tracking-widest text-[#5c3003] border-b-2 border-dashed border-[#8f5214] pb-2 flex items-center justify-center gap-1.5 relative z-10">
+            📌 {lang === 'HI' ? 'अध्यापक सूचना पट्ट' : 'STAFF ROOM NOTICE BOARD'} 📌
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 relative z-10">
+            {/* Paper Note 1: Daily Target */}
+            <div className="relative bg-[#faf9f5] p-4 shadow-md rotate-[-1deg] border-t-4 border-slate-700 rounded-sm">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-base filter drop-shadow-md select-none">📍</div>
+              <h5 className="text-[10px] font-black uppercase tracking-wider text-slate-700 mb-1">{lang === 'HI' ? 'दैनिक लक्ष्य' : 'DAILY TARGETS'}</h5>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs font-bold text-slate-700">
+                  <span>{lang === 'HI' ? 'हल प्रश्न' : 'Solved Qs'}:</span>
+                  <span>{todaySolved}/25</span>
+                </div>
+                <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-slate-700 transition-all duration-1000"
+                    style={{ width: `${Math.min((todaySolved/25)*100, 100)}%` }}
+                  />
+                </div>
+                <p className="text-[9px] text-slate-500 italic">
+                  {todaySolved >= 25 
+                    ? (lang === 'HI' ? 'अद्भुत! लक्ष्य पूरा हुआ। 🏆' : 'Amazing! Goal reached. Keep it up! 🏆') 
+                    : (lang === 'HI' ? `आज ${Math.max(0, 25 - todaySolved)} और हल करें!` : `Solve ${Math.max(0, 25 - todaySolved)} more to hit your daily goal!`)}
+                </p>
+              </div>
+            </div>
+
+            {/* Paper Note 2: Teacher Quote & Tip */}
+            <div className="relative bg-[#faf9f5] p-4 shadow-md rotate-[1.5deg] border-t-4 border-slate-700 rounded-sm">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-base filter drop-shadow-md select-none">📌</div>
+              <h5 className="text-[10px] font-black uppercase tracking-wider text-slate-700 mb-1">{t.tipTitle || 'DAILY TIP'}</h5>
+              <p className="text-xs text-slate-700 italic leading-relaxed">
+                "{t.tipBody || "Teaching is the greatest act of optimism."}"
+              </p>
+              <span className="text-[8px] block text-right text-slate-500 font-bold uppercase tracking-widest mt-2">— {lang === 'HI' ? 'स्टाफ रूम' : 'Staff Room Advisory'}</span>
+            </div>
+          </div>
         </div>
-        <div className="h-2 w-full bg-slate-200 dark:bg-white/5 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)] transition-all duration-1000"
-            style={{ width: `${Math.min((todaySolved/25)*100, 100)}%` }}
-          />
+      ) : (
+        <div id="tut-daily" className="glass-card !py-4 space-y-3 bg-gradient-to-r from-emerald-500/10 to-transparent border-l-4 border-l-emerald-500">
+          <div className="flex justify-between items-center">
+            <h5 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Today's Goal</h5>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{todaySolved}/25 Qs</span>
+          </div>
+          <div className="h-2 w-full bg-slate-200 dark:bg-white/5 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)] transition-all duration-1000"
+              style={{ width: `${Math.min((todaySolved/25)*100, 100)}%` }}
+            />
+          </div>
+          <p className="text-[10px] text-slate-500 font-medium italic">
+            {todaySolved >= 25 ? "Amazing! Goal reached. Keep it up! 🏆" : `Solve ${Math.max(0, 25 - todaySolved)} more to hit your daily goal!`}
+          </p>
         </div>
-        <p className="text-[10px] text-slate-500 font-medium italic">
-          {todaySolved >= 25 ? "Amazing! Goal reached. Keep it up! 🏆" : `Solve ${Math.max(0, 25 - todaySolved)} more to hit your daily goal!`}
-        </p>
-      </div>
+      )}
 
       {/* Revision Zone Card */}
       <div 
@@ -282,7 +340,41 @@ const Dashboard = () => {
         <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-
+      {/* Classroom Simulator Card */}
+      {/* 
+      <div 
+        onClick={() => navigate('/simulator')}
+        className="glass-card relative overflow-hidden bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent border-l-4 border-l-emerald-500 p-5 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all group"
+      >
+        <div className="space-y-1 z-10">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[9px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+              {lang === 'HI' ? 'नया सिमुलेटर' : 'New Simulator'}
+            </span>
+            {user?.rank_points !== undefined && (
+              <span className="text-[9px] font-black uppercase tracking-widest bg-purple-500/20 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded-full">
+                {(() => {
+                  const pts = user.rank_points || 0;
+                  if (pts < 500) return `${lang === 'HI' ? 'प्रशिक्षण शिक्षक' : 'Intern'} (${pts} XP)`;
+                  if (pts < 1500) return `${lang === 'HI' ? 'सहायक शिक्षक' : 'Assistant'} (${pts} XP)`;
+                  if (pts < 3000) return `${lang === 'HI' ? 'वरिष्ठ शिक्षक' : 'Senior'} (${pts} XP)`;
+                  return `${lang === 'HI' ? 'प्रधानाचार्य' : 'Principal'} (${pts} XP)`;
+                })()}
+              </span>
+            )}
+          </div>
+          <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1.5 flex items-center gap-1.5">
+            {t.classroomSimulator || "Classroom Simulator"} 🏫
+          </h3>
+          <p className="text-xs text-slate-400 font-semibold max-w-[280px]">
+            {t.simulatorDesc || "Step into classroom stories, make decisions, and master child psychology."}
+          </p>
+        </div>
+        <div className="text-3xl z-10 group-hover:scale-110 transition-transform duration-300 animate-bounce">
+          🧑‍🏫
+        </div>
+      </div>
+      */}
       
       {/* Daily Live Contest Card */}
       <div id="tut-contest" className={`glass-card relative overflow-hidden ${contestStatus.status === 'live' ? 'ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/20' : ''}`}>
@@ -349,12 +441,14 @@ const Dashboard = () => {
       </div>
 
       {/* Daily Tip */}
-      <div className="glass-card relative overflow-hidden border-l-4 border-l-sky-500 !py-5 bg-gradient-to-r from-sky-500/10 to-transparent">
-        <h5 className="text-[10px] font-black uppercase tracking-widest text-sky-600 dark:text-sky-400 mb-2 flex items-center gap-2">
-          <span>💡</span> {t.tipTitle}
-        </h5>
-        <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed">"{t.tipBody}"</p>
-      </div>
+      {uiVersion !== 'v3' && (
+        <div className="glass-card relative overflow-hidden border-l-4 border-l-sky-500 !py-5 bg-gradient-to-r from-sky-500/10 to-transparent">
+          <h5 className="text-[10px] font-black uppercase tracking-widest text-sky-600 dark:text-sky-400 mb-2 flex items-center gap-2">
+            <span>💡</span> {t.tipTitle}
+          </h5>
+          <p className="text-sm text-[var(--text-secondary)] italic leading-relaxed">"{t.tipBody}"</p>
+        </div>
+      )}
 
 
       {/* Main Action: Daily Exam */}

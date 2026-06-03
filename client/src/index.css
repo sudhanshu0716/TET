@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Caveat:wght@600;700&family=Playpen+Sans:wght@400;600;800&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -599,3 +600,595 @@ body {
 .theme-v2 .shadow-sky-500\/20 {
   box-shadow: 0 12px 30px -1px rgba(168, 85, 247, 0.4) !important;
 }
+
+/* ========================================== */
+/* UI Theme V3 (Blackboard & Chalk Vibe)     */
+/* ========================================== */
+
+.theme-v3 {
+  /* Dark Mode V3 Defaults - Refined Slate Chalkboard */
+  --bg-primary: #1a1d1c;
+  --bg-secondary: #222625;
+  --text-primary: #fcfcfc;
+  --text-secondary: #9aa19d;
+  --glass-bg: rgba(30, 35, 33, 0.9);
+  --glass-bg-hover: rgba(38, 44, 42, 0.95);
+  --glass-border: rgba(255, 255, 255, 0.28); /* Chalk dashed line border color */
+  --input-bg: rgba(22, 26, 25, 0.9);
+  --nav-bg: rgba(30, 35, 33, 0.95);
+
+  --primary-glow: rgba(255, 255, 255, 0.02);
+  --secondary-glow: rgba(255, 255, 255, 0.01);
+  
+  background-color: var(--bg-primary) !important;
+  /* Realistic chalkboard dusty chalk-grain effect */
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    radial-gradient(rgba(255, 255, 255, 0.015) 2px, transparent 2px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 0%, transparent 100%) !important;
+  background-size: 24px 24px, 48px 48px, 100% 100% !important;
+  background-attachment: fixed !important;
+}
+
+/* Light Mode V3 Defaults - Dry-Erase Whiteboard */
+.theme-v3.light-mode {
+  --bg-primary: #f5f4f0;
+  --bg-secondary: #ebdcd3;
+  --text-primary: #1c1e1d;
+  --text-secondary: #5a615d;
+  --glass-bg: #ffffff;
+  --glass-bg-hover: #faf9f6;
+  --glass-border: rgba(0, 0, 0, 0.22); /* Dry-erase dashed marker border color */
+  --input-bg: #ffffff;
+  --nav-bg: #ffffff;
+  
+  background-color: var(--bg-primary) !important;
+  /* Subtle dry-erase whiteboard / paper texture */
+  background-image: 
+    radial-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.005) 0%, transparent 100%) !important;
+  background-size: 24px 24px, 100% 100% !important;
+  background-attachment: fixed !important;
+}
+
+/* Apply school board fonts and wood frame styles */
+.theme-v3,
+.theme-v3 input,
+.theme-v3 textarea,
+.theme-v3 button,
+.theme-v3 select {
+  font-family: 'Playpen Sans', cursive !important;
+}
+
+.theme-v3 h1, 
+.theme-v3 h2 {
+  font-family: 'Caveat', cursive !important;
+  letter-spacing: 0.03em !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+}
+
+.theme-v3 h3, 
+.theme-v3 h4, 
+.theme-v3 h5, 
+.theme-v3 h6 {
+  font-family: 'Playpen Sans', cursive !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Custom Scrollbars in V3 */
+.theme-v3::-webkit-scrollbar-thumb {
+  background: var(--text-secondary) !important;
+  border-radius: 4px;
+}
+
+/* Chalkboard hand-drawn slate cards */
+.theme-v3 .glass-card {
+  background: var(--glass-bg) !important;
+  border: 2.5px dashed var(--glass-border) !important;
+  /* Organic hand-drawn card contours */
+  border-radius: 255px 20px 225px 20px/20px 225px 20px 255px !important;
+  box-shadow: 2px 6px 16px rgba(0, 0, 0, 0.22) !important;
+  transition: transform 0.22s ease, box-shadow 0.22s ease !important;
+  overflow: hidden;
+}
+
+.theme-v3 .glass-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 2px 10px 22px rgba(0, 0, 0, 0.3) !important;
+  border-color: var(--text-primary) !important;
+}
+
+.theme-v3.light-mode .glass-card {
+  box-shadow: 2px 6px 12px rgba(0, 0, 0, 0.03) !important;
+}
+
+.theme-v3.light-mode .glass-card:hover {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Premium Button as a Chalk Box (Dark Mode: White box, Light Mode: Black box) */
+.theme-v3 .premium-button {
+  background: #fcfcfc !important;
+  color: #0f1311 !important;
+  border: 2px solid #fcfcfc !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 0px rgba(255, 255, 255, 0.15) !important;
+  font-weight: 900 !important;
+}
+
+.theme-v3 .premium-button:hover {
+  background: #f1f1f1 !important;
+  transform: translateY(1px) !important;
+  box-shadow: 0 3px 0px rgba(255, 255, 255, 0.15) !important;
+}
+
+.theme-v3 .premium-button:active {
+  transform: translateY(3px) !important;
+  box-shadow: none !important;
+}
+
+.theme-v3.light-mode .premium-button {
+  background: #121413 !important;
+  color: #faf8f5 !important;
+  border: 2px solid #121413 !important;
+  box-shadow: 0 4px 0px rgba(0, 0, 0, 0.15) !important;
+}
+
+.theme-v3.light-mode .premium-button:hover {
+  background: #232725 !important;
+  box-shadow: 0 3px 0px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Slate Inputs */
+.theme-v3 .glass-input {
+  border-radius: 10px !important;
+  border: 2px solid var(--text-secondary) !important;
+}
+
+.theme-v3 .glass-input:focus {
+  border-color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+
+/* Chalk Text Colors */
+.theme-v3 .text-sky-400 {
+  color: var(--text-primary) !important;
+}
+
+/* Theme V3 Accent Text and badging maps directly to blackboard colors */
+.theme-v3 .text-gradient {
+  background-image: none !important;
+  background-clip: unset !important;
+  -webkit-background-clip: unset !important;
+  color: var(--text-primary) !important;
+}
+
+/* Bottom Nav bar */
+.theme-v3 .bottom-nav-bar {
+  border-radius: 16px !important;
+  border: 3px solid var(--glass-border) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Tab indicator override */
+.theme-v3 .bg-sky-500\/10 {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+.theme-v3.light-mode .bg-sky-500\/10 {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.theme-v3 .border-sky-500 {
+  border-color: var(--text-primary) !important;
+}
+
+.theme-v3 .text-sky-500 {
+  color: var(--text-primary) !important;
+}
+
+.theme-v3 .bg-sky-500 {
+  background-color: var(--text-primary) !important;
+  color: var(--bg-primary) !important;
+}
+
+.theme-v3 .from-sky-500\/10,
+.theme-v3 .from-sky-400 {
+  --tw-gradient-from: rgba(255, 255, 255, 0.05) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), transparent !important;
+}
+
+.theme-v3.light-mode .from-sky-500\/10,
+.theme-v3.light-mode .from-sky-400 {
+  --tw-gradient-from: rgba(0, 0, 0, 0.03) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), transparent !important;
+}
+
+/* Colored Chalk Overrides - Headings & text only */
+.theme-v3 .chalk-yellow { color: #fef08a !important; }
+.theme-v3 .chalk-green { color: #a7f3d0 !important; }
+.theme-v3 .chalk-blue { color: #bae6fd !important; }
+.theme-v3 .chalk-pink { color: #fbcfe8 !important; }
+.theme-v3 .chalk-red { color: #fecaca !important; }
+
+.theme-v3.light-mode .chalk-yellow { color: #b45309 !important; } /* Darker yellow/amber */
+.theme-v3.light-mode .chalk-green { color: #047857 !important; }  /* Darker green */
+.theme-v3.light-mode .chalk-blue { color: #0369a1 !important; }   /* Darker blue */
+.theme-v3.light-mode .chalk-pink { color: #be185d !important; }   /* Darker pink */
+.theme-v3.light-mode .chalk-red { color: #b91c1c !important; }    /* Darker red */
+
+/* Red-Pen / Green-Pen Chalk Marks */
+.theme-v3 .chalk-check::after {
+  content: ' ✔️';
+  color: #a7f3d0 !important;
+  font-weight: 900;
+}
+.theme-v3.light-mode .chalk-check::after {
+  content: ' ✔️';
+  color: #047857 !important;
+}
+.theme-v3 .chalk-cross::after {
+  content: ' ❌';
+  color: #fecaca !important;
+  font-weight: 900;
+}
+.theme-v3.light-mode .chalk-cross::after {
+  content: ' ❌';
+  color: #b91c1c !important;
+}
+
+/* =================================================== */
+/* UI Theme V3 REFINED (Monochrome Blackboard System)  */
+/* =================================================== */
+
+/* Remove neon glowing blobs completely to maintain flat chalkboard layout */
+.theme-v3 .blur-3xl,
+.theme-v3 .blur-2xl,
+.theme-v3 .blur-xl {
+  display: none !important;
+}
+
+/* Neutralize neon gradients on cards to flat chalkboards/whiteboards with dashed borders */
+.theme-v3 .bg-gradient-to-r,
+.theme-v3 .bg-gradient-to-br,
+.theme-v3 .bg-gradient-to-tr,
+.theme-v3 .bg-gradient-to-t {
+  background-image: none !important;
+  background-color: var(--glass-bg) !important;
+  border: 2.5px dashed var(--glass-border) !important;
+  border-radius: 255px 20px 225px 20px/20px 225px 20px 255px !important;
+  box-shadow: 2px 6px 16px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* Light mode card gradients neutralized */
+.theme-v3.light-mode .bg-gradient-to-r,
+.theme-v3.light-mode .bg-gradient-to-br,
+.theme-v3.light-mode .bg-gradient-to-tr,
+.theme-v3.light-mode .bg-gradient-to-t {
+  background-color: var(--glass-bg) !important;
+  box-shadow: 2px 6px 12px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Ensure left accent borders fit the chalkboard hand-drawn style */
+.theme-v3 .border-l-4 {
+  border-left: 4px dashed var(--glass-border) !important;
+}
+
+/* Neutralize digital neon badges and containers to clean outlined chalk slots */
+.theme-v3 .bg-indigo-500\/10,
+.theme-v3 .bg-purple-500\/20,
+.theme-v3 .bg-emerald-500\/10,
+.theme-v3 .bg-emerald-500\/20,
+.theme-v3 .bg-rose-500\/10,
+.theme-v3 .bg-rose-500\/20,
+.theme-v3 .bg-sky-500\/10,
+.theme-v3 .bg-sky-500\/20,
+.theme-v3 .bg-amber-500\/10,
+.theme-v3 .bg-amber-500\/20,
+.theme-v3 .bg-white\/5,
+.theme-v3 .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.theme-v3.light-mode .bg-indigo-500\/10,
+.theme-v3.light-mode .bg-purple-500\/20,
+.theme-v3.light-mode .bg-emerald-500\/10,
+.theme-v3.light-mode .bg-emerald-500\/20,
+.theme-v3.light-mode .bg-rose-500\/10,
+.theme-v3.light-mode .bg-rose-500\/20,
+.theme-v3.light-mode .bg-sky-500\/10,
+.theme-v3.light-mode .bg-sky-500\/20,
+.theme-v3.light-mode .bg-amber-500\/10,
+.theme-v3.light-mode .bg-amber-500\/20,
+.theme-v3.light-mode .bg-white\/5,
+.theme-v3.light-mode .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Neutralize digital neon text highlight classes to standard chalk text color */
+.theme-v3 .text-purple-300,
+.theme-v3 .text-purple-400,
+.theme-v3 .text-purple-500,
+.theme-v3 .text-sky-300,
+.theme-v3 .text-sky-400,
+.theme-v3 .text-sky-500,
+.theme-v3 .text-sky-600,
+.theme-v3 .text-indigo-400,
+.theme-v3 .text-orange-400,
+.theme-v3 .text-amber-300,
+.theme-v3 .text-amber-400,
+.theme-v3 .text-amber-500 {
+  color: var(--text-primary) !important;
+}
+
+/* Map standard correct/incorrect review states to soft chalk red and green values */
+.theme-v3 .text-emerald-400,
+.theme-v3 .text-emerald-500 {
+  color: #a7f3d0 !important;
+}
+.theme-v3.light-mode .text-emerald-400,
+.theme-v3.light-mode .text-emerald-500 {
+  color: #047857 !important;
+}
+
+.theme-v3 .text-rose-400,
+.theme-v3 .text-rose-500,
+.theme-v3 .text-red-400 {
+  color: #fecaca !important;
+}
+.theme-v3.light-mode .text-rose-400,
+.theme-v3.light-mode .text-rose-500,
+.theme-v3.light-mode .text-red-400 {
+  color: #b91c1c !important;
+}
+
+/* Fix visibility of hardcoded white text and slate texts on light whiteboard mode */
+.theme-v3 .text-white,
+.theme-v3 .text-white\/95,
+.theme-v3 .text-white\/90,
+.theme-v3 .text-white\/80,
+.theme-v3 .text-slate-100,
+.theme-v3 .text-slate-200,
+.theme-v3 .text-slate-300,
+.theme-v3 .text-slate-400 {
+  color: var(--text-primary) !important;
+}
+
+.theme-v3.light-mode .text-white,
+.theme-v3.light-mode .text-white\/95,
+.theme-v3.light-mode .text-white\/90,
+.theme-v3.light-mode .text-white\/80,
+.theme-v3.light-mode .text-slate-100,
+.theme-v3.light-mode .text-slate-200,
+.theme-v3.light-mode .text-slate-300,
+.theme-v3.light-mode .text-slate-400,
+.theme-v3.light-mode .text-slate-500 {
+  color: var(--text-primary) !important;
+}
+
+/* Neutralize subtext to chalkboard tray dust grey */
+.theme-v3 .text-slate-500,
+.theme-v3 .text-slate-400,
+.theme-v3 .text-slate-300 {
+  color: var(--text-secondary) !important;
+}
+
+.theme-v3.light-mode .text-slate-500,
+.theme-v3.light-mode .text-slate-400,
+.theme-v3.light-mode .text-slate-300 {
+  color: var(--text-secondary) !important;
+}
+
+/* Remove colored dropshadows completely */
+.theme-v3 .shadow-sky-500\/20,
+.theme-v3 .shadow-purple-500\/20,
+.theme-v3 .shadow-emerald-500\/20,
+.theme-v3 .shadow-amber-500\/20,
+.theme-v3 .shadow-rose-500\/20,
+.theme-v3 .shadow-indigo-500\/20 {
+  box-shadow: none !important;
+}
+
+/* Override profile page avatar to a flat wooden slate */
+.theme-v3 .w-20.h-20 {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+
+/* Flat statistics board panels */
+.theme-v3 .bg-white\/5.border-white\/5 {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.theme-v3.light-mode .bg-white\/5.border-white\/5 {
+  background-color: rgba(0, 0, 0, 0.02) !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Neutralize top progress bar line on exams */
+.theme-v3 .bg-gradient-to-r.from-sky-500.to-indigo-500 {
+  background-image: none !important;
+  background-color: var(--text-primary) !important;
+}
+
+/* Contest waiting room header tray override */
+.theme-v3 .bg-gradient-to-br.from-indigo-900\/80 {
+  background-image: none !important;
+  background-color: var(--bg-secondary) !important;
+  border-bottom: 4px solid var(--glass-border) !important;
+}
+
+/* Chalk-Box Active Indicator Pill style for Tabs */
+.theme-v3 [layoutId="activeTabPill"] {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border: 2px dashed var(--text-primary) !important;
+  box-shadow: none !important;
+}
+.theme-v3.light-mode [layoutId="activeTabPill"] {
+  background-color: rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Force buttons that have white backgrounds to map to chalk buttons */
+.theme-v3 button.bg-white,
+.theme-v3 a.bg-white {
+  background-color: var(--text-primary) !important;
+  color: var(--bg-primary) !important;
+  border: 2px dashed var(--text-primary) !important;
+}
+.theme-v3.light-mode button.bg-white,
+.theme-v3.light-mode a.bg-white {
+  background-color: var(--text-primary) !important;
+  color: var(--bg-primary) !important;
+  border: 2px dashed var(--text-primary) !important;
+}
+
+/* Dynamic active bar in the Bottom Navigation Tray */
+.theme-v3 .bg-sky-400 {
+  background-color: var(--text-primary) !important;
+}
+.theme-v3 .text-sky-400 {
+  color: var(--text-primary) !important;
+}
+.theme-v3 .bottom-nav-bar {
+  background: var(--bg-secondary) !important;
+  border: 2.5px dashed var(--glass-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2) !important;
+}
+.theme-v3.light-mode .bottom-nav-bar {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.04) !important;
+}
+.theme-v3 .bottom-nav-bar div.absolute {
+  box-shadow: none !important;
+}
+
+/* =================================================== */
+/* UI Theme V3 Refinement Details (Chalkboard 2.0 Plus) */
+/* =================================================== */
+
+/* Powdery chalk text shadows for V3 headings and buttons */
+.theme-v3 h1,
+.theme-v3 h2,
+.theme-v3 h3,
+.theme-v3 h4,
+.theme-v3 h5,
+.theme-v3 h6,
+.theme-v3 .premium-button {
+  text-shadow: 0 0 1.5px rgba(255, 255, 255, 0.4), 0 0 3px rgba(255, 255, 255, 0.15) !important;
+}
+
+.theme-v3.light-mode h1,
+.theme-v3.light-mode h2,
+.theme-v3.light-mode h3,
+.theme-v3.light-mode h4,
+.theme-v3.light-mode h5,
+.theme-v3.light-mode h6,
+.theme-v3.light-mode .premium-button {
+  text-shadow: 0 0 0.5px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Card Title Underlines (Hand-Drawn Chalk Lines) */
+.theme-v3 .glass-card h3.font-bold {
+  border-bottom: 2px dashed var(--glass-border) !important;
+  padding-bottom: 6px !important;
+  margin-bottom: 12px !important;
+  display: inline-block !important;
+}
+
+/* Double-lined chalk border for the main CTA challenge card */
+.theme-v3 .glass-card.bg-gradient-to-br.from-sky-600.to-indigo-900 {
+  border: 4.5px double var(--glass-border) !important;
+  border-radius: 255px 20px 225px 20px/20px 225px 20px 255px !important;
+}
+
+/* Skeuomorphic pushpin shadows on the Notice Board */
+.theme-v3 [class*="drop-shadow-md"] {
+  filter: drop-shadow(2px 5px 3px rgba(0, 0, 0, 0.35)) !important;
+}
+
+/* =================================================== */
+/* UI Theme V3 Selected Option & Button Visibility Fixes */
+/* =================================================== */
+
+/* Prevent overlay glow/gradient divs from rendering as cards with dashed borders */
+.theme-v3 .pointer-events-none.bg-gradient-to-r,
+.theme-v3 .pointer-events-none.bg-gradient-to-br,
+.theme-v3 .pointer-events-none.bg-gradient-to-tr,
+.theme-v3 .pointer-events-none.bg-gradient-to-t {
+  background-image: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Selected option card border & background highlight */
+.theme-v3 .border-sky-500\/50,
+.theme-v3 .border-sky-500 {
+  border-color: var(--text-primary) !important;
+  border-style: dashed !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.theme-v3.light-mode .border-sky-500\/50,
+.theme-v3.light-mode .border-sky-500 {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Selected Option Letter/Circle background & icon stroke color fixes */
+.theme-v3 .bg-sky-500.text-white,
+.theme-v3 .bg-sky-500.text-white * {
+  background-color: var(--text-primary) !important;
+  color: var(--bg-primary) !important;
+}
+
+.theme-v3 .bg-sky-500.text-white svg {
+  stroke: var(--bg-primary) !important;
+  color: var(--bg-primary) !important;
+}
+
+/* Force text visibility inside premium buttons with .text-white class */
+.theme-v3 button.premium-button,
+.theme-v3 button.premium-button *,
+.theme-v3 a.premium-button,
+.theme-v3 a.premium-button *,
+.theme-v3 .premium-button,
+.theme-v3 .premium-button * {
+  color: #0f1311 !important;
+}
+
+.theme-v3.light-mode button.premium-button,
+.theme-v3.light-mode button.premium-button *,
+.theme-v3.light-mode a.premium-button,
+.theme-v3.light-mode a.premium-button *,
+.theme-v3.light-mode .premium-button,
+.theme-v3.light-mode .premium-button * {
+  color: #faf8f5 !important;
+}
+
+/* Force text visibility inside white background buttons */
+.theme-v3 button.bg-white,
+.theme-v3 button.bg-white *,
+.theme-v3 a.bg-white,
+.theme-v3 a.bg-white * {
+  color: var(--bg-primary) !important;
+}
+
+/* Reset progress bar visual styles */
+.theme-v3 .bg-gradient-to-r.from-sky-500.to-indigo-500 {
+  background-image: none !important;
+  background-color: var(--text-primary) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+
+
+

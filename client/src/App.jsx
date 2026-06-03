@@ -19,8 +19,10 @@ import Progress from './pages/Progress';
 import Subscription from './pages/Subscription';
 import SuperTricks from './pages/SuperTricks';
 import RevisionZone from './pages/RevisionZone';
+// import ClassroomSimulator from './pages/ClassroomSimulator';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ModalProvider } from './context/ModalContext';
 import Profile from './components/Profile';
 import Leaderboard from './components/Leaderboard';
 import BottomNav from './components/BottomNav';
@@ -57,7 +59,6 @@ function AppContent() {
       const trialEnd = new Date(user.trial_end_date);
       const isExpired = trialEnd < new Date();
       
-      // Don't show modal on profile page, subscription page, home, login or register
       const isExcludedPage = ['/profile', '/subscription', '/login', '/register', '/'].some(path => 
         location.pathname === path || location.pathname.startsWith(path + '/')
       );
@@ -146,6 +147,7 @@ function AppContent() {
               <Route path="/subscription" element={<Subscription />} />
               <Route path="/super-tricks" element={<SuperTricks />} />
               <Route path="/revision" element={<RevisionZone />} />
+              {/* <Route path="/simulator" element={<ClassroomSimulator />} /> */}
             </Route>
           </Routes>
         </main>
@@ -164,12 +166,15 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Router>
-          <AppContent />
-        </Router>
+        <ModalProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </ModalProvider>
       </AuthProvider>
     </ThemeProvider>
   );
 }
+
 
 export default App;

@@ -4,9 +4,11 @@ import translations from '../translations';
 import PaymentButton from '../components/PaymentButton';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCustomModal } from '../context/ModalContext';
 
 const Subscription = () => {
   const { user, setUser } = useAuth();
+  const { showAlert } = useCustomModal();
   const [selectedPlan, setSelectedPlan] = useState(1); // Default to popular plan
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
@@ -26,8 +28,8 @@ const Subscription = () => {
     { id: 3, name: t.yearly, price: 149, duration: t.oneYear, icon: Crown, color: 'text-purple-400', bg: 'bg-purple-500/10' },
   ];
 
-  const handleSuccess = (data) => {
-    alert(lang === 'HI' ? 'भुगतान सफल! आप अब एक प्रीमियम सदस्य हैं।' : 'Payment Successful! You are now a Premium Member.');
+  const handleSuccess = async (data) => {
+    await showAlert(lang === 'HI' ? 'भुगतान सफल! आप अब एक प्रीमियम सदस्य हैं।' : 'Payment Successful! You are now a Premium Member.', 'Success');
     if (data.user) {
       setUser(data.user);
       localStorage.setItem('user', JSON.stringify(data.user));
@@ -35,8 +37,8 @@ const Subscription = () => {
     navigate('/profile');
   };
 
-  const handleFailure = (error) => {
-    alert(lang === 'HI' ? 'भुगतान विफल: ' + error : 'Payment Failed: ' + error);
+  const handleFailure = async (error) => {
+    await showAlert(lang === 'HI' ? 'भुगतान विफल: ' + error : 'Payment Failed: ' + error, 'Error');
   };
 
   return (

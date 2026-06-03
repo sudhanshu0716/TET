@@ -51,7 +51,18 @@ const Exams = () => {
       border: 'border-amber-500/20',
       badge: 'POPULAR'
     },
-
+    /*
+    {
+      id: 'simulator',
+      title: t.classroomSimulator || 'Classroom Simulator',
+      desc: t.simulatorDesc || 'Step into classroom stories, make decisions, and master child psychology.',
+      icon: <Brain className="text-purple-400" size={24} />,
+      path: '/simulator',
+      color: 'from-purple-500/20 to-purple-500/5',
+      border: 'border-purple-500/20',
+      badge: 'VOICE PLAY'
+    },
+    */
     {
       id: 'mock',
       title: t.fullMock || 'Full Length Mock',

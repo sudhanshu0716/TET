@@ -5,10 +5,14 @@ import translations from '../translations';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, CheckCircle2, Clock, ListChecks, X, Trophy, RotateCcw, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useCustomModal } from '../context/ModalContext';
 
 const DailyExam = ({ type }) => {
   const { subject, year } = useParams();
   const { user } = useAuth();
+  const { uiVersion } = useTheme();
+  const { showAlert, showConfirm } = useCustomModal();
   const location = useLocation();
   const [bookmarkedIds, setBookmarkedIds] = useState([]);
   const [step, setStep] = useState('config');
@@ -110,10 +114,10 @@ const DailyExam = ({ type }) => {
       });
       localStorage.setItem('offline_exam', JSON.stringify(res.data));
       setOfflineExam(res.data);
-      alert('Offline Mock Test downloaded! You can now practice without internet.');
+      await showAlert('Offline Mock Test downloaded! You can now practice without internet.', 'Success');
     } catch (err) {
       console.error(err);
-      alert('Failed to download offline test. Please check your connection.');
+      await showAlert('Failed to download offline test. Please check your connection.', 'Error');
     }
   };
 
@@ -195,7 +199,7 @@ const DailyExam = ({ type }) => {
       const msg = err.response?.data?.message || 'Error starting exam';
       // Suppress alert ONLY for trial/premium limits which are handled by PremiumModal
       if (err.response?.status !== 403 || (!msg.toLowerCase().includes('trial') && !msg.toLowerCase().includes('premium'))) {
-        alert(msg);
+        await showAlert(msg, 'Error');
       }
       navigate('/dashboard');
     }
@@ -326,7 +330,7 @@ const DailyExam = ({ type }) => {
       setStep('result');
     } catch (err) { 
       console.error(err);
-      alert('Error submitting exam. Please try again.');
+      await showAlert('Error submitting exam. Please try again.', 'Error');
     } finally {
       setSubmitting(false);
     }
@@ -478,8 +482,12 @@ const DailyExam = ({ type }) => {
     <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
       <div className="flex justify-start px-1">
         <button 
-          onClick={() => {
-            if (window.confirm(t.confirmExit || "Quit exam? Your progress will be lost.")) {
+          onClick={async () => {
+            const confirmed = await showConfirm(
+              t.confirmExit || "Quit exam? Your progress will be lost.",
+              lang === 'HI' ? "परीक्षा छोड़ें?" : "Quit Exam?"
+            );
+            if (confirmed) {
               clearResumeData();
               navigate('/dashboard');
             }
@@ -789,22 +797,32 @@ const DailyExam = ({ type }) => {
             </p>
             
             <div className="space-y-2">
-              <div className="p-3 rounded-xl bg-white/5 border border-white/5">
-                <div className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1">{t.yourAnswer || 'Your Answer'}</div>
-                <div className={`text-sm font-bold ${
-                  answers[questions[reviewIndex].question_id] === questions[reviewIndex].correct_answer 
-                    ? 'text-emerald-400' 
-                    : 'text-rose-400'
-                }`}>
-                  {answers[questions[reviewIndex].question_id] || 'Not Attempted'}
+              <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between items-center">
+                <div>
+                  <div className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1">{t.yourAnswer || 'Your Answer'}</div>
+                  <div className={`text-sm font-bold ${
+                    answers[questions[reviewIndex].question_id] === questions[reviewIndex].correct_answer 
+                      ? 'text-emerald-400' 
+                      : 'text-rose-400'
+                  }`}>
+                    {answers[questions[reviewIndex].question_id] || 'Not Attempted'}
+                  </div>
                 </div>
+                {uiVersion === 'v3' && answers[questions[reviewIndex].question_id] && (
+                  <span className={answers[questions[reviewIndex].question_id] === questions[reviewIndex].correct_answer ? 'chalk-check shrink-0 ml-2' : 'chalk-cross shrink-0 ml-2'} />
+                )}
               </div>
               
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                <div className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">{t.correctAnswer || 'Correct Answer'}</div>
-                <div className="text-sm font-bold text-emerald-400">
-                  {questions[reviewIndex].correct_answer}
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex justify-between items-center">
+                <div>
+                  <div className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-1">{t.correctAnswer || 'Correct Answer'}</div>
+                  <div className="text-sm font-bold text-emerald-400">
+                    {questions[reviewIndex].correct_answer}
+                  </div>
                 </div>
+                {uiVersion === 'v3' && (
+                  <span className="chalk-check shrink-0 ml-2" />
+                )}
               </div>
             </div>
 
@@ -871,11 +889,16 @@ const DailyExam = ({ type }) => {
         {/* Header Section */}
         <div className="flex justify-between items-center px-1">
           <button 
-            onClick={() => {
-              const choice = window.confirm(
+            onClick={async () => {
+              const choice = await showConfirm(
                 lang === 'HI'
-                  ? 'परीक्षा छोड़ रहे हैं?\n\n✅ OK = बाहर जाएं (प्रगति सहेजी गई - वापस आने पर जारी रख सकते हैं)\n❌ Cancel = परीक्षा जारी रखें'
-                  : 'Exit Exam?\n\n✅ OK = Exit (progress saved — you can resume when you return)\n❌ Cancel = Continue exam'
+                  ? 'आपकी प्रगति सहेजी जाएगी। आप वापस आने पर वहीं से शुरू कर सकते हैं।'
+                  : 'Your progress will be saved — you can resume when you return.',
+                lang === 'HI' ? 'परीक्षा छोड़ें?' : 'Exit Exam?',
+                {
+                  confirmText: lang === 'HI' ? 'बाहर जाएं' : 'Exit',
+                  cancelText: lang === 'HI' ? 'जारी रखें' : 'Continue'
+                }
               );
               if (choice) {
                 navigate('/dashboard'); // progress stays saved in localStorage

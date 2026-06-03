@@ -25,16 +25,17 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     const root = window.document.body;
+    root.classList.remove('theme-v2', 'theme-v3');
     if (uiVersion === 'v2') {
       root.classList.add('theme-v2');
-    } else {
-      root.classList.remove('theme-v2');
+    } else if (uiVersion === 'v3') {
+      root.classList.add('theme-v3');
     }
     localStorage.setItem('uiVersion', uiVersion);
   }, [uiVersion]);
 
   const toggleTheme = () => setIsDarkMode(prev => !prev);
-  const toggleUiVersion = () => setUiVersion(prev => prev === 'v1' ? 'v2' : 'v1');
+  const toggleUiVersion = () => setUiVersion(prev => prev === 'v1' ? 'v2' : prev === 'v2' ? 'v3' : 'v1');
 
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleTheme, uiVersion, setUiVersion, toggleUiVersion }}>

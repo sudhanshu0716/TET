@@ -16,9 +16,13 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import translations from '../translations';
+import { useTheme } from '../context/ThemeContext';
+import { useCustomModal } from '../context/ModalContext';
 
 const RevisionZone = () => {
   const navigate = useNavigate();
+  const { uiVersion } = useTheme();
+  const { showAlert } = useCustomModal();
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
 
@@ -105,7 +109,7 @@ const RevisionZone = () => {
       const { exam } = res.data;
       navigate(`/daily-exam`, { state: { remedialExam: res.data } });
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to generate remedial quiz.');
+      await showAlert(err.response?.data?.message || 'Failed to generate remedial quiz.', 'Error');
     } finally {
       setGeneratingQuiz(false);
     }
@@ -382,16 +386,21 @@ const RevisionZone = () => {
                               return (
                                 <div 
                                   key={oIdx}
-                                  className={`p-3.5 rounded-xl border text-xs font-semibold leading-normal ${
+                                  className={`p-3.5 rounded-xl border text-xs font-semibold leading-normal flex justify-between items-center ${
                                     isCorrect 
                                       ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
                                       : 'bg-white/5 border-white/5 text-slate-400'
                                   }`}
                                 >
-                                  <span className="font-black uppercase tracking-widest mr-2">
-                                    {String.fromCharCode(65 + oIdx)}.
-                                  </span>
-                                  {opt}
+                                  <div>
+                                    <span className="font-black uppercase tracking-widest mr-2">
+                                      {String.fromCharCode(65 + oIdx)}.
+                                    </span>
+                                    {opt}
+                                  </div>
+                                  {uiVersion === 'v3' && isCorrect && (
+                                    <span className="chalk-check shrink-0 ml-2" />
+                                  )}
                                 </div>
                               );
                             })}
@@ -479,16 +488,21 @@ const RevisionZone = () => {
                               return (
                                 <div 
                                   key={oIdx}
-                                  className={`p-3.5 rounded-xl border text-xs font-semibold leading-normal ${
+                                  className={`p-3.5 rounded-xl border text-xs font-semibold leading-normal flex justify-between items-center ${
                                     isCorrect 
                                       ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
                                       : 'bg-white/5 border-white/5 text-slate-400'
                                   }`}
                                 >
-                                  <span className="font-black uppercase tracking-widest mr-2">
-                                    {String.fromCharCode(65 + oIdx)}.
-                                  </span>
-                                  {opt}
+                                  <div>
+                                    <span className="font-black uppercase tracking-widest mr-2">
+                                      {String.fromCharCode(65 + oIdx)}.
+                                    </span>
+                                    {opt}
+                                  </div>
+                                  {uiVersion === 'v3' && isCorrect && (
+                                    <span className="chalk-check shrink-0 ml-2" />
+                                  )}
                                 </div>
                               );
                             })}

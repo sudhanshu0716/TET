@@ -88,6 +88,15 @@ const Profile = () => {
     </div>
   );
 
+  const getLetterGrade = (score) => {
+    if (score >= 95) return 'A+';
+    if (score >= 85) return 'A';
+    if (score >= 75) return 'B+';
+    if (score >= 65) return 'B';
+    if (score >= 50) return 'C';
+    return 'D';
+  };
+
   return (
     <div className="flex flex-col gap-8 pt-8 px-6 pb-32 max-w-md mx-auto w-full animate-fade-in">
       <div className="space-y-2">
@@ -120,7 +129,9 @@ const Profile = () => {
           </div>
           <div className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-1">
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{t.success}</span>
-            <div className="text-xl font-black text-emerald-400">{profile.avgScore || 0}%</div>
+            <div className="text-xl font-black text-emerald-400">
+              {uiVersion === 'v3' ? getLetterGrade(profile.avgScore || 0) : `${profile.avgScore || 0}%`}
+            </div>
           </div>
           <div className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-1">
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{t.streak}</span>
@@ -175,15 +186,15 @@ const Profile = () => {
             {t.uiExperience || "UI Theme"}
           </h4>
           <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">
-            Switch between Classic and Modern UI designs
+            Switch between Classic, Modern, and Blackboard UI designs
           </p>
         </div>
         
-        <div className="grid grid-cols-2 gap-3 p-1 rounded-2xl bg-white/5 border border-white/5 relative">
+        <div className="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-white/5 border border-white/5 relative">
           <button
             type="button"
             onClick={() => setUiVersion('v1')}
-            className={`py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 relative z-10 flex items-center justify-center gap-2 ${
+            className={`py-3 px-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 relative z-10 flex items-center justify-center gap-1 ${
               uiVersion === 'v1'
                 ? 'text-white'
                 : 'text-slate-400 hover:text-slate-200'
@@ -195,7 +206,7 @@ const Profile = () => {
           <button
             type="button"
             onClick={() => setUiVersion('v2')}
-            className={`py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 relative z-10 flex items-center justify-center gap-2 ${
+            className={`py-3 px-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 relative z-10 flex items-center justify-center gap-1 ${
               uiVersion === 'v2'
                 ? 'text-white'
                 : 'text-slate-400 hover:text-slate-200'
@@ -203,13 +214,29 @@ const Profile = () => {
           >
             <span>{t.modernUI || 'Modern (V2)'}</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setUiVersion('v3')}
+            className={`py-3 px-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all duration-300 relative z-10 flex items-center justify-center gap-1 ${
+              uiVersion === 'v3'
+                ? (localStorage.getItem('theme') === 'light' ? 'text-white' : 'text-slate-950')
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <span>{t.chalkboardUI || 'Chalk (V3)'}</span>
+          </button>
           
           <div 
-            className="absolute top-1 bottom-1 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 transition-all duration-300 ease-out"
+            className="absolute top-1 bottom-1 rounded-xl transition-all duration-300 ease-out"
             style={{
-              left: uiVersion === 'v1' ? '4px' : 'calc(50% + 2px)',
-              width: 'calc(50% - 6px)',
-              background: uiVersion === 'v2' ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' : 'linear-gradient(135deg, #0ea5e9, #6366f1)'
+              left: uiVersion === 'v1' ? '4px' : uiVersion === 'v2' ? 'calc(33.33% + 2px)' : 'calc(66.66% + 2px)',
+              width: 'calc(33.33% - 6px)',
+              background: uiVersion === 'v2' 
+                ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' 
+                : uiVersion === 'v3' 
+                  ? (localStorage.getItem('theme') === 'light' ? '#121413' : '#fcfcfc') 
+                  : 'linear-gradient(135deg, #0ea5e9, #6366f1)'
             }}
           />
         </div>
