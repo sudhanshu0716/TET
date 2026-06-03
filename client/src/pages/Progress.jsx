@@ -4,6 +4,7 @@ import api from '../services/api';
 import translations from '../translations';
 import TopicInsights from '../components/TopicInsights';
 import PerformanceRadar from '../components/PerformanceRadar';
+import SubtopicWeaknesses from '../components/SubtopicWeaknesses';
 import { useAuth } from '../context/AuthContext';
 
 const Progress = () => {
@@ -24,6 +25,14 @@ const Progress = () => {
       return [];
     }
   });
+  const [subtopicInsights, setSubtopicInsights] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_subtopic_insights');
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
   const [loadingProfile, setLoadingProfile] = useState(() => {
     try {
       const cached = localStorage.getItem('user');
@@ -35,6 +44,14 @@ const Progress = () => {
   const [loadingInsights, setLoadingInsights] = useState(() => {
     try {
       const cached = localStorage.getItem('cached_progress_insights');
+      return !cached;
+    } catch (e) {
+      return true;
+    }
+  });
+  const [loadingSubtopic, setLoadingSubtopic] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_subtopic_insights');
       return !cached;
     } catch (e) {
       return true;
@@ -78,7 +95,19 @@ const Progress = () => {
           })
           .finally(() => setLoadingInsights(false));
 
-        await Promise.all([profilePromise, insightsPromise]);
+        const subtopicPromise = api.get('/api/exams/subtopic-insights', { headers: { 'x-auth-token': token } })
+          .then(res => {
+            if (res.data) {
+              setSubtopicInsights(res.data);
+              localStorage.setItem('cached_subtopic_insights', JSON.stringify(res.data));
+            }
+          })
+          .catch(err => {
+            console.error("Subtopic insights fetch error:", err);
+          })
+          .finally(() => setLoadingSubtopic(false));
+
+        await Promise.all([profilePromise, insightsPromise, subtopicPromise]);
       } catch (err) {
         console.error(err);
         setError(true);
@@ -164,6 +193,9 @@ const Progress = () => {
           <PerformanceRadar insights={insights} loading={loadingInsights} />
         </div>
         <TopicInsights insights={insights} loading={loadingInsights} />
+        
+        {/* Subtopic level Weakness Analysis & Recommendations */}
+        <SubtopicWeaknesses insights={subtopicInsights} loading={loadingSubtopic} />
       </div>
     </div>
   );

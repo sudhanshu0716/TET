@@ -55,9 +55,13 @@ const paymentRoutes = require('./routes/payment');
 app.use('/api/payment', paymentRoutes);
 
 // Connect to MongoDB
+const topicLinker = require('./services/topicLinker');
+
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
+  .then(async () => {
     console.log('Connected to MongoDB');
+    // Run topic linker dynamically
+    await topicLinker();
   })
   .catch(err => console.error('Could not connect to MongoDB:', err));
 

@@ -251,6 +251,112 @@ router.get('/insights', auth, async (req, res) => {
   }
 });
 
+// @route   GET api/exams/subtopic-insights
+// @desc    Get performance insights grouped by subtopics (cheatsheets)
+router.get('/subtopic-insights', auth, async (req, res) => {
+  try {
+    const subtopicInsights = await Exam.aggregate([
+      { $match: { user_id: req.user.id, completed: true } },
+      { $unwind: "$answers" },
+      {
+        $lookup: {
+          from: "cheatsheets",
+          localField: "answers.question_id",
+          foreignField: "linked_questions",
+          as: "cheatsheet"
+        }
+      },
+      { $unwind: "$cheatsheet" },
+      {
+        $group: {
+          _id: "$cheatsheet.topic_id",
+          topic_id: { $first: "$cheatsheet.topic_id" },
+          title_hi: { $first: "$cheatsheet.title_hi" },
+          title_en: { $first: "$cheatsheet.title_en" },
+          subject: { $first: "$cheatsheet.subject" },
+          category_hi: { $first: "$cheatsheet.category_hi" },
+          category_en: { $first: "$cheatsheet.category_en" },
+          total: { $sum: 1 },
+          correct: { $sum: { $cond: ["$answers.is_correct", 1, 0] } }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          topic_id: 1,
+          title_hi: 1,
+          title_en: 1,
+          subject: 1,
+          category_hi: 1,
+          category_en: 1,
+          total: 1,
+          correct: 1,
+          accuracy: {
+            $cond: [
+              { $eq: ["$total", 0] },
+              0,
+              { $round: [{ $multiply: [{ $divide: ["$correct", "$total"] }, 100] }, 1] }
+            ]
+          }
+        }
+      }
+    ]);
+
+    const adviceMap = {
+      "cdp-theory-01": {
+        en: "Focus on Piaget's 4 stages (Sensorimotor, Pre-operational, Concrete, Formal). Pay attention to conservation & schema adaptation.",
+        hi: "जीन पियाजे के 4 चरणों (संवेदी-पेशीय, पूर्व-संक्रियात्मक, मूर्त, अमूर्त) पर ध्यान दें। संरक्षण और स्कीमा चक्र को समझें।"
+      },
+      "hin-grammar-01": {
+        en: "Practice Swar Sandhi identification. Look for key vowel combinations (single/double मात्राs) to instantly recognize Guna/Vriddhi Sandhi.",
+        hi: "स्वर संधि की पहचान का अभ्यास करें। गुण और वृद्धि संधि को पहचानने के लिए शब्द के मध्य में एक या दो मात्राओं को देखें।"
+      },
+      "eng-lit-01": {
+        en: "Revise Figures of Speech triggers. Remember: 'like/as' indicates Simile, while direct comparison is Metaphor.",
+        hi: "Figures of Speech (अलंकार) पहचान ट्रिगर्स दोहराएं। याद रखें: 'like/as' उपमा (Simile) दर्शाता है, जबकि सीधा रूपक (Metaphor) है।"
+      },
+      "evs-eco-01": {
+        en: "Master Lindeman's 10% law and distinguish between Biotic/Abiotic factors. Pyramid of energy flows bottom-up.",
+        hi: "लिंडमैन के 10% ऊर्जा नियम को कंठस्थ करें। जैविक (सजीव) और अजैविक (निर्जीव) घटकों के अंतर को स्पष्ट रूप से समझें।"
+      },
+      "mat-geom-01": {
+        en: "Review Van Hiele levels of geometric thought. Level 0 is visualization (appearance) and Level 1 is analysis (properties).",
+        hi: "वैन हीले के ज्यामितीय चिंतन स्तरों को याद करें। स्तर 0 दृश्यीकरण (दिखावट) है और स्तर 1 विश्लेषण (आकृतियों के गुण) है।"
+      },
+      "san-grammar-01": {
+        en: "Understand Maheshwar Sutras and how to construct Pratyaharas. Remember: Ach represents vowels, Hal represents consonants.",
+        hi: "माहेश्वर सूत्रों और प्रत्याहार निर्माण की विधि को समझें। याद रखें: अच् में सभी स्वर और हल् में सभी व्यंजन आते हैं।"
+      },
+      "sci-bio-01": {
+        en: "Study human digestion organs and their enzymes. Remember: Pepsin targets proteins, Amylase targets starch, and Lipase targets fats.",
+        hi: "मानव पाचन तंत्र के अंगों और उनके एंजाइमों का अध्ययन करें। याद रखें: पेप्सिन प्रोटीन को, एमाइलेज स्टार्च को, और लाइपेज वसा को पचाता है।"
+      },
+      "soc-polity-01": {
+        en: "Memorize Articles 12-35 for Fundamental Rights. Pay special attention to Right to Equality (14-18) and Constitutional Remedies (32).",
+        hi: "भारतीय संविधान के भाग III (अनुच्छेद 12-35) मौलिक अधिकारों को याद करें। संवैधानिक उपचारों का अधिकार (अनुच्छेद 32) अति महत्वपूर्ण है।"
+      }
+    };
+
+    const insightsWithAdvice = subtopicInsights.map(item => {
+      const advice = adviceMap[item.topic_id] || {
+        en: "Review this sub-topic notes to clarify key concepts and practice related mock questions.",
+        hi: "प्रमुख अवधारणाओं को स्पष्ट करने और प्रासंगिक प्रश्नों का अभ्यास करने के लिए इस विषय के नोट्स देखें।"
+      };
+      return {
+        ...item,
+        advice_en: advice.en,
+        advice_hi: advice.hi
+      };
+    });
+
+    res.json(insightsWithAdvice);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
+
 // @route   GET api/exams/important
 // @desc    Get most important questions (Asked in multiple years)
 router.get('/important', auth, async (req, res) => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import translations from '../translations';
 import ReactMarkdown from 'react-markdown';
@@ -7,6 +7,7 @@ import remarkGfm from 'remark-gfm';
 
 const Cheatsheets = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [notes, setNotes] = useState(() => {
     try {
       const cached = localStorage.getItem('cached_cheatsheets');
@@ -49,6 +50,17 @@ const Cheatsheets = () => {
     };
     fetchNotes();
   }, []);
+
+  useEffect(() => {
+    if (notes.length > 0 && location.state?.selectedTopicId) {
+      const matched = notes.find(n => n.topic_id === location.state.selectedTopicId);
+      if (matched) {
+        setSelectedNote(matched);
+        // Clear history state to avoid repeatedly selecting it when navigating back/forth
+        window.history.replaceState({ ...location.state, selectedTopicId: undefined }, '');
+      }
+    }
+  }, [notes, location.state]);
 
   const subjects = ['all', 'pedagogy', 'hindi', 'english', 'evs', 'math', 'social', 'science', 'sanskrit'];
   const filteredNotes = filter === 'all' ? notes : notes.filter(n => n.subject === filter);

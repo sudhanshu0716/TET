@@ -28,6 +28,8 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [cleaning, setCleaning] = useState(false);
+  const [cleaningLoadtest, setCleaningLoadtest] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
   const [revokeEmail, setRevokeEmail] = useState('');
   
   // New Admin Tools State
@@ -190,6 +192,27 @@ const AdminDashboard = () => {
     } catch (err) { alert('Failed to clear idle exams'); }
   };
 
+  const handleCleanLoadtestUsers = async () => {
+    if (!window.confirm("Are you sure you want to delete ALL load test users (emails starting with 'loadtest_' or ending in '@tetload.com') along with their exam records? This cannot be undone.")) return;
+    setCleaningLoadtest(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await api.post('/api/admin/clean-loadtest-users', {}, { headers: { 'x-auth-token': token } });
+      alert(res.data.message);
+      // Refresh stats and user list
+      const [statsRes, usersRes] = await Promise.all([
+        api.get('/api/admin/stats', { headers: { 'x-auth-token': token } }),
+        api.get('/api/admin/users', { headers: { 'x-auth-token': token } })
+      ]);
+      setStats(statsRes.data);
+      setUsersList(usersRes.data);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to clean load test users');
+    } finally {
+      setCleaningLoadtest(false);
+    }
+  };
+
   const handleRevokePremium = async () => {
     if (!revokeEmail) return alert('Enter email');
     if (!window.confirm(`Revoke premium and end trial for ${revokeEmail}?`)) return;
@@ -333,134 +356,176 @@ const AdminDashboard = () => {
         </button>
       </header>
 
-      {/* DevOps / Automation Panel Navigation */}
-      <div 
-        onClick={() => navigate('/admin/automation')}
-        className="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white shadow-xl shadow-purple-500/20 border border-white/10 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all group"
+      {/* Admin Sub-Navbar Tabs */}
+      <nav 
+        className="flex items-center gap-1.5 p-1 rounded-2xl bg-white/5 border border-white/10 overflow-x-auto scroll-smooth shrink-0"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        <div className="space-y-1 relative z-10">
-          <span className="text-[9px] font-black uppercase tracking-widest bg-white/20 px-2.5 py-0.5 rounded-full text-white">
-            DevOps & Actions Runs
-          </span>
-          <h3 className="text-lg font-black tracking-tight mt-1 flex items-center gap-2">
-            🤖 Automation Control Center
-          </h3>
-          <p className="text-[11px] text-white/90 font-medium leading-relaxed max-w-[280px]">
-            Trigger GitHub Action workflows and monitor build outputs in real-time.
-          </p>
+        {[
+          { id: 'overview', label: 'Overview', icon: BarChart2 },
+          { id: 'users', label: 'Users', icon: Users },
+          { id: 'access', label: 'Access', icon: KeyRound },
+          { id: 'contests', label: 'Contests', icon: Clock },
+          { id: 'devops', label: 'DevOps', icon: Activity },
+          { id: 'system', label: 'System', icon: Settings },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-black tracking-wide uppercase transition-all duration-300 whitespace-nowrap ${
+                isActive
+                  ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-lg shadow-sky-500/25 scale-[1.02]'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Icon size={14} />
+              {tab.label}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* DevOps / Automation Panel Navigation */}
+      {activeTab === 'devops' && (
+        <div 
+          onClick={() => navigate('/admin/automation')}
+          className="relative overflow-hidden rounded-3xl p-5 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white shadow-xl shadow-purple-500/20 border border-white/10 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all group"
+        >
+          <div className="space-y-1 relative z-10">
+            <span className="text-[9px] font-black uppercase tracking-widest bg-white/20 px-2.5 py-0.5 rounded-full text-white">
+              DevOps & Actions Runs
+            </span>
+            <h3 className="text-lg font-black tracking-tight mt-1 flex items-center gap-2">
+              🤖 Automation Control Center
+            </h3>
+            <p className="text-[11px] text-white/90 font-medium leading-relaxed max-w-[280px]">
+              Trigger GitHub Action workflows and monitor build outputs in real-time.
+            </p>
+          </div>
+          <div className="text-3xl relative z-10 group-hover:rotate-12 transition-transform duration-300">
+            🚀
+          </div>
+          <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
-        <div className="text-3xl relative z-10 group-hover:rotate-12 transition-transform duration-300">
-          🚀
-        </div>
-        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </div>
+      )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-3">
+      {activeTab === 'overview' && (
+        <div className="grid grid-cols-1 gap-3">
 
-        {/* Total Questions — Expandable Card */}
-        <div
-          className="glass-card cursor-pointer select-none transition-all"
-          onClick={fetchBreakdown}
-        >
-          <div className="flex items-center gap-5">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400">
-              <Database size={22} />
+          {/* Total Questions — Expandable Card */}
+          <div
+            className="glass-card cursor-pointer select-none transition-all"
+            onClick={fetchBreakdown}
+          >
+            <div className="flex items-center gap-5">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400">
+                <Database size={22} />
+              </div>
+              <div className="flex-1">
+                <span className="text-2xl font-black text-[var(--text-primary)]">{stats.totalQuestions.toLocaleString()}</span>
+                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Questions</div>
+              </div>
+              <div className={`text-slate-400 transition-transform duration-300 ${showBreakdown ? 'rotate-180' : ''}`}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
             </div>
-            <div className="flex-1">
-              <span className="text-2xl font-black text-[var(--text-primary)]">{stats.totalQuestions.toLocaleString()}</span>
-              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Questions</div>
-            </div>
-            <div className={`text-slate-400 transition-transform duration-300 ${showBreakdown ? 'rotate-180' : ''}`}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
+
+            {/* Expandable Subject Breakdown */}
+            {showBreakdown && (
+              <div className="mt-4 pt-4 border-t border-white/5 space-y-2.5">
+                {loadingBreakdown ? (
+                  <div className="text-center text-slate-500 text-xs py-2 animate-pulse">Loading breakdown...</div>
+                ) : (
+                  subjectBreakdown.map((item) => {
+                    const maxCount = Math.max(...subjectBreakdown.map(x => x.count), 1);
+                    const pct = Math.round((item.count / maxCount) * 100);
+                    return (
+                      <div key={item.subject}>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-bold text-[var(--text-primary)] capitalize">{subjectLabels[item.subject] || item.subject}</span>
+                          <span className="text-xs font-black text-emerald-400">{item.count.toLocaleString()}</span>
+                        </div>
+                        <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${subjectColors[item.subject] || 'bg-slate-500'} transition-all duration-700`}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Expandable Subject Breakdown */}
-          {showBreakdown && (
-            <div className="mt-4 pt-4 border-t border-white/5 space-y-2.5">
-              {loadingBreakdown ? (
-                <div className="text-center text-slate-500 text-xs py-2 animate-pulse">Loading breakdown...</div>
-              ) : (
-                subjectBreakdown.map((item) => {
-                  const maxCount = Math.max(...subjectBreakdown.map(x => x.count), 1);
-                  const pct = Math.round((item.count / maxCount) * 100);
-                  return (
-                    <div key={item.subject}>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs font-bold text-[var(--text-primary)] capitalize">{subjectLabels[item.subject] || item.subject}</span>
-                        <span className="text-xs font-black text-emerald-400">{item.count.toLocaleString()}</span>
-                      </div>
-                      <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${subjectColors[item.subject] || 'bg-slate-500'} transition-all duration-700`}
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })
-              )}
+          {/* Other stat cards */}
+          {adminCards.map((card, i) => (
+            <div key={i} className="glass-card flex items-center gap-5">
+              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${card.bg} ${card.color}`}>
+                <card.icon size={22} />
+              </div>
+              <div>
+                <span className="text-2xl font-black text-[var(--text-primary)]">{card.value.toLocaleString()}</span>
+                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{card.label}</div>
+              </div>
             </div>
-          )}
+          ))}
         </div>
+      )}
 
-        {/* Other stat cards */}
-        {adminCards.map((card, i) => (
-          <div key={i} className="glass-card flex items-center gap-5">
-            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${card.bg} ${card.color}`}>
-              <card.icon size={22} />
+
+      {/* Premium Service Management Toggles */}
+      {activeTab === 'devops' && (
+        <div className="space-y-3">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
+            <ShieldCheck size={12} /> Premium Service Management
+          </h3>
+          <div className="glass-card space-y-6">
+            {/* Global Toggle */}
+            <div className="flex items-center justify-between p-1">
+              <div>
+                <h4 className="text-sm font-bold text-[var(--text-primary)]">Enforce Subscription</h4>
+                <p className="text-[10px] text-slate-500 font-medium mt-0.5">Redirect users to plans if trial ended</p>
+              </div>
+              <button 
+                onClick={handleTogglePremium}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${premiumEnabled ? 'bg-sky-500' : 'bg-slate-700'}`}
+              >
+                <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${premiumEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+              </button>
             </div>
-            <div>
-              <span className="text-2xl font-black text-[var(--text-primary)]">{card.value.toLocaleString()}</span>
-              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{card.label}</div>
+
+            <div className="h-px bg-white/5 w-full" />
+
+            {/* Maintenance Mode Toggle */}
+            <div className="flex items-center justify-between p-1">
+              <div>
+                <h4 className="text-sm font-bold text-[var(--text-primary)]">Maintenance Mode</h4>
+                <p className="text-[10px] text-slate-500 font-medium mt-0.5">Restrict app access for maintenance</p>
+              </div>
+              <button 
+                onClick={handleToggleMaintenance}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${maintenanceEnabled ? 'bg-rose-500' : 'bg-slate-700'}`}
+              >
+                <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${maintenanceEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+              </button>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
-
-      {/* Premium Service Management */}
-      <div className="space-y-3">
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-          <ShieldCheck size={12} /> Premium Service Management
-        </h3>
-        <div className="glass-card space-y-6">
-          {/* Global Toggle */}
-          <div className="flex items-center justify-between p-1">
-            <div>
-              <h4 className="text-sm font-bold text-[var(--text-primary)]">Enforce Subscription</h4>
-              <p className="text-[10px] text-slate-500 font-medium mt-0.5">Redirect users to plans if trial ended</p>
-            </div>
-            <button 
-              onClick={handleTogglePremium}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${premiumEnabled ? 'bg-sky-500' : 'bg-slate-700'}`}
-            >
-              <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${premiumEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
-            </button>
-          </div>
-
-          <div className="h-px bg-white/5 w-full" />
-
-          {/* Maintenance Mode Toggle */}
-          <div className="flex items-center justify-between p-1">
-            <div>
-              <h4 className="text-sm font-bold text-[var(--text-primary)]">Maintenance Mode</h4>
-              <p className="text-[10px] text-slate-500 font-medium mt-0.5">Restrict app access for maintenance</p>
-            </div>
-            <button 
-              onClick={handleToggleMaintenance}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${maintenanceEnabled ? 'bg-rose-500' : 'bg-slate-700'}`}
-            >
-              <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${maintenanceEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
-            </button>
-          </div>
-
-          <div className="h-px bg-white/5 w-full" />
-
-          {/* Manual Bypass */}
-          <div className="space-y-4 pt-1">
-            <h4 className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Manual User Bypass (Grant Free Plan)</h4>
+      {/* Manual User Bypass */}
+      {activeTab === 'access' && (
+        <div className="space-y-3">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
+            <ShieldCheck size={12} /> Manual User Bypass (Grant Free Plan)
+          </h3>
+          <div className="glass-card">
             <div className="flex flex-col gap-3">
               <input 
                 type="email" 
@@ -491,413 +556,445 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Contest Management */}
-      <div className="space-y-3">
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-          <Clock size={12} /> Live Contest Settings
-        </h3>
-        <div className="glass-card space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Start Time (IST)</label>
-              <input 
-                type="time" 
-                value={contestSettings.start_time}
-                onChange={(e) => setContestSettings({...contestSettings, start_time: e.target.value})}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-[var(--text-primary)] font-bold outline-none focus:border-sky-500/50"
-              />
+      {activeTab === 'contests' && (
+        <div className="space-y-3">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
+            <Clock size={12} /> Live Contest Settings
+          </h3>
+          <div className="glass-card space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Start Time (IST)</label>
+                <input 
+                  type="time" 
+                  value={contestSettings.start_time}
+                  onChange={(e) => setContestSettings({...contestSettings, start_time: e.target.value})}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-[var(--text-primary)] font-bold outline-none focus:border-sky-500/50"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Duration (Mins)</label>
+                <input 
+                  type="number" 
+                  value={contestSettings.duration}
+                  onChange={(e) => setContestSettings({...contestSettings, duration: parseInt(e.target.value) || 0})}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-[var(--text-primary)] font-bold outline-none focus:border-sky-500/50"
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Duration (Mins)</label>
-              <input 
-                type="number" 
-                value={contestSettings.duration}
-                onChange={(e) => setContestSettings({...contestSettings, duration: parseInt(e.target.value) || 0})}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-[var(--text-primary)] font-bold outline-none focus:border-sky-500/50"
-              />
-            </div>
+            <button 
+              onClick={handleUpdateContest}
+              disabled={saving}
+              className="w-full py-3 rounded-xl bg-sky-500 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-sky-500/20 active:scale-95 transition-all"
+            >
+              {saving ? 'Updating...' : <><Save size={14} /> Update Contest Time</>}
+            </button>
           </div>
-          <button 
-            onClick={handleUpdateContest}
-            disabled={saving}
-            className="w-full py-3 rounded-xl bg-sky-500 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-sky-500/20 active:scale-95 transition-all"
-          >
-            {saving ? 'Updating...' : <><Save size={14} /> Update Contest Time</>}
-          </button>
         </div>
-      </div>
+      )}
 
       {/* Global App Settings */}
-      <div className="space-y-3">
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Global App Settings</h3>
-        <div className="glass-card space-y-4">
-          <div className="space-y-2">
-            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">System Message / Banner Alert</label>
-            <textarea 
-              rows={3}
-              value={systemMessage}
-              onChange={(e) => setSystemMessage(e.target.value)}
-              placeholder="E.g., Server maintenance at 12 PM. Expect 5 mins downtime."
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] font-medium outline-none focus:border-sky-500/50 transition-all resize-none"
-            />
+      {activeTab === 'overview' && (
+        <div className="space-y-3">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Global App Settings</h3>
+          <div className="glass-card space-y-4">
+            <div className="space-y-2">
+              <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">System Message / Banner Alert</label>
+              <textarea 
+                rows={3}
+                value={systemMessage}
+                onChange={(e) => setSystemMessage(e.target.value)}
+                placeholder="E.g., Server maintenance at 12 PM. Expect 5 mins downtime."
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] font-medium outline-none focus:border-sky-500/50 transition-all resize-none"
+              />
+            </div>
+            <button 
+              onClick={handleSetSystemMessage}
+              className="w-full py-3 rounded-xl bg-sky-500 text-white font-black text-xs shadow-lg shadow-sky-500/20 active:scale-95 transition-all"
+            >
+              Publish System Message
+            </button>
           </div>
-          <button 
-            onClick={handleSetSystemMessage}
-            className="w-full py-3 rounded-xl bg-sky-500 text-white font-black text-xs shadow-lg shadow-sky-500/20 active:scale-95 transition-all"
-          >
-            Publish System Message
-          </button>
         </div>
-      </div>
+      )}
 
       {/* User Directory & Management */}
-      <div className="space-y-3">
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
-          <Users size={12} /> User Directory & Management
-        </h3>
-        <div className="glass-card space-y-4">
-          <div className="relative">
-            <input 
-              type="text" 
-              placeholder="Search users by name or email..." 
-              className="bg-white/5 border border-white/10 w-full rounded-xl pl-10 pr-4 py-3 text-sm text-[var(--text-primary)] outline-none focus:border-sky-500/50 transition-all font-medium"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-            <Search className="absolute left-3.5 top-3.5 text-slate-500" size={16} />
-          </div>
+      {activeTab === 'users' && (
+        <div className="space-y-3">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2">
+            <Users size={12} /> User Directory & Management
+          </h3>
+          <div className="glass-card space-y-4">
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder="Search users by name or email..." 
+                className="bg-white/5 border border-white/10 w-full rounded-xl pl-10 pr-4 py-3 text-sm text-[var(--text-primary)] outline-none focus:border-sky-500/50 transition-all font-medium"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              <Search className="absolute left-3.5 top-3.5 text-slate-500" size={16} />
+            </div>
 
-          <div className="max-h-[350px] overflow-y-auto pr-1 space-y-2.5 custom-scrollbar">
-            {usersList
-              .filter(user => 
+            <div className="max-h-[350px] overflow-y-auto pr-1 space-y-2.5 custom-scrollbar">
+              {usersList
+                .filter(user => 
+                  user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                  user.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .map(user => (
+                  <div key={user._id} className="p-3.5 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors flex flex-col gap-3">
+                    <div className="flex justify-between items-start w-full">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400/20 to-indigo-600/20 border border-sky-500/20 flex items-center justify-center font-black text-sky-400 text-sm shrink-0">
+                          {user.name?.[0]?.toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <h4 className="font-black text-sm text-[var(--text-primary)] leading-tight">{user.name}</h4>
+                            {editingUserId !== user._id && (
+                              <button 
+                                onClick={() => handleEditName(user)}
+                                className="text-slate-500 hover:text-sky-400 transition-colors"
+                                title="Edit User"
+                              >
+                                <Edit2 size={12} />
+                              </button>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-500 font-bold lowercase tracking-wide mt-0.5">{user.email}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 shrink-0">
+                        <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded h-fit ${user.role === 'admin' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-sky-500/20 text-sky-400 border border-sky-500/30'}`}>
+                          {user.role}
+                        </span>
+                        <button 
+                          onClick={() => handleDeleteUser(user._id, user.name)}
+                          className="text-rose-500 hover:text-rose-400 p-1 rounded-lg bg-rose-500/10 border border-rose-500/20 transition-all hover:bg-rose-500/20 h-fit"
+                          title="Delete User"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {editingUserId === user._id && (
+                      <div className="flex flex-col gap-3 mt-1 bg-slate-950/40 p-3 rounded-xl border border-white/5 w-full max-w-full">
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Name</label>
+                          <input 
+                            type="text" 
+                            value={editingName} 
+                            onChange={e => setEditingName(e.target.value)}
+                            className="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
+                          />
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Level</label>
+                            <select
+                              value={editingLevel}
+                              onChange={e => setEditingLevel(e.target.value)}
+                              className="w-full bg-slate-900 border border-white/10 rounded-xl px-2 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
+                            >
+                              <option value="primary">Primary</option>
+                              <option value="junior">Junior</option>
+                            </select>
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Lang I</label>
+                            <select
+                              value={editingLanguage1}
+                              onChange={e => setEditingLanguage1(e.target.value)}
+                              className="w-full bg-slate-900 border border-white/10 rounded-xl px-2 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
+                            >
+                              <option value="Hindi">Hindi</option>
+                              <option value="English">English</option>
+                            </select>
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Lang II</label>
+                            <select
+                              value={editingLanguage2}
+                              onChange={e => setEditingLanguage2(e.target.value)}
+                              className="w-full bg-slate-900 border border-white/10 rounded-xl px-2 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
+                            >
+                              <option value="English">English</option>
+                              <option value="Sanskrit">Sanskrit</option>
+                              <option value="Urdu">Urdu</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 justify-end pt-1">
+                          <button 
+                            onClick={() => setEditingUserId(null)}
+                            className="px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5"
+                          >
+                            <X size={12} /> Cancel
+                          </button>
+                          <button 
+                            onClick={() => handleSaveName(user._id)}
+                            className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5"
+                          >
+                            <CheckCircle size={12} /> Save
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-4 gap-2 pt-2 border-t border-white/5">
+                      <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
+                        <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Solved</div>
+                        <div className="text-xs font-black text-[var(--text-primary)]">{user.questions_solved || 0}</div>
+                      </div>
+                      <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
+                        <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Points</div>
+                        <div className="text-xs font-black text-sky-400">{user.rank_points || 0}</div>
+                      </div>
+                      <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
+                        <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Exams</div>
+                        <div className="text-xs font-black text-purple-400">{user.examsTaken || 0}</div>
+                      </div>
+                      <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
+                        <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Avg Score</div>
+                        <div className="text-xs font-black text-emerald-400">{user.avgScore || 0}%</div>
+                      </div>
+                    </div>
+
+                    {/* Detail pills */}
+                    <div className="flex gap-2 flex-wrap items-center">
+                      <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded border border-white/5">
+                        Level: {user.level || 'primary'}
+                      </span>
+                      <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded border border-white/5">
+                        Lang: {user.language1}/{user.language2}
+                      </span>
+                      <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${user.is_premium ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-700/30 text-slate-400 border border-slate-700/30'}`}>
+                        {user.is_premium ? 'Premium' : 'Free Trial'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              {usersList.filter(user => 
                 user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                 user.email?.toLowerCase().includes(searchQuery.toLowerCase())
-              )
-              .map(user => (
-                <div key={user._id} className="p-3.5 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors flex flex-col gap-3">
-                  <div className="flex justify-between items-start w-full">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400/20 to-indigo-600/20 border border-sky-500/20 flex items-center justify-center font-black text-sky-400 text-sm shrink-0">
-                        {user.name?.[0]?.toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <h4 className="font-black text-sm text-[var(--text-primary)] leading-tight">{user.name}</h4>
-                          {editingUserId !== user._id && (
-                            <button 
-                              onClick={() => handleEditName(user)}
-                              className="text-slate-500 hover:text-sky-400 transition-colors"
-                              title="Edit User"
-                            >
-                              <Edit2 size={12} />
-                            </button>
-                          )}
-                        </div>
-                        <p className="text-[10px] text-slate-500 font-bold lowercase tracking-wide mt-0.5">{user.email}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 shrink-0">
-                      <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded h-fit ${user.role === 'admin' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-sky-500/20 text-sky-400 border border-sky-500/30'}`}>
-                        {user.role}
-                      </span>
-                      <button 
-                        onClick={() => handleDeleteUser(user._id, user.name)}
-                        className="text-rose-500 hover:text-rose-400 p-1 rounded-lg bg-rose-500/10 border border-rose-500/20 transition-all hover:bg-rose-500/20 h-fit"
-                        title="Delete User"
-                      >
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
-                  </div>
-
-                  {editingUserId === user._id && (
-                    <div className="flex flex-col gap-3 mt-1 bg-slate-950/40 p-3 rounded-xl border border-white/5 w-full max-w-full">
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Name</label>
-                        <input 
-                          type="text" 
-                          value={editingName} 
-                          onChange={e => setEditingName(e.target.value)}
-                          className="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
-                        />
-                      </div>
-                      
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Level</label>
-                          <select
-                            value={editingLevel}
-                            onChange={e => setEditingLevel(e.target.value)}
-                            className="w-full bg-slate-900 border border-white/10 rounded-xl px-2 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
-                          >
-                            <option value="primary">Primary</option>
-                            <option value="junior">Junior</option>
-                          </select>
-                        </div>
-
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Lang I</label>
-                          <select
-                            value={editingLanguage1}
-                            onChange={e => setEditingLanguage1(e.target.value)}
-                            className="w-full bg-slate-900 border border-white/10 rounded-xl px-2 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
-                          >
-                            <option value="Hindi">Hindi</option>
-                            <option value="English">English</option>
-                          </select>
-                        </div>
-
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Lang II</label>
-                          <select
-                            value={editingLanguage2}
-                            onChange={e => setEditingLanguage2(e.target.value)}
-                            className="w-full bg-slate-900 border border-white/10 rounded-xl px-2 py-2 text-xs text-white font-bold outline-none focus:border-sky-500 transition-colors"
-                          >
-                            <option value="English">English</option>
-                            <option value="Sanskrit">Sanskrit</option>
-                            <option value="Urdu">Urdu</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2 justify-end pt-1">
-                        <button 
-                          onClick={() => setEditingUserId(null)}
-                          className="px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5"
-                        >
-                          <X size={12} /> Cancel
-                        </button>
-                        <button 
-                          onClick={() => handleSaveName(user._id)}
-                          className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all font-black text-[10px] uppercase tracking-widest flex items-center gap-1.5"
-                        >
-                          <CheckCircle size={12} /> Save
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-4 gap-2 pt-2 border-t border-white/5">
-                    <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
-                      <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Solved</div>
-                      <div className="text-xs font-black text-[var(--text-primary)]">{user.questions_solved || 0}</div>
-                    </div>
-                    <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
-                      <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Points</div>
-                      <div className="text-xs font-black text-sky-400">{user.rank_points || 0}</div>
-                    </div>
-                    <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
-                      <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Exams</div>
-                      <div className="text-xs font-black text-purple-400">{user.examsTaken || 0}</div>
-                    </div>
-                    <div className="text-center bg-white/5 rounded-lg py-1.5 px-1">
-                      <div className="text-[7px] font-black text-slate-500 uppercase tracking-wider">Avg Score</div>
-                      <div className="text-xs font-black text-emerald-400">{user.avgScore || 0}%</div>
-                    </div>
-                  </div>
-
-                  {/* Detail pills */}
-                  <div className="flex gap-2 flex-wrap items-center">
-                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded border border-white/5">
-                      Level: {user.level || 'primary'}
-                    </span>
-                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded border border-white/5">
-                      Lang: {user.language1}/{user.language2}
-                    </span>
-                    <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${user.is_premium ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-700/30 text-slate-400 border border-slate-700/30'}`}>
-                      {user.is_premium ? 'Premium' : 'Free Trial'}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            {usersList.filter(user => 
-              user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-              user.email?.toLowerCase().includes(searchQuery.toLowerCase())
-            ).length === 0 && (
-              <div className="text-center py-8 text-slate-500 font-bold text-xs">
-                No users found matching your search.
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Content Management</h3>
-        <div className="flex flex-col gap-3">
-          <button className="glass-card flex items-center gap-4 text-left active:scale-[0.98] transition-all">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-400">
-              <FilePlus size={22} />
-            </div>
-            <div>
-              <h4 className="font-black text-[var(--text-primary)] text-sm">Upload Paper</h4>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Import PDF or CSV</p>
-            </div>
-          </button>
-          
-          <button 
-            onClick={handleRemoveDuplicates}
-            disabled={cleaning}
-            className="glass-card flex items-center gap-4 text-left active:scale-[0.98] transition-all"
-          >
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400">
-              <Database size={22} />
-            </div>
-            <div>
-              <h4 className="font-black text-[var(--text-primary)] text-sm">{cleaning ? 'Scanning Database...' : 'Clean Duplicates'}</h4>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Remove identical questions</p>
-            </div>
-          </button>
-          <button 
-            onClick={handleClearIdleExams}
-            className="glass-card flex items-center gap-4 text-left active:scale-[0.98] transition-all"
-          >
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-400">
-              <Database size={22} />
-            </div>
-            <div>
-              <h4 className="font-black text-[var(--text-primary)] text-sm">Clear Abandoned Exams</h4>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Free up database space</p>
-            </div>
-          </button>
-
-          <button 
-            onClick={handleResetLeaderboard}
-            className="glass-card flex items-center gap-4 text-left active:scale-[0.98] transition-all"
-          >
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-400">
-              <Activity size={22} />
-            </div>
-            <div>
-              <h4 className="font-black text-[var(--text-primary)] text-sm">Reset Leaderboard</h4>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Zero out all points</p>
-            </div>
-          </button>
-
-          <div className="glass-card p-4 space-y-4">
-             <h4 className="font-black text-[var(--text-primary)] text-sm border-b border-white/5 pb-2">Revoke Access</h4>
-             <div className="flex gap-2">
-                <input 
-                  type="email" 
-                  placeholder="User Email to Revoke" 
-                  className="bg-white/5 flex-1 rounded-xl px-3 py-2 text-xs font-semibold"
-                  value={revokeEmail}
-                  onChange={e => setRevokeEmail(e.target.value)}
-                />
-                <button 
-                  onClick={handleRevokePremium}
-                  className="bg-rose-500/10 text-rose-500 border border-rose-500/20 px-3 py-2 rounded-xl font-bold text-xs hover:bg-rose-500 hover:text-white transition-all"
-                >
-                  Revoke
-                </button>
-             </div>
-             <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Removes premium & ends trial instantly</p>
-          </div>
-
-          {/* Reset User Password */}
-          <div className="glass-card p-4 space-y-4">
-            <div className="flex items-center gap-2 border-b border-white/5 pb-2">
-              <KeyRound size={14} className="text-violet-400" />
-              <h4 className="font-black text-[var(--text-primary)] text-sm">Reset User Password</h4>
-            </div>
-            <div className="space-y-3">
-              <div className="flex gap-2">
-                <input 
-                  type="email" 
-                  placeholder="User Email" 
-                  className="bg-white/5 flex-1 rounded-xl px-3 py-2 text-xs font-semibold border border-white/10 outline-none focus:border-violet-500/50 transition-all"
-                  value={resetEmail}
-                  onChange={e => { setResetEmail(e.target.value); setResetResult(null); }}
-                />
-                <button 
-                  onClick={handleResetUserPassword}
-                  disabled={resetting}
-                  className="bg-violet-500/10 text-violet-400 border border-violet-500/20 px-3 py-2 rounded-xl font-black text-xs hover:bg-violet-500 hover:text-white transition-all disabled:opacity-50 whitespace-nowrap"
-                >
-                  {resetting ? '...' : 'Reset'}
-                </button>
-              </div>
-
-              {resetResult && (
-                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 space-y-2">
-                  <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">
-                    ✅ {resetResult.message}
-                  </p>
-                  <div className="flex items-center gap-2 bg-slate-900/80 rounded-lg px-3 py-2">
-                    <code className="text-sm font-black text-amber-400 flex-1 tracking-widest">
-                      {resetResult.tempPassword}
-                    </code>
-                    <button
-                      onClick={() => { navigator.clipboard.writeText(resetResult.tempPassword); alert('Copied!'); }}
-                      className="text-slate-400 hover:text-white transition-colors"
-                      title="Copy password"
-                    >
-                      <Copy size={14} />
-                    </button>
-                  </div>
-                  <p className="text-[9px] text-slate-500 font-bold">Share this with the user. Ask them to change it after logging in.</p>
+              ).length === 0 && (
+                <div className="text-center py-8 text-slate-500 font-bold text-xs">
+                  No users found matching your search.
                 </div>
               )}
-              <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Generates a temporary password — user logs in and changes it</p>
             </div>
           </div>
+        </div>
+      )}
 
-          <div className="glass-card p-4 space-y-4">
-             <h4 className="font-black text-[var(--text-primary)] text-sm border-b border-white/5 pb-2">Reset Stats by Subject</h4>
-             <div className="space-y-3">
-                <input 
-                  type="email" 
-                  placeholder="User Email to Reset" 
-                  className="w-full bg-white/5 rounded-xl px-3 py-2 text-xs font-semibold"
-                  value={cleanStatsEmail}
-                  onChange={e => setCleanStatsEmail(e.target.value)}
-                />
-                
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">Select Subjects to Remove</label>
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {Object.entries(subjectLabels).map(([subKey, subLabel]) => {
-                      const isSelected = cleanSelectedSubjects.includes(subKey);
-                      return (
-                        <button
-                          key={subKey}
-                          onClick={() => {
-                            if (isSelected) {
-                              setCleanSelectedSubjects(prev => prev.filter(s => s !== subKey));
-                            } else {
-                              setCleanSelectedSubjects(prev => [...prev, subKey]);
-                            }
-                          }}
-                          type="button"
-                          className={`px-2 py-1 rounded-lg text-[9px] font-bold border transition-all ${
-                            isSelected 
-                              ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-sm' 
-                              : 'bg-white/5 text-slate-400 border-white/5 hover:border-white/10'
-                          }`}
-                        >
-                          {subLabel}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+      {/* Content Management (System Tab) */}
+      {activeTab === 'system' && (
+        <div className="space-y-3">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Content & DB Management</h3>
+          <div className="flex flex-col gap-3">
+            <button className="glass-card flex items-center gap-4 text-left active:scale-[0.98] transition-all">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-400">
+                <FilePlus size={22} />
+              </div>
+              <div>
+                <h4 className="font-black text-[var(--text-primary)] text-sm">Upload Paper</h4>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Import PDF or CSV</p>
+              </div>
+            </button>
+            
+            <button 
+              onClick={handleRemoveDuplicates}
+              disabled={cleaning}
+              className="glass-card flex items-center gap-4 text-left active:scale-[0.98] transition-all"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400">
+                <Database size={22} />
+              </div>
+              <div>
+                <h4 className="font-black text-[var(--text-primary)] text-sm">{cleaning ? 'Scanning Database...' : 'Clean Duplicates'}</h4>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Remove identical questions</p>
+              </div>
+            </button>
+            
+            <button 
+              onClick={handleClearIdleExams}
+              className="glass-card flex items-center gap-4 text-left active:scale-[0.98] transition-all"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-400">
+                <Database size={22} />
+              </div>
+              <div>
+                <h4 className="font-black text-[var(--text-primary)] text-sm">Clear Abandoned Exams</h4>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Free up database space</p>
+              </div>
+            </button>
 
-                <button 
-                  onClick={handleResetSubjectStats}
-                  className="w-full bg-amber-500/10 text-amber-500 border border-amber-500/20 py-2 rounded-xl font-bold text-xs hover:bg-amber-500 hover:text-white transition-all active:scale-[0.98]"
-                >
-                  Reset Stats
-                </button>
-             </div>
-             <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Deletes subject exams & adjusts rankings</p>
+            <button 
+              onClick={handleCleanLoadtestUsers}
+              disabled={cleaningLoadtest}
+              className="glass-card flex items-center gap-4 text-left active:scale-[0.98] transition-all"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400">
+                <UserMinus size={22} />
+              </div>
+              <div>
+                <h4 className="font-black text-[var(--text-primary)] text-sm">{cleaningLoadtest ? 'Cleaning...' : 'Remove Load Test Users'}</h4>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Delete users with loadtest_ prefix</p>
+              </div>
+            </button>
+
+            <button 
+              onClick={handleResetLeaderboard}
+              className="glass-card flex items-center gap-4 text-left active:scale-[0.98] transition-all"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-400">
+                <Activity size={22} />
+              </div>
+              <div>
+                <h4 className="font-black text-[var(--text-primary)] text-sm">Reset Leaderboard</h4>
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Zero out all points</p>
+              </div>
+            </button>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* User Operations & Resets (Access Tab) */}
+      {activeTab === 'access' && (
+        <div className="space-y-3">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">User Security & Settings</h3>
+          <div className="flex flex-col gap-3">
+            <div className="glass-card p-4 space-y-4">
+               <h4 className="font-black text-[var(--text-primary)] text-sm border-b border-white/5 pb-2">Revoke Access</h4>
+               <div className="flex gap-2">
+                  <input 
+                    type="email" 
+                    placeholder="User Email to Revoke" 
+                    className="bg-white/5 flex-1 rounded-xl px-3 py-2 text-xs font-semibold"
+                    value={revokeEmail}
+                    onChange={e => setRevokeEmail(e.target.value)}
+                  />
+                  <button 
+                    onClick={handleRevokePremium}
+                    className="bg-rose-500/10 text-rose-500 border border-rose-500/20 px-3 py-2 rounded-xl font-bold text-xs hover:bg-rose-500 hover:text-white transition-all"
+                  >
+                    Revoke
+                  </button>
+               </div>
+               <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Removes premium & ends trial instantly</p>
+            </div>
+
+            {/* Reset User Password */}
+            <div className="glass-card p-4 space-y-4">
+              <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                <KeyRound size={14} className="text-violet-400" />
+                <h4 className="font-black text-[var(--text-primary)] text-sm">Reset User Password</h4>
+              </div>
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <input 
+                    type="email" 
+                    placeholder="User Email" 
+                    className="bg-white/5 flex-1 rounded-xl px-3 py-2 text-xs font-semibold border border-white/10 outline-none focus:border-violet-500/50 transition-all"
+                    value={resetEmail}
+                    onChange={e => { setResetEmail(e.target.value); setResetResult(null); }}
+                  />
+                  <button 
+                    onClick={handleResetUserPassword}
+                    disabled={resetting}
+                    className="bg-violet-500/10 text-violet-400 border border-violet-500/20 px-3 py-2 rounded-xl font-black text-xs hover:bg-violet-500 hover:text-white transition-all disabled:opacity-50 whitespace-nowrap"
+                  >
+                    {resetting ? '...' : 'Reset'}
+                  </button>
+                </div>
+
+                {resetResult && (
+                  <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 space-y-2">
+                    <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">
+                      ✅ {resetResult.message}
+                    </p>
+                    <div className="flex items-center gap-2 bg-slate-900/80 rounded-lg px-3 py-2">
+                      <code className="text-sm font-black text-amber-400 flex-1 tracking-widest">
+                        {resetResult.tempPassword}
+                      </code>
+                      <button
+                        onClick={() => { navigator.clipboard.writeText(resetResult.tempPassword); alert('Copied!'); }}
+                        className="text-slate-400 hover:text-white transition-colors"
+                        title="Copy password"
+                      >
+                        <Copy size={14} />
+                      </button>
+                    </div>
+                    <p className="text-[9px] text-slate-500 font-bold">Share this with the user. Ask them to change it after logging in.</p>
+                  </div>
+                )}
+                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Generates a temporary password — user logs in and changes it</p>
+              </div>
+            </div>
+
+            <div className="glass-card p-4 space-y-4">
+               <h4 className="font-black text-[var(--text-primary)] text-sm border-b border-white/5 pb-2">Reset Stats by Subject</h4>
+               <div className="space-y-3">
+                  <input 
+                    type="email" 
+                    placeholder="User Email to Reset" 
+                    className="w-full bg-white/5 rounded-xl px-3 py-2 text-xs font-semibold"
+                    value={cleanStatsEmail}
+                    onChange={e => setCleanStatsEmail(e.target.value)}
+                  />
+                  
+                  <div className="space-y-1">
+                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">Select Subjects to Remove</label>
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {Object.entries(subjectLabels).map(([subKey, subLabel]) => {
+                        const isSelected = cleanSelectedSubjects.includes(subKey);
+                        return (
+                          <button
+                            key={subKey}
+                            onClick={() => {
+                              if (isSelected) {
+                                setCleanSelectedSubjects(prev => prev.filter(s => s !== subKey));
+                              } else {
+                                setCleanSelectedSubjects(prev => [...prev, subKey]);
+                              }
+                            }}
+                            type="button"
+                            className={`px-2 py-1 rounded-lg text-[9px] font-bold border transition-all ${
+                              isSelected 
+                                ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-sm' 
+                                : 'bg-white/5 text-slate-400 border-white/5 hover:border-white/10'
+                            }`}
+                          >
+                            {subLabel}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={handleResetSubjectStats}
+                    className="w-full bg-amber-500/10 text-amber-500 border border-amber-500/20 py-2 rounded-xl font-bold text-xs hover:bg-amber-500 hover:text-white transition-all active:scale-[0.98]"
+                  >
+                    Reset Stats
+                  </button>
+               </div>
+               <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Deletes subject exams & adjusts rankings</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

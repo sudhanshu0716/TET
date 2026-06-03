@@ -245,6 +245,46 @@ router.post('/revoke-premium', [auth, adminAuth], async (req, res) => {
   } catch (err) { res.status(500).send('Server Error'); }
 });
 
+// @desc    Delete all load test users and their exam/contest records
+router.post('/clean-loadtest-users', [auth, adminAuth], async (req, res) => {
+  try {
+    // Find all users with email matching /loadtest_/ or ending in @tetload.com
+    const testUsers = await User.find({
+      $or: [
+        { email: /loadtest_/i },
+        { email: /@tetload\.com$/i }
+      ]
+    }).select('user_id');
+
+    if (testUsers.length === 0) {
+      return res.json({
+        message: 'No load test users found in the database.',
+        deletedUsersCount: 0,
+        deletedExamsCount: 0,
+        deletedRegsCount: 0
+      });
+    }
+
+    const testUserIds = testUsers.map(u => u.user_id);
+    const mongoIds = testUsers.map(u => u._id);
+
+    // Cascade delete
+    const examResult = await Exam.deleteMany({ user_id: { $in: testUserIds } });
+    const regResult = await ContestRegistration.deleteMany({ user_id: { $in: testUserIds } });
+    const userResult = await User.deleteMany({ _id: { $in: mongoIds } });
+
+    res.json({
+      message: `Successfully cleaned up ${userResult.deletedCount} load test users and their related data.`,
+      deletedUsersCount: userResult.deletedCount,
+      deletedExamsCount: examResult.deletedCount,
+      deletedRegsCount: regResult.deletedCount
+    });
+  } catch (err) {
+    console.error('Error cleaning loadtest users:', err);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @desc    Reset a user's password (Admin) — returns a one-time temp password
 router.post('/reset-user-password', [auth, adminAuth], async (req, res) => {
   const { email } = req.body;
