@@ -182,6 +182,27 @@ const Cheatsheets = () => {
             <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
           </div>
 
+          {/* Quick link to Revision Zone */}
+          <div 
+            onClick={() => navigate('/revision')}
+            className="glass-card bg-gradient-to-br from-rose-500/20 to-purple-500/20 border border-rose-500/30 relative overflow-hidden flex items-center justify-between cursor-pointer hover:bg-white/10 active:scale-[0.98] transition-all p-5 mb-4 group animate-fade-in"
+          >
+            <div className="space-y-1 relative z-10">
+              <span className="text-[9px] font-black uppercase tracking-widest text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full w-fit">
+                {lang === 'HI' ? 'गलतियों का सुधार' : 'Mistakes Archive'}
+              </span>
+              <h4 className="text-sm font-black text-[var(--text-primary)] mt-2">
+                🎯 {lang === 'HI' ? 'रिवीजन ज़ोन में अभ्यास करें' : 'Practice in Revision Zone'}
+              </h4>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-relaxed">
+                {lang === 'HI' ? 'गलत और बुकमार्क किए गए प्रश्नों को सुधारें!' : 'Resolve incorrect and bookmarked questions!'}
+              </p>
+            </div>
+            <span className="text-3xl relative z-10 group-hover:scale-110 transition-transform duration-300 animate-pulse">🎯</span>
+            {/* Subtle highlight overlay */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
+          </div>
+
           {/* Subject Filter Pills */}
           <div className="flex gap-2.5 overflow-x-auto pb-2 hide-scrollbar">
             {subjects.map(sub => (

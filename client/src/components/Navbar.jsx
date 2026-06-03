@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { LogOut, Sun, Moon } from 'lucide-react';
+import { LogOut, Sun, Moon, Target } from 'lucide-react';
 import translations from '../translations';
 
 const Navbar = () => {
@@ -58,6 +58,17 @@ const Navbar = () => {
           >
             {lang === 'EN' ? 'हिंदी' : 'English'}
           </button>
+
+          {token && (
+            <button 
+              onClick={() => navigate('/revision')}
+              className="w-9 h-9 rounded-lg bg-purple-500/5 border border-purple-500/40 text-purple-400 flex items-center justify-center hover:bg-purple-500/10 hover:border-purple-300 hover:text-purple-300 transition-all shadow-[0_0_12px_rgba(168,85,247,0.15)] active:scale-95 cursor-pointer"
+              aria-label={t.revisionZone}
+              title={t.revisionZone}
+            >
+              <Target className="w-5 h-5" />
+            </button>
+          )}
           
           {user?.role === 'admin' && (
             <button 
