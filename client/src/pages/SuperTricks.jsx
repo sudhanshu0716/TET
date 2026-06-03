@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import translations from '../translations';
 import { useCustomModal } from '../context/ModalContext';
+import { GenericPageSkeleton } from '../components/SkeletonLoader';
 
 const SuperTricks = () => {
   const { showAlert } = useCustomModal();
@@ -259,12 +260,7 @@ const SuperTricks = () => {
     return matchesSubject && matchesQuery;
   });
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-      <div className="loader"></div>
-      <p className="text-slate-500 font-bold animate-pulse">{t.preparing}</p>
-    </div>
-  );
+  if (loading) return <GenericPageSkeleton />;
 
   if (error) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 px-5 max-w-md mx-auto text-center">

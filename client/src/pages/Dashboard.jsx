@@ -5,6 +5,7 @@ import translations from '../translations';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useCustomModal } from '../context/ModalContext';
+import { DashboardSkeleton } from '../components/SkeletonLoader';
 
 const Dashboard = () => {
   const { user: authUser, setUser: setAuthUser } = useAuth();
@@ -148,12 +149,7 @@ const Dashboard = () => {
     </div>
   );
 
-  if (!user && !error) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-5 max-w-md mx-auto w-full">
-      <div className="loader"></div>
-      <p className="text-slate-500 font-bold animate-pulse">{t.preparing}</p>
-    </div>
-  );
+  if (!user && !error) return <DashboardSkeleton />;
 
 
   return (

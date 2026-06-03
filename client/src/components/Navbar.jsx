@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { LogOut, Sun, Moon } from 'lucide-react';
@@ -38,18 +39,25 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Enhanced Visibility Theme Toggle */}
-          <button 
+          {/* Animated Theme Toggle */}
+          <button
             onClick={toggleTheme}
-            className="w-9 h-9 rounded-lg bg-amber-500/5 border border-amber-500/40 text-amber-500 flex items-center justify-center hover:bg-amber-500/10 hover:border-amber-400 hover:text-amber-400 transition-all shadow-[0_0_12px_rgba(245,158,11,0.15)] active:scale-95 cursor-pointer"
-            aria-label="Toggle Theme"
-            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            className="relative w-10 h-10 flex items-center justify-center rounded-2xl hover:bg-white/10 transition-all duration-300 cursor-pointer overflow-hidden"
+            aria-label="Toggle theme"
           >
-            {isDarkMode ? (
-              <Sun className="w-5 h-5 text-amber-500 fill-amber-500/10" />
-            ) : (
-              <Moon className="w-5 h-5 text-amber-500 fill-amber-500/15" />
-            )}
+            <motion.div
+              key={isDarkMode ? 'dark' : 'light'}
+              initial={{ y: -30, opacity: 0, rotate: -90 }}
+              animate={{ y: 0, opacity: 1, rotate: 0 }}
+              exit={{ y: 30, opacity: 0, rotate: 90 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              {isDarkMode ? (
+                <Sun size={20} className="text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]" />
+              ) : (
+                <Moon size={20} className="text-indigo-500 drop-shadow-[0_0_8px_rgba(99,102,241,0.4)]" />
+              )}
+            </motion.div>
           </button>
 
           <button 

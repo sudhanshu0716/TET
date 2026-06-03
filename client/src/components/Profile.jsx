@@ -5,6 +5,7 @@ import { Crown, Zap, Calendar, ChevronRight, ShieldCheck } from 'lucide-react';
 import translations from '../translations';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { GenericPageSkeleton } from './SkeletonLoader';
 
 const Profile = () => {
   const { user, setUser } = useAuth();
@@ -81,12 +82,7 @@ const Profile = () => {
     }
   };
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-      <div className="w-10 h-10 border-4 border-sky-500/20 border-t-sky-500 rounded-full animate-spin"></div>
-      <p className="text-slate-500 font-bold animate-pulse">{t.loadingProfile || 'Loading Profile...'}</p>
-    </div>
-  );
+  if (loading) return <GenericPageSkeleton />;
 
   const getLetterGrade = (score) => {
     if (score >= 95) return 'A+';

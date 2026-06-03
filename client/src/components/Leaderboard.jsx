@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import translations from '../translations';
+import { GenericPageSkeleton } from './SkeletonLoader';
 
 const Leaderboard = () => {
   const [tab, setTab] = useState('global'); // 'global' or 'contest'
@@ -56,12 +57,7 @@ const Leaderboard = () => {
     fetchRankings();
   }, [tab]);
 
-  if (loading && rankings.length === 0) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-      <div className="w-10 h-10 border-4 border-sky-500/20 border-t-sky-500 rounded-full animate-spin"></div>
-      <p className="text-slate-500 font-bold animate-pulse uppercase tracking-widest text-xs">{t.loadingStats || 'Loading Rankings...'}</p>
-    </div>
-  );
+  if (loading && rankings.length === 0) return <GenericPageSkeleton />;
 
   return (
     <div className="flex flex-col gap-8 pt-8 px-6 pb-24 max-w-md mx-auto w-full animate-fade-in">

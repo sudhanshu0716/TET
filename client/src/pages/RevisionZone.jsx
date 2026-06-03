@@ -18,6 +18,7 @@ import api from '../services/api';
 import translations from '../translations';
 import { useTheme } from '../context/ThemeContext';
 import { useCustomModal } from '../context/ModalContext';
+import { RevisionSkeleton } from '../components/SkeletonLoader';
 
 const RevisionZone = () => {
   const navigate = useNavigate();
@@ -136,12 +137,7 @@ const RevisionZone = () => {
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (stats.progress / 100) * circumference;
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-5 max-w-md mx-auto w-full">
-      <div className="loader"></div>
-      <p className="text-slate-500 font-bold animate-pulse">{t.loadingRevision || "Loading Revision Zone..."}</p>
-    </div>
-  );
+  if (loading) return <RevisionSkeleton />;
 
   return (
     <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in relative">

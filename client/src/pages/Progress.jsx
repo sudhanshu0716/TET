@@ -6,6 +6,7 @@ import TopicInsights from '../components/TopicInsights';
 import PerformanceRadar from '../components/PerformanceRadar';
 import SubtopicWeaknesses from '../components/SubtopicWeaknesses';
 import { useAuth } from '../context/AuthContext';
+import { ProgressSkeleton } from '../components/SkeletonLoader';
 
 const Progress = () => {
   const { user: authUser } = useAuth();
@@ -132,12 +133,7 @@ const Progress = () => {
     </div>
   );
 
-  if (loadingProfile && !user) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-5 max-w-md mx-auto w-full">
-      <div className="w-10 h-10 border-4 border-sky-500/20 border-t-sky-500 rounded-full animate-spin"></div>
-      <p className="text-slate-500 font-bold animate-pulse">{t.loadingStats || 'Loading your stats...'}</p>
-    </div>
-  );
+  if (loadingProfile && !user) return <ProgressSkeleton />;
 
   return (
     <div className="flex flex-col gap-6 px-5 pt-8 pb-32 max-w-md mx-auto w-full animate-fade-in">

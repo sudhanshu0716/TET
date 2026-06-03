@@ -4,6 +4,7 @@ import api from '../services/api';
 import translations from '../translations';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { GenericPageSkeleton } from '../components/SkeletonLoader';
 
 const Cheatsheets = () => {
   const navigate = useNavigate();
@@ -65,12 +66,7 @@ const Cheatsheets = () => {
   const subjects = ['all', 'pedagogy', 'hindi', 'english', 'evs', 'math', 'social', 'science', 'sanskrit'];
   const filteredNotes = filter === 'all' ? notes : notes.filter(n => n.subject === filter);
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-      <div className="loader"></div>
-      <p className="text-slate-500 font-bold animate-pulse">{t.preparing}</p>
-    </div>
-  );
+  if (loading) return <GenericPageSkeleton />;
 
   return (
     <div className="flex flex-col gap-6 px-5 pt-6 pb-32 max-w-md mx-auto w-full animate-fade-in">

@@ -1,15 +1,31 @@
 {
   "short_name": "TET Prep",
   "name": "TET Prep: UPTET & CTET Companion",
+  "description": "The ultimate preparation companion for UPTET & CTET success. Daily practice, revision notes, classroom simulator, and more.",
   "icons": [
     {
       "src": "favicon.svg",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/svg+xml"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "theme_color": "#020617",
-  "background_color": "#020617"
+  "background_color": "#020617",
+  "categories": ["education", "productivity"]
 }

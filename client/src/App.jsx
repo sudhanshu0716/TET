@@ -28,6 +28,7 @@ import Leaderboard from './components/Leaderboard';
 import BottomNav from './components/BottomNav';
 import ProtectedRoute from './components/ProtectedRoute';
 import AppTutorial from './components/AppTutorial';
+import InstallPrompt from './components/InstallPrompt';
 import { useAuth } from './context/AuthContext';
 import { Settings, ShieldAlert, Sparkles, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -153,6 +154,7 @@ function AppContent() {
         </main>
         {!isAdmin && !isExamPage && <BottomNav />}
         {!isAdmin && !isExamPage && <AppTutorial />}
+        {!isAdmin && !isExamPage && <InstallPrompt />}
         <PremiumModal 
           isOpen={showPremiumModal} 
           user={user} 
