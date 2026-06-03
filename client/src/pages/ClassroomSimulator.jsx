@@ -68,6 +68,7 @@ const ClassroomSimulator = () => {
   });
   const [voices, setVoices] = useState([]);
   const activeUtteranceRef = useRef(null);
+  const isFirstRenderRef = useRef(true);
 
   // Desk Mini-App States
   const [showHandbook, setShowHandbook] = useState(false);
@@ -116,6 +117,9 @@ const ClassroomSimulator = () => {
     const synth = window.speechSynthesis;
     
     try {
+      if (synth.paused) {
+        synth.resume();
+      }
       synth.cancel(); // Clear any running speech
     } catch (e) {
       console.warn('Speech cancel error:', e);
@@ -323,7 +327,12 @@ const ClassroomSimulator = () => {
   // Trigger speech on initial mount/scenario fetch (Dependencies length: 3)
   useEffect(() => {
     if (!loading && scenario && currentStep && !isReacting && !result) {
-      triggerCurrentStateSpeech();
+      if (isFirstRenderRef.current) {
+        // Skip automatic speech on the very first mount of simulator to prevent autoplay block sticking the queue
+        isFirstRenderRef.current = false;
+      } else {
+        triggerCurrentStateSpeech();
+      }
     }
   }, [currentStepIndex, scenario, loading]);
 
