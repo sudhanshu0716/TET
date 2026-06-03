@@ -51,7 +51,6 @@ const Exams = () => {
       border: 'border-amber-500/20',
       badge: 'POPULAR'
     },
-    /*
     {
       id: 'simulator',
       title: t.classroomSimulator || 'Classroom Simulator',
@@ -62,7 +61,6 @@ const Exams = () => {
       border: 'border-purple-500/20',
       badge: 'VOICE PLAY'
     },
-    */
     {
       id: 'mock',
       title: t.fullMock || 'Full Length Mock',

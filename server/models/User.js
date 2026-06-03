@@ -27,6 +27,12 @@ const userSchema = new mongoose.Schema({
     status: { type: String, enum: ['active', 'corrected'], default: 'active' },
     added_at: { type: Date, default: Date.now },
     corrected_at: { type: Date }
+  }],
+  scenarios_completed: [{
+    scenario_id: { type: String, required: true },
+    selected_choices: [{ type: Number }],
+    score: { type: Number, default: 0 },
+    completed_at: { type: Date, default: Date.now }
   }]
 });
 

@@ -1189,6 +1189,62 @@ body {
   box-shadow: none !important;
 }
 
+/* =================================================== */
+/* UI Theme V3 Classroom Simulator Themed Styles      */
+/* =================================================== */
+
+/* Handwritten Chalk Speech Bubbles on the Chalkboard */
+.theme-v3 .sim-bubble {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 2px dashed var(--glass-border) !important;
+  /* Organic uneven hand-drawn radius */
+  border-radius: 15px 35px 15px 35px/35px 15px 35px 15px !important;
+  color: var(--text-primary) !important;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+.theme-v3.light-mode .sim-bubble {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Ensure bubble content text is white/dark-charcoal in V3 */
+.theme-v3 .sim-bubble *,
+.theme-v3 .sim-bubble p,
+.theme-v3 .sim-bubble span {
+  color: var(--text-primary) !important;
+}
+
+/* Hide bubble triangle pointers in V3 to fit the hand-sketched board look */
+.theme-v3 .sim-bubble .bubble-pointer {
+  display: none !important;
+}
+
+/* Custom Chalkboard Handbook Modal */
+.theme-v3 .sim-handbook-modal {
+  background-color: var(--bg-secondary) !important;
+  border: 3px dashed var(--glass-border) !important;
+  border-radius: 20px 8px 20px 8px/8px 20px 8px 20px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+.theme-v3 .sim-handbook-modal h3,
+.theme-v3 .sim-handbook-modal h4 {
+  font-family: 'Caveat', cursive !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.theme-v3 .sim-handbook-modal p,
+.theme-v3 .sim-handbook-modal span {
+  font-family: 'Playpen Sans', cursive !important;
+  color: var(--text-secondary) !important;
+}
+
+.theme-v3 .sim-handbook-modal .text-white {
+  color: var(--text-primary) !important;
+}
+
+
 
 
 

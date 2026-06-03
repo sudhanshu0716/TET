@@ -19,7 +19,7 @@ import Progress from './pages/Progress';
 import Subscription from './pages/Subscription';
 import SuperTricks from './pages/SuperTricks';
 import RevisionZone from './pages/RevisionZone';
-// import ClassroomSimulator from './pages/ClassroomSimulator';
+import ClassroomSimulator from './pages/ClassroomSimulator';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ModalProvider } from './context/ModalContext';
@@ -147,7 +147,7 @@ function AppContent() {
               <Route path="/subscription" element={<Subscription />} />
               <Route path="/super-tricks" element={<SuperTricks />} />
               <Route path="/revision" element={<RevisionZone />} />
-              {/* <Route path="/simulator" element={<ClassroomSimulator />} /> */}
+              <Route path="/simulator" element={<ClassroomSimulator />} />
             </Route>
           </Routes>
         </main>

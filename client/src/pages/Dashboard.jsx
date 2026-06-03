@@ -341,7 +341,6 @@ const Dashboard = () => {
       </div>
 
       {/* Classroom Simulator Card */}
-      {/* 
       <div 
         onClick={() => navigate('/simulator')}
         className="glass-card relative overflow-hidden bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent border-l-4 border-l-emerald-500 p-5 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all group"
@@ -374,7 +373,6 @@ const Dashboard = () => {
           🧑‍🏫
         </div>
       </div>
-      */}
       
       {/* Daily Live Contest Card */}
       <div id="tut-contest" className={`glass-card relative overflow-hidden ${contestStatus.status === 'live' ? 'ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/20' : ''}`}>

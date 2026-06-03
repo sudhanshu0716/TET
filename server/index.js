@@ -35,7 +35,7 @@ app.use('/api/exams', require('./routes/exams'));
 app.use('/api/contests', require('./routes/contests'));
 app.use('/api/cheatsheets', require('./routes/cheatsheets'));
 app.use('/api/revision', require('./routes/revision'));
-// app.use('/api/scenarios', require('./routes/scenarios'));
+app.use('/api/scenarios', require('./routes/scenarios'));
 
 // Cheatsheet Routes
 const cheatsheetRoutes = require('./routes/cheatsheets');
