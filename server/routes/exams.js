@@ -207,6 +207,37 @@ router.post(['/submit', '/submit/:examId'], auth, async (req, res) => {
     if (user) {
       user.questions_solved = (user.questions_solved || 0) + (answers ? answers.length : 0);
       user.rank_points = (user.rank_points || 0) + (score * 10);
+      
+      // Update mistakes/wrong answers tracking
+      if (graded.length > 0) {
+        if (!user.wrong_answers) user.wrong_answers = [];
+        
+        for (const item of graded) {
+          const existingIndex = user.wrong_answers.findIndex(w => w.question_id === item.question_id);
+          if (item.is_correct) {
+            // Correct answer: if active, set status to corrected
+            if (existingIndex !== -1 && user.wrong_answers[existingIndex].status === 'active') {
+              user.wrong_answers[existingIndex].status = 'corrected';
+              user.wrong_answers[existingIndex].corrected_at = new Date();
+            }
+          } else {
+            // Incorrect answer: increment count and ensure status is active
+            if (existingIndex !== -1) {
+              user.wrong_answers[existingIndex].count = (user.wrong_answers[existingIndex].count || 0) + 1;
+              user.wrong_answers[existingIndex].status = 'active';
+              user.wrong_answers[existingIndex].added_at = new Date();
+            } else {
+              user.wrong_answers.push({
+                question_id: item.question_id,
+                count: 1,
+                status: 'active',
+                added_at: new Date()
+              });
+            }
+          }
+        }
+      }
+      
       await user.save();
     }
 

@@ -47,6 +47,14 @@ const Dashboard = () => {
       return { status: 'upcoming', registered: false };
     }
   });
+  const [revisionStats, setRevisionStats] = useState(() => {
+    try {
+      const cached = localStorage.getItem('cached_dashboard_revisionStats');
+      return cached ? JSON.parse(cached) : { active_mistakes: 0, total_bookmarks: 0 };
+    } catch (e) {
+      return { active_mistakes: 0, total_bookmarks: 0 };
+    }
+  });
   const navigate = useNavigate();
   const lang = localStorage.getItem('appLang') || 'EN';
   const t = translations[lang] || translations.EN;
@@ -55,11 +63,12 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       const token = localStorage.getItem('token');
       try {
-        const [profileRes, contestRes, historyRes, activeRes] = await Promise.all([
+        const [profileRes, contestRes, historyRes, activeRes, revisionRes] = await Promise.all([
           api.get('/api/profile', { headers: { 'x-auth-token': token } }),
           api.get('/api/contests/status', { headers: { 'x-auth-token': token } }).catch(e => { console.error(e); return { data: null }; }),
           api.get('/api/exams/history', { headers: { 'x-auth-token': token } }).catch(e => { console.error(e); return { data: [] }; }),
-          api.get('/api/profile/active-count').catch(e => { console.error(e); return { data: { count: 0 } }; })
+          api.get('/api/profile/active-count').catch(e => { console.error(e); return { data: { count: 0 } }; }),
+          api.get('/api/revision/stats', { headers: { 'x-auth-token': token } }).catch(e => { console.error(e); return { data: null }; })
         ]);
 
         if (profileRes.data) {
@@ -89,6 +98,11 @@ const Dashboard = () => {
         if (activeRes.data) {
           setActiveCount(activeRes.data.count);
           localStorage.setItem('cached_dashboard_activeCount', activeRes.data.count.toString());
+        }
+
+        if (revisionRes && revisionRes.data) {
+          setRevisionStats(revisionRes.data);
+          localStorage.setItem('cached_dashboard_revisionStats', JSON.stringify(revisionRes.data));
         }
       } catch (err) {
         console.error(err);
@@ -206,6 +220,40 @@ const Dashboard = () => {
         </p>
       </div>
 
+      {/* Revision Zone Card */}
+      <div 
+        onClick={() => navigate('/revision')}
+        className="glass-card relative overflow-hidden bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent border-l-4 border-l-purple-500 p-5 flex items-center justify-between cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-all group"
+      >
+        <div className="space-y-1 z-10">
+          <span className="text-[9px] font-black uppercase tracking-widest bg-purple-500/20 text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded-full">
+            {lang === 'HI' ? 'सुधार केंद्र' : 'Revision'}
+          </span>
+          <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1.5 flex items-center gap-1.5">
+            {t.revisionZone} 🌟
+          </h3>
+          <p className="text-xs text-slate-400 font-semibold max-w-[280px]">
+            {revisionStats.active_mistakes > 0 
+              ? (t.activeMistakesCount ? t.activeMistakesCount.replace('{count}', revisionStats.active_mistakes) : `${revisionStats.active_mistakes} Active Mistakes`)
+              : (t.revisionDesc || "Practice mistakes & bookmarks")
+            }
+          </p>
+        </div>
+        
+        {revisionStats.active_mistakes > 0 ? (
+          <div className="h-12 w-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex flex-col items-center justify-center shrink-0 z-10 animate-pulse">
+            <span className="text-sm font-black text-rose-400 leading-none">{revisionStats.active_mistakes}</span>
+            <span className="text-[7px] font-bold text-rose-400 uppercase tracking-tighter leading-none mt-1">
+              {lang === 'HI' ? 'गलत' : 'Fail'}
+            </span>
+          </div>
+        ) : (
+          <div className="text-3xl z-10 group-hover:scale-110 transition-transform duration-300">
+            🎯
+          </div>
+        )}
+      </div>
+
       {/* Super Tricks Hub Banner */}
       <div 
         onClick={() => navigate('/super-tricks')}
@@ -233,6 +281,8 @@ const Dashboard = () => {
         {/* Subtle glassmorphic overlay */}
         <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
+
+
       
       {/* Daily Live Contest Card */}
       <div id="tut-contest" className={`glass-card relative overflow-hidden ${contestStatus.status === 'live' ? 'ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/20' : ''}`}>

@@ -51,6 +51,7 @@ const Exams = () => {
       border: 'border-amber-500/20',
       badge: 'POPULAR'
     },
+
     {
       id: 'mock',
       title: t.fullMock || 'Full Length Mock',
@@ -161,30 +162,43 @@ const Exams = () => {
       {/* Quick Revision Section */}
       <div className="mt-4 space-y-4">
         <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Quick Tools</h4>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           <button 
             onClick={() => navigate('/flashcards')}
-            className="glass-card !p-4 flex flex-col gap-3 group active:scale-95 transition-all bg-gradient-to-br from-indigo-500/10 to-transparent border-indigo-500/20"
+            className="glass-card !p-3 flex flex-col gap-3 group active:scale-95 transition-all bg-gradient-to-br from-indigo-500/10 to-transparent border-indigo-500/20"
           >
             <div className="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
               <Sparkles size={18} />
             </div>
             <div>
-              <p className="text-sm font-black text-[var(--text-primary)]">Flashcards</p>
-              <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Active Recall</p>
+              <p className="text-xs font-black text-[var(--text-primary)] leading-tight">Flashcards</p>
+              <p className="text-[8px] text-slate-500 font-bold uppercase tracking-wider leading-none mt-1">Recall</p>
             </div>
           </button>
           
           <button 
             onClick={() => navigate('/cheatsheets')}
-            className="glass-card !p-4 flex flex-col gap-3 group active:scale-95 transition-all bg-gradient-to-br from-emerald-500/10 to-transparent border-emerald-500/20"
+            className="glass-card !p-3 flex flex-col gap-3 group active:scale-95 transition-all bg-gradient-to-br from-emerald-500/10 to-transparent border-emerald-500/20"
           >
             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-all">
               <Timer size={18} />
             </div>
             <div>
-              <p className="text-sm font-black text-[var(--text-primary)]">Last Minute</p>
-              <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Cheat Sheets</p>
+              <p className="text-xs font-black text-[var(--text-primary)] leading-tight">Last Minute</p>
+              <p className="text-[8px] text-slate-500 font-bold uppercase tracking-wider leading-none mt-1">Notes</p>
+            </div>
+          </button>
+
+          <button 
+            onClick={() => navigate('/revision')}
+            className="glass-card !p-3 flex flex-col gap-3 group active:scale-95 transition-all bg-gradient-to-br from-purple-500/10 to-transparent border-purple-500/20"
+          >
+            <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-all">
+              <Star size={18} />
+            </div>
+            <div>
+              <p className="text-xs font-black text-[var(--text-primary)] leading-tight">{t.revisionZone || "Revision"}</p>
+              <p className="text-[8px] text-slate-500 font-bold uppercase tracking-wider leading-none mt-1">Mistakes</p>
             </div>
           </button>
         </div>

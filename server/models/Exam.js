@@ -5,7 +5,7 @@ const examSchema = new mongoose.Schema({
   user_id: { type: String, required: true },
   date: { type: Date, default: Date.now },
   questions: [{ type: String }], // Array of question_ids
-  exam_type: { type: String, enum: ['daily', 'full-mock', 'subject-wise', 'important', 'contest', 'year-wise'] },
+  exam_type: { type: String, enum: ['daily', 'full-mock', 'subject-wise', 'important', 'contest', 'year-wise', 'remedial'] },
   duration: { type: Number }, // in minutes
   score: { type: Number, default: 0 },
   answers: [{ 

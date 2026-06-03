@@ -19,7 +19,15 @@ const userSchema = new mongoose.Schema({
     type: Date, 
     default: () => new Date(+new Date() + 3 * 24 * 60 * 60 * 1000) 
   },
-  created_at: { type: Date, default: Date.now }
+  created_at: { type: Date, default: Date.now },
+  bookmarks: [{ type: String }],
+  wrong_answers: [{
+    question_id: { type: String, required: true },
+    count: { type: Number, default: 1 },
+    status: { type: String, enum: ['active', 'corrected'], default: 'active' },
+    added_at: { type: Date, default: Date.now },
+    corrected_at: { type: Date }
+  }]
 });
 
 userSchema.index({ last_active: -1 });

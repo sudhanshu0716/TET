@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import api from '../services/api';
 import translations from '../translations';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, CheckCircle2, Clock, ListChecks, X, Trophy, RotateCcw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle2, Clock, ListChecks, X, Trophy, RotateCcw, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const DailyExam = ({ type }) => {
   const { subject, year } = useParams();
   const { user } = useAuth();
+  const location = useLocation();
+  const [bookmarkedIds, setBookmarkedIds] = useState([]);
   const [step, setStep] = useState('config');
   const [config, setConfig] = useState({ qCount: 30, timeLimit: 30 });
   const [questions, setQuestions] = useState([]);
@@ -75,6 +77,21 @@ const DailyExam = ({ type }) => {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchBookmarks = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await api.get('/api/revision/bookmarked-ids', { headers: { 'x-auth-token': token } });
+        setBookmarkedIds(res.data.bookmarked_ids || []);
+      } catch (err) {
+        console.error('Error fetching bookmarks:', err);
+      }
+    };
+    if (user) {
+      fetchBookmarks();
+    }
+  }, [user]);
+
   // Countdown tick — runs at top level, only meaningful when step === 'contest-waiting'
   useEffect(() => {
     if (step !== 'contest-waiting') return;
@@ -116,6 +133,16 @@ const DailyExam = ({ type }) => {
 
   const startExam = async () => {
     clearResumeData(); // Fresh start clears any saved session
+    
+    if (location.state?.remedialExam) {
+      const { exam: newExam, questions: newQuestions } = location.state.remedialExam;
+      setExam(newExam);
+      setQuestions(newQuestions);
+      setTimeLeft(newExam.duration * 60);
+      setStep('exam');
+      return;
+    }
+
     setStep('loading');
     
     // Cycle loading text to keep user engaged while Render wakes up
@@ -177,6 +204,12 @@ const DailyExam = ({ type }) => {
   // Auto-start for specific exam types — but ONLY if there's no saved resume session
   useEffect(() => {
     if (step !== 'config') return;
+    
+    if (location.state?.remedialExam) {
+      startExam();
+      return;
+    }
+
     // If a resume session exists, stay on config so the resume banner is shown
     const savedSession = localStorage.getItem(resumeKey);
     if (savedSession) return; // let the banner handle it
@@ -300,6 +333,21 @@ const DailyExam = ({ type }) => {
   };
 
   const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
+
+  const handleToggleBookmark = async () => {
+    if (!q) return;
+    try {
+      const token = localStorage.getItem('token');
+      await api.post('/api/revision/bookmark/toggle', { question_id: q.question_id }, { headers: { 'x-auth-token': token } });
+      setBookmarkedIds(prev => 
+        prev.includes(q.question_id) 
+          ? prev.filter(id => id !== q.question_id) 
+          : [...prev, q.question_id]
+      );
+    } catch (err) {
+      console.error('Error toggling bookmark:', err);
+    }
+  };
 
   // CONFIG SCREEN
   if (step === 'config') return (
@@ -839,6 +887,18 @@ const DailyExam = ({ type }) => {
           </button>
           
           <div className="flex items-center gap-4">
+            {q && (
+              <button 
+                onClick={handleToggleBookmark}
+                className={`p-2 rounded-xl transition-all border ${
+                  bookmarkedIds.includes(q.question_id) 
+                    ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' 
+                    : 'bg-white/5 border-white/10 text-slate-500 hover:text-white'
+                } active:scale-90`}
+              >
+                <Star size={16} fill={bookmarkedIds.includes(q.question_id) ? '#fbbf24' : 'none'} className={bookmarkedIds.includes(q.question_id) ? 'animate-pulse' : ''} />
+              </button>
+            )}
             <div className={`flex items-center gap-1.5 font-black text-sm ${timeLeft < 300 ? 'text-rose-500 animate-pulse' : 'text-sky-400'}`}>
               <Clock size={16} className={timeLeft < 300 ? 'animate-spin-slow' : ''} />
               <span>{formatTime(timeLeft)}</span>

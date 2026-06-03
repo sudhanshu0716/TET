@@ -18,6 +18,7 @@ import Exams from './pages/Exams';
 import Progress from './pages/Progress';
 import Subscription from './pages/Subscription';
 import SuperTricks from './pages/SuperTricks';
+import RevisionZone from './pages/RevisionZone';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Profile from './components/Profile';
@@ -144,6 +145,7 @@ function AppContent() {
               <Route path="/flashcards" element={<Flashcards />} />
               <Route path="/subscription" element={<Subscription />} />
               <Route path="/super-tricks" element={<SuperTricks />} />
+              <Route path="/revision" element={<RevisionZone />} />
             </Route>
           </Routes>
         </main>
