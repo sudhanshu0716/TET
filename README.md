@@ -81,14 +81,19 @@ TET_PREP/
 │   │   │   ├── BottomNav.jsx       # Mobile sticky footer nav
 │   │   │   ├── Profile.jsx         # User settings & stats
 │   │   │   ├── Leaderboard.jsx     # Global rankings view
+│   │   │   ├── InstallPrompt.jsx   # PWA homescreen installer prompt
+│   │   │   ├── SkeletonLoader.jsx  # Reusable UI shimmer components
+│   │   │   ├── TransparentAvatar.jsx # Avatar BFS canvas transparency solver
 │   │   │   └── ...
-│   │   ├── context/            # Auth & Theme React contexts
+│   │   ├── context/            # Auth, Theme, & Modal React contexts
 │   │   │   ├── AuthContext.jsx     # Login/register + per-user tutorial flag
-│   │   │   └── ThemeContext.jsx
+│   │   │   ├── ThemeContext.jsx    # Visual themes (V1, V2, V3) context
+│   │   │   └── ModalContext.jsx    # Promise-based visual custom alert/confirms
 │   │   ├── pages/              # Primary route screens
 │   │   │   ├── Dashboard.jsx       # Main study dashboard
 │   │   │   ├── DailyExam.jsx       # Exam engine (all types)
 │   │   │   ├── SuperTricks.jsx     # Super Tricks Hub (mnemonic learning + audio synthesizer)
+│   │   │   ├── ClassroomSimulator.jsx # RPG-style branching pedagogy game
 │   │   │   ├── AdminDashboard.jsx  # Administrative control centre
 │   │   │   └── ...
 │   │   ├── services/           # Axios HTTP services
@@ -98,7 +103,7 @@ TET_PREP/
 │   └── vite.config.js
 ├── server/                     # Express Node.js Backend
 │   ├── middleware/             # JWT auth validation
-│   ├── models/                 # Mongoose schemas (User, Exam, Question, SuperTrick, etc.)
+│   ├── models/                 # Mongoose schemas (User, Exam, Question, Scenario, etc.)
 │   ├── routes/
 │   │   ├── admin.js            # Admin-only operations
 │   │   ├── auth.js             # Register / login / profile
@@ -107,8 +112,9 @@ TET_PREP/
 │   │   ├── exams.js            # Exam setup, submission (50Q default, no limits)
 │   │   ├── payment.js          # Razorpay orders & verification
 │   │   ├── profile.js          # Stats, leaderboard, user profiles
+│   │   ├── scenarios.js        # Pedagogy branching RPG visual novel endpoints
 │   │   └── supertricks.js      # Super Tricks endpoints (premium protected)
-│   ├── seeds/                  # DB seeds for questions & admin
+│   ├── seeds/                  # DB seeds for questions, scenarios, & admin
 │   ├── seed_supertricks.js     # Database seed file for 100 super tricks
 │   └── index.js                # App entry point & MongoDB init
 ├── vercel.json                 # Vercel routing configuration
@@ -285,6 +291,32 @@ The app is pre-configured for Vercel deployment:
 ---
 
 ## 📋 Recent Changes & Fixes
+
+### v2.2 — June 2026
+
+#### 🏫 Classroom Simulator (Visual Novel RPG)
+- **Branching Scenarios**: Seeded 3-stage visual pedagogy stories tracking *Confrontation, Reaction, and Resolution* stages mapped in MongoDB (`Scenario.js`).
+- **Interactive Visual Novel**: Built in-browser Text-to-Speech (TTS) audio with distinct profiles for narrator, child student, and female teacher. Supports auto-play chaining and visual speech bubbles.
+- **Teacher's Desk Panel**: Embedded a pedagogy theory guide cheat sheet, classroom reset tools, and motivational coffee breaks.
+- **Transparent Avatar System**: Dynamic boundary flood-fill algorithm removing solid backdrops from teacher/student avatars.
+
+#### 📱 Progressive Web App (PWA) & Offline Optimization
+- **Offline Caching**: Built using `vite-plugin-pwa` with custom caching rules (APIs: NetworkFirst, assets: CacheFirst, JS/CSS: StaleWhileRevalidate).
+- **Standalone Mode Compliance**: Configured proper manifest metadata, Apple standalone launcher tags, status bar overlays, and FOUC (Flash of Unstyled Content) theme synchronization.
+- **Animated Install Prompt**: Spring-animated overlay (`InstallPrompt.jsx`) prompting Web users to add to home screen with a 7-day dismiss cooldown. Gated SW registration to prevent Capacitor conflicts.
+
+#### 🎨 Chalkboard Art 2.0 (Blackboard V3 Theme)
+- **Handwritten Typography**: Integrated Google Fonts (`Caveat` and `Playpen Sans`) for retro handwritten notes feel.
+- **Imperfect Slate Layouts**: Cards render with organic asymmetrical curves, dashed chalk borders, and wooden slate frames.
+- **Dry-Erase Whiteboard Theme**: Marker-black light mode whiteboard theme with 100% legibility overrides for hardcoded white-text contrast conflicts.
+- **Skeuomorphic नोटिस बोर्ड**: Board overlays pinned paper blocks with dynamic shadow drop pinned sheets.
+
+#### 💀 Skeleton Shimmer Loading Screens
+- **Shimmer UI Library**: Created `SkeletonLoader.jsx` mapping `DashboardSkeleton`, `ProgressSkeleton`, `RevisionSkeleton`, and `GenericPageSkeleton`.
+- **Spinner Replacements**: Replaced old circular spinners on Dashboard, Progress, Revision, Profile, Leaderboard, Notes, and Tricks.
+
+#### 💬 Custom Promise-Based Modals
+- **Context-Aware Dialogs**: Replaced browser popups (`alert`/`confirm`) with custom Framer Motion popups (`ModalContext.jsx`) styling themselves automatically to match Glass (V1), Gradient (V2), and Chalk (V3) themes.
 
 ### v2.1 — May 2026
 

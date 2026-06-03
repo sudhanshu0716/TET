@@ -48,6 +48,24 @@ The frontend React client for the UPTET/CTET Prep Application, built using **Rea
 
 Razorpay Checkout modal launched on click; user context updated on successful payment verification.
 
+### 6. 🏫 Classroom Simulator RPG (`ClassroomSimulator.jsx`)
+- Immersive visual novel experience to practice child psychology and pedagogical decision-making.
+- **Narrative Audio Synthesis**: Web Speech TTS voice output with pitch and rate adjustments for child student and teacher voices.
+- **Visual Classroom Board**: Features a letter-by-letter green chalkboard typewriter animation, dynamic cartoon dialogue bubbles, and a control desk with educational theory references, quiz reset buttons, and motivational quotes.
+- **Transparent Avatars**: Boundaries BFS image preprocessing removing solid backgrounds from character sprites.
+
+### 7. 📳 Progressive Web App (PWA)
+- Full-screen standalone PWA support using `vite-plugin-pwa` and caching strategies.
+- Apple standalone compliance tags and dynamically synchronized status bar theme-colors.
+- Spring-animated Homescreen installer prompt component (`InstallPrompt.jsx`) with a 7-day dismiss cooldown.
+
+### 8. 💀 Skeleton Shimmer Loaders (`SkeletonLoader.jsx`)
+- A modular library of shimmer effect skeleton shapes representing layouts of various dashboard cards, graphs, lists, and pages.
+- Replaces traditional standard spinner loader wheels, preventing visual jumps during API hydration.
+
+### 9. 💬 Promise-Based Custom Dialogs (`ModalContext.jsx`)
+- Replaces standard blocking browser alert/confirms with custom React modals utilizing vertical spring animations and context-aware visual borders (V1, V2, and V3 support).
+
 ---
 
 ## 📁 Source Code Directory Structure
@@ -62,19 +80,24 @@ client/
 │   │   ├── AdminUsers.jsx       # User administration grid
 │   │   ├── BottomNav.jsx        # Mobile footer navigation bar
 │   │   ├── ErrorBoundary.jsx    # Graceful crash fallback
+│   │   ├── InstallPrompt.jsx    # PWA standalone installer prompt
 │   │   ├── Leaderboard.jsx      # Global rankings view
 │   │   ├── Navbar.jsx           # Global top header
 │   │   ├── PaymentButton.jsx    # Razorpay button wrapper
 │   │   ├── PremiumModal.jsx     # Expired trial prompt modal
 │   │   ├── Profile.jsx          # Settings, stats & tutorial replay
 │   │   ├── ProtectedRoute.jsx   # Auth guard for private routes
-│   │   └── SVGCharts.jsx        # SVG Performance Radar charts
+│   │   ├── SkeletonLoader.jsx   # Reusable UI shimmer components
+│   │   ├── SVGCharts.jsx        # SVG Performance Radar charts
+│   │   └── TransparentAvatar.jsx # Avatar BFS canvas transparency solver
 │   ├── context/            # React global state contexts
 │   │   ├── AuthContext.jsx      # Login/register + per-user tutorial flag
-│   │   └── ThemeContext.jsx     # Visual styling (dark mode)
+│   │   ├── ThemeContext.jsx     # Visual styling (V1, V2, V3) context
+│   │   └── ModalContext.jsx     # Visual custom alert/confirms context
 │   ├── pages/              # Primary route screens
 │   │   ├── AdminDashboard.jsx   # Administrative control centre
 │   │   ├── Cheatsheets.jsx      # Revision notes library
+│   │   ├── ClassroomSimulator.jsx # RPG-style branching pedagogy game
 │   │   ├── CommunityUpload.jsx  # User-contributed content
 │   │   ├── Dashboard.jsx        # Main study dashboard
 │   │   ├── DailyExam.jsx        # Exam engine (all types)
