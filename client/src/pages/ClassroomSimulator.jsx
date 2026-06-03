@@ -108,7 +108,7 @@ const ClassroomSimulator = () => {
   }, []);
 
   // Single-Utterance Speech Narration (Highly stable local-first voice matching)
-  const speakText = (text, usePreferredVoice = true) => {
+  const speakText = (text, fallbackText = null, usePreferredVoice = true, forceLang = null) => {
     if (!text || text.trim() === '') return;
     if (!('speechSynthesis' in window) || isMuted) {
       return;
@@ -131,8 +131,10 @@ const ClassroomSimulator = () => {
     const availableVoices = voices.length > 0 ? voices : synth.getVoices();
     let voice = null;
 
+    const currentLang = forceLang || (text === fallbackText ? 'EN' : lang);
+
     if (usePreferredVoice && availableVoices.length > 0) {
-      if (lang === 'HI') {
+      if (currentLang === 'HI') {
         // Find Hindi voice, prefer local services (no network dependencies)
         voice = availableVoices.find(v => (v.lang.includes('hi') || v.lang.includes('HI')) && v.localService === true);
         if (!voice) {
@@ -161,11 +163,11 @@ const ClassroomSimulator = () => {
       }
     } else {
       // Fallback mode: do not assign custom voice object, let browser use native local fallback voice
-      utterance.lang = lang === 'HI' ? 'hi-IN' : 'en-US';
+      utterance.lang = currentLang === 'HI' ? 'hi-IN' : 'en-US';
     }
 
     // Standard clear speech parameters (pitch and rate)
-    utterance.rate = lang === 'HI' ? 0.85 : 0.9;
+    utterance.rate = currentLang === 'HI' ? 0.85 : 0.9;
     utterance.pitch = 1.0;
 
     utterance.onstart = () => {
@@ -181,16 +183,28 @@ const ClassroomSimulator = () => {
 
     utterance.onerror = (e) => {
       // If preferred voice failed (e.g. online Google voice failed due to Chrome message port closed), retry offline local voice
-      if (e.error === 'synthesis-failed' && usePreferredVoice && utterance.voice) {
-        console.warn('SpeechSynthesis preferred voice failed, retrying with system default local voice...');
-        setIsPlayingSpeech(false);
-        if (activeUtteranceRef.current === utterance) {
-          activeUtteranceRef.current = null;
+      if (e.error === 'synthesis-failed') {
+        if (usePreferredVoice && utterance.voice) {
+          console.warn('SpeechSynthesis preferred voice failed, retrying with system default local voice...');
+          setIsPlayingSpeech(false);
+          if (activeUtteranceRef.current === utterance) {
+            activeUtteranceRef.current = null;
+          }
+          setTimeout(() => {
+            speakText(text, fallbackText, false, forceLang);
+          }, 50);
+          return;
+        } else if (fallbackText && fallbackText !== text) {
+          console.warn('Hindi SpeechSynthesis failed completely, retrying with English fallback text...');
+          setIsPlayingSpeech(false);
+          if (activeUtteranceRef.current === utterance) {
+            activeUtteranceRef.current = null;
+          }
+          setTimeout(() => {
+            speakText(fallbackText, null, true, 'EN');
+          }, 50);
+          return;
         }
-        setTimeout(() => {
-          speakText(text, false);
-        }, 50);
-        return;
       }
 
       // Ignore normal 'interrupted' events
@@ -217,14 +231,20 @@ const ClassroomSimulator = () => {
 
   const triggerCurrentStateSpeech = () => {
     if (isReacting) {
-      const text = chosenText + (reactionText ? (lang === 'HI' ? '। छात्र की प्रतिक्रिया: ' : '. Student reaction: ') + reactionText : '');
-      speakText(text);
+      const chosenChoiceDetail = currentStep?.choices?.find(c => c.choice_index === currentChoice);
+      if (chosenChoiceDetail) {
+        const textHi = chosenChoiceDetail.text_hi + (chosenChoiceDetail.reaction_modifier_hi ? '। छात्र की प्रतिक्रिया: ' + chosenChoiceDetail.reaction_modifier_hi : '');
+        const textEn = chosenChoiceDetail.text_en + (chosenChoiceDetail.reaction_modifier_en ? '. Student reaction: ' + chosenChoiceDetail.reaction_modifier_en : '');
+        const text = lang === 'HI' ? textHi : textEn;
+        speakText(text, textEn);
+      }
     } else if (currentStep) {
-      const { narrative: stepNarrative, speech: stepSpeech } = parseDialogue(
-        lang === 'HI' ? currentStep.description_hi : currentStep.description_en
-      );
-      const text = stepNarrative + (stepSpeech ? (lang === 'HI' ? '। छात्र कहता है: ' : '. The student says: ') + stepSpeech : '');
-      speakText(text);
+      const { narrative: narrativeHi, speech: speechHi } = parseDialogue(currentStep.description_hi);
+      const { narrative: narrativeEn, speech: speechEn } = parseDialogue(currentStep.description_en);
+      const textHi = narrativeHi + (speechHi ? '। छात्र कहता है: ' + speechHi : '');
+      const textEn = narrativeEn + (speechEn ? '. The student says: ' + speechEn : '');
+      const text = lang === 'HI' ? textHi : textEn;
+      speakText(text, textEn);
     }
   };
 
@@ -354,9 +374,11 @@ const ClassroomSimulator = () => {
       setChosenText(cText || '');
       setIsReacting(true);
 
-      // Play decision + reaction sequence
-      const speechCombined = cText + (rText ? (lang === 'HI' ? '। छात्र की प्रतिक्रिया: ' : '. Student reaction: ') + rText : '');
-      speakText(speechCombined);
+      // Play decision + reaction sequence with English fallback
+      const textHi = cText + (rText ? '। छात्र की प्रतिक्रिया: ' + rText : '');
+      const textEn = (chosenChoiceDetail.text_en || '') + (chosenChoiceDetail.reaction_modifier_en ? '. Student reaction: ' + chosenChoiceDetail.reaction_modifier_en : '');
+      const text = lang === 'HI' ? textHi : textEn;
+      speakText(text, textEn);
     }
   };
 
