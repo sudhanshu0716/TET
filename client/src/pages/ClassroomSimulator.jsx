@@ -23,9 +23,13 @@ import TransparentAvatar from '../components/TransparentAvatar';
 import { useCustomModal } from '../context/ModalContext';
 
 // Typewriter Text Effect Component
-const Typewriter = ({ text, speed = 12 }) => {
+const Typewriter = ({ text = '', speed = 12 }) => {
   const [displayed, setDisplayed] = useState('');
   useEffect(() => {
+    if (!text) {
+      setDisplayed('');
+      return;
+    }
     setDisplayed('');
     let i = 0;
     const timer = setInterval(() => {
@@ -326,7 +330,7 @@ const ClassroomSimulator = () => {
   const handleCommitChoice = () => {
     if (currentChoice === null) return;
 
-    const chosenChoiceDetail = currentStep.choices.find(c => c.choice_index === currentChoice);
+    const chosenChoiceDetail = currentStep?.choices?.find(c => c.choice_index === currentChoice);
     if (chosenChoiceDetail) {
       const rText = lang === 'HI' 
         ? chosenChoiceDetail.reaction_modifier_hi 
@@ -672,7 +676,7 @@ const ClassroomSimulator = () => {
                   exit={{ opacity: 0, y: -15 }}
                   className="flex flex-col gap-3"
                 >
-                  {currentStep?.choices.map((choice) => {
+                  {(currentStep?.choices || []).map((choice) => {
                     const isSelected = currentChoice === choice.choice_index;
                     return (
                       <motion.div
