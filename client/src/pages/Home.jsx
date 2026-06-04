@@ -33,19 +33,19 @@ const Home = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[100dvh] px-4 w-full relative overflow-hidden -mt-16 bg-[#030712] selection:bg-sky-500/30">
+    <div className="flex flex-col items-center justify-center min-h-[100dvh] px-4 w-full relative overflow-hidden -mt-16 bg-[var(--bg-primary)] transition-colors duration-300 selection:bg-sky-500/30">
       
       {/* Refined Ambient Background Glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center z-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-sky-500/10 via-indigo-500/5 to-transparent rounded-full blur-[80px]" />
       </div>
 
-      {/* Main Glassmorphic Container */}
+      {/* Main Content Container (No Glass) */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-sm relative z-10 p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/[0.05] shadow-[0_0_80px_-20px_rgba(14,165,233,0.15)] backdrop-blur-2xl flex flex-col items-center text-center space-y-8"
+        className="w-full max-w-sm relative z-10 flex flex-col items-center text-center space-y-8"
       >
         {/* Floating Sparkles around icon */}
         <div className="relative">
@@ -54,7 +54,7 @@ const Home = () => {
             transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
             className="absolute -inset-4 bg-gradient-to-tr from-sky-500/20 to-fuchsia-500/20 rounded-full blur-xl"
           />
-          <div className="relative w-20 h-20 bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl flex items-center justify-center shadow-inner">
+          <div className="relative w-20 h-20 bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-2xl flex items-center justify-center shadow-inner">
             <GraduationCap size={36} className="text-sky-400 drop-shadow-md" />
             <motion.div
               animate={{ opacity: [0.4, 1, 0.4] }}
@@ -68,13 +68,13 @@ const Home = () => {
         
         {/* Typography */}
         <div className="space-y-3">
-          <h1 className="text-5xl font-black text-white leading-tight tracking-tight">
+          <h1 className="text-5xl font-black text-[var(--text-primary)] leading-tight tracking-tight">
             {t.master} <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">
               {t.tetExams}
             </span>
           </h1>
-          <p className="text-slate-400/90 text-[15px] font-medium leading-relaxed px-2">
+          <p className="text-[var(--text-secondary)] text-[15px] font-medium leading-relaxed px-2">
             {t.subtitle}
           </p>
         </div>
@@ -84,7 +84,7 @@ const Home = () => {
           {user ? (
             <Link
               to="/dashboard"
-              className="relative group overflow-hidden w-full py-4 rounded-2xl font-black text-white shadow-xl shadow-sky-500/25 bg-gradient-to-r from-sky-500 to-indigo-600 flex justify-center items-center active:scale-95 transition-all"
+              className="premium-button w-full py-4 rounded-2xl font-black text-white"
             >
               <span className="relative flex items-center text-base">
                 {t.enterDash}
@@ -95,10 +95,8 @@ const Home = () => {
             <>
               <Link
                 to="/register"
-                className="relative group w-full py-4 rounded-2xl font-black text-white shadow-xl shadow-sky-500/20 bg-gradient-to-r from-sky-500 to-indigo-600 flex justify-center items-center active:scale-95 transition-all overflow-hidden border border-sky-400/30 hover:shadow-sky-500/40"
+                className="premium-button w-full py-4 rounded-2xl font-black text-white"
               >
-                {/* Shine effect that triggers on hover */}
-                <div className="absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[30deg] -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out" />
                 <span className="relative flex items-center text-base">
                   {t.startFree}
                   <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
@@ -107,12 +105,32 @@ const Home = () => {
               
               <Link
                 to="/login"
-                className="text-[13px] font-bold text-slate-500 hover:text-white transition-colors uppercase tracking-[0.15em] block py-2"
+                className="text-[13px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors uppercase tracking-[0.15em] block py-2"
               >
                 {t.alreadyMember}
               </Link>
             </>
           )}
+        </div>
+
+        {/* Sleek Feature List */}
+        <div className="w-full pt-6 mt-4 border-t border-[var(--glass-border)] grid grid-cols-2 gap-y-4 gap-x-4 place-items-start px-2">
+          <span className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-wider flex items-center gap-2.5 whitespace-nowrap">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+            {isHi ? '10k+ प्रश्न' : '10k+ Questions'}
+          </span>
+          <span className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-wider flex items-center gap-2.5 whitespace-nowrap">
+            <span className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]"></span>
+            {isHi ? '120+ ट्रिक्स' : '120+ Super Tricks'}
+          </span>
+          <span className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-wider flex items-center gap-2.5 whitespace-nowrap">
+            <span className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></span>
+            {isHi ? '100+ नोट्स' : '100+ Revision Notes'}
+          </span>
+          <span className="text-xs font-black text-[var(--text-secondary)] uppercase tracking-wider flex items-center gap-2.5 whitespace-nowrap">
+            <span className="w-2 h-2 rounded-full bg-fuchsia-500 shadow-[0_0_8px_rgba(217,70,239,0.8)]"></span>
+            {isHi ? '20+ चीटशीट्स' : '20+ Cheatsheets'}
+          </span>
         </div>
       </motion.div>
       

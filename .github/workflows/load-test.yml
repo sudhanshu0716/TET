@@ -15,20 +15,12 @@ on:
         description: "Test duration (e.g., 15s, 30s, 1m, 3m)"
         required: true
         default: "30s"
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-    types: [ closed ]
 
 jobs:
   k6-test:
     name: High Concurrency Load Test
-    # Execute if manual trigger, push on main, or closed PR on main is merged
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'push' ||
-      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    # Execute only on manual trigger
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
@@ -40,12 +32,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Wait for Deployment to settle (3 minutes)
-        # Delay automatic runs to let the main branch live deployment complete and settle
-        if: github.event_name != 'workflow_dispatch'
-        run: |
-          echo "Waiting 3 minutes for deployment to settle on main branch..."
-          sleep 180
 
       - name: Run k6 load test
         uses: grafana/k6-action@v0.3.1
