@@ -641,5 +641,93 @@ router.get('/automation/branches', [auth, adminAuth], async (req, res) => {
   }
 });
 
+// @route   GET api/admin/automation/runs/:runId/artifacts
+// @desc    Get artifacts list for a workflow run (load test reports etc.)
+router.get('/automation/runs/:runId/artifacts', [auth, adminAuth], async (req, res) => {
+  try {
+    const { client } = await getGithubClient();
+    const artifactsRes = await client.get(`/actions/runs/${req.params.runId}/artifacts`);
+    res.json(artifactsRes.data.artifacts || []);
+  } catch (err) {
+    console.error('Artifacts Fetch Error:', err.message);
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// @route   GET api/admin/automation/artifacts/:artifactId/download
+// @desc    Download an artifact zip, extract load-test-report.html and return its HTML content
+router.get('/automation/artifacts/:artifactId/download', [auth, adminAuth], async (req, res) => {
+  try {
+    const { client } = await getGithubClient();
+    const response = await client.get(`/actions/artifacts/${req.params.artifactId}/zip`, {
+      responseType: 'arraybuffer'
+    });
+
+    // Use adm-zip to extract HTML from the zip buffer
+    const AdmZip = require('adm-zip');
+    const zip = new AdmZip(Buffer.from(response.data));
+    const entries = zip.getEntries();
+
+    // Look for load-test-report.html or any .html file
+    let htmlContent = null;
+    let summaryJson = null;
+    for (const entry of entries) {
+      if (entry.entryName.endsWith('.html')) {
+        htmlContent = entry.getData().toString('utf8');
+      }
+      if (entry.entryName === 'summary.json') {
+        summaryJson = entry.getData().toString('utf8');
+      }
+    }
+
+    if (!htmlContent) {
+      return res.status(404).json({ message: 'No HTML report found in artifact.' });
+    }
+
+    res.json({
+      html: htmlContent,
+      summary: summaryJson ? JSON.parse(summaryJson) : null
+    });
+  } catch (err) {
+    console.error('Artifact Download Error:', err.message);
+    res.status(400).json({ message: err.response?.data?.message || err.message });
+  }
+});
+
+// @route   POST api/admin/set-default-ui
+// @desc    Set the default UI version (v1/v2/v3) globally for all users
+router.post('/set-default-ui', [auth, adminAuth], async (req, res) => {
+  const { ui_version } = req.body;
+  if (!['v1', 'v2', 'v3'].includes(ui_version)) {
+    return res.status(400).json({ message: 'Invalid UI version. Must be v1, v2, or v3.' });
+  }
+  try {
+    let settings = await GlobalSettings.findOne();
+    if (!settings) settings = new GlobalSettings();
+
+    settings.default_ui_version = ui_version;
+    settings.last_updated = new Date();
+    await settings.save();
+    res.json({ message: `Default UI version set to ${ui_version} for all users.`, default_ui_version: ui_version });
+  } catch (err) {
+    console.error('Set Default UI Error:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// @route   GET api/admin/global-settings-public
+// @desc    Get public global settings (default UI version) — accessible by any authenticated user
+router.get('/global-settings-public', auth, async (req, res) => {
+  try {
+    const settings = await GlobalSettings.findOne();
+    res.json({
+      default_ui_version: settings?.default_ui_version || 'v1'
+    });
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;
+
 

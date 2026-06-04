@@ -23,7 +23,7 @@ const Navbar = () => {
     const newLang = lang === 'EN' ? 'HI' : 'EN';
     setLang(newLang);
     localStorage.setItem('appLang', newLang);
-    window.location.reload(); // Refresh to apply lang change globally
+    window.dispatchEvent(new Event('languageChanged'));
   };
 
   return (

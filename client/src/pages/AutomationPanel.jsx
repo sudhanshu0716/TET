@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Cpu, Play, Settings, RefreshCw, CheckCircle, 
   XCircle, Loader, Terminal, GitBranch, ShieldAlert, KeyRound,
-  ExternalLink, Clock, User, ChevronRight, Check
+  ExternalLink, Clock, User, ChevronRight, Check, BarChart2
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -34,6 +34,10 @@ const AutomationPanel = () => {
   const [runDetails, setRunDetails] = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const detailsIntervalRef = useRef(null);
+
+  // Load Test Report States
+  const [reportHtml, setReportHtml] = useState(null);
+  const [loadingReport, setLoadingReport] = useState(false);
 
   // General Notification Alert
   const [toast, setToast] = useState(null);
@@ -191,6 +195,43 @@ const AutomationPanel = () => {
     }
     // Refresh main list in case status updated
     fetchWorkflowsAndRuns();
+  };
+
+  const fetchLoadTestReport = async (runId) => {
+    setLoadingReport(true);
+    try {
+      const token = localStorage.getItem('token');
+      // 1. Fetch artifacts for the run
+      const artifactsRes = await api.get(`/api/admin/automation/runs/${runId}/artifacts`, {
+        headers: { 'x-auth-token': token }
+      });
+      const artifacts = artifactsRes.data;
+      if (!artifacts || artifacts.length === 0) {
+        triggerToast('No artifacts found for this run.', true);
+        setLoadingReport(false);
+        return;
+      }
+      
+      // Look for an artifact that looks like a report
+      const reportArtifact = artifacts.find(a => a.name.toLowerCase().includes('report'));
+      if (!reportArtifact) {
+        triggerToast('No report artifact found.', true);
+        setLoadingReport(false);
+        return;
+      }
+
+      // 2. Download and extract HTML
+      const downloadRes = await api.get(`/api/admin/automation/artifacts/${reportArtifact.id}/download`, {
+        headers: { 'x-auth-token': token }
+      });
+      
+      setReportHtml(downloadRes.data.html);
+    } catch (err) {
+      console.error(err);
+      triggerToast('Failed to load report artifact.', true);
+    } finally {
+      setLoadingReport(false);
+    }
   };
 
   useEffect(() => {
@@ -569,6 +610,16 @@ const AutomationPanel = () => {
                   <h3 className="text-base font-black text-slate-100 truncate mt-1">
                     {activeRun.display_title || activeRun.head_commit?.message || 'Workflow steps'}
                   </h3>
+                  {activeRun.status === 'completed' && activeRun.conclusion === 'success' && activeRun.name.toLowerCase().includes('load') && (
+                    <button 
+                      onClick={() => fetchLoadTestReport(activeRun.id)}
+                      disabled={loadingReport}
+                      className="mt-2 text-[10px] font-bold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-purple-500/20 transition-colors"
+                    >
+                      {loadingReport ? <Loader className="animate-spin" size={12} /> : <BarChart2 size={12} />}
+                      {loadingReport ? 'Loading Report...' : 'View Load Test Report'}
+                    </button>
+                  )}
                 </div>
                 <button
                   onClick={handleCloseDetails}
@@ -637,6 +688,33 @@ const AutomationPanel = () => {
                 Runs logs are synced directly from GitHub Action Runner.
               </div>
             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* REPORT VIEWER OVERLAY */}
+      <AnimatePresence>
+        {reportHtml && (
+          <div className="fixed inset-0 z-[100] bg-black flex flex-col">
+            <div className="flex items-center justify-between p-3 border-b border-white/10 bg-[#0B0F19]">
+              <div className="flex items-center gap-2">
+                <BarChart2 className="text-purple-400" size={18} />
+                <h3 className="text-sm font-black text-white">Load Test Report</h3>
+              </div>
+              <button
+                onClick={() => setReportHtml(null)}
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300"
+              >
+                <XCircle size={20} />
+              </button>
+            </div>
+            <div className="flex-1 w-full h-full bg-white">
+              <iframe 
+                srcDoc={reportHtml} 
+                className="w-full h-full border-none" 
+                title="Load Test Report"
+              />
+            </div>
           </div>
         )}
       </AnimatePresence>

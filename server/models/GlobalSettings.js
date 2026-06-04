@@ -7,6 +7,7 @@ const globalSettingsSchema = new mongoose.Schema({
   github_token: { type: String, default: '' },
   github_owner: { type: String, default: '' },
   github_repo: { type: String, default: '' },
+  default_ui_version: { type: String, enum: ['v1', 'v2', 'v3'], default: 'v1' },
   last_updated: { type: Date, default: Date.now }
 });
 

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import api from '../services/api';
 
 const ThemeContext = createContext();
 
@@ -16,6 +17,29 @@ export const ThemeProvider = ({ children }) => {
   const [uiVersion, setUiVersion] = useState(() => {
     return localStorage.getItem('uiVersion') || 'v1';
   });
+
+  // On mount, fetch server default UI version and apply if user hasn't manually set one
+  useEffect(() => {
+    const fetchServerDefault = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        const hasManualUi = localStorage.getItem('uiVersion_manual');
+        if (hasManualUi) return; // User has their own preference, skip
+
+        const res = await api.get('/api/admin/global-settings-public', {
+          headers: { 'x-auth-token': token }
+        });
+        const serverDefault = res.data?.default_ui_version || 'v1';
+        setUiVersion(serverDefault);
+        localStorage.setItem('uiVersion', serverDefault);
+      } catch (err) {
+        // Silent fail — use existing local value
+      }
+    };
+    fetchServerDefault();
+  }, []);
 
   // Listen for system theme changes (only if user hasn't manually set a preference)
   useEffect(() => {
@@ -72,13 +96,26 @@ export const ThemeProvider = ({ children }) => {
     setIsDarkMode(prev => !prev);
   }, []);
 
-  const toggleUiVersion = () => setUiVersion(prev => prev === 'v1' ? 'v2' : prev === 'v2' ? 'v3' : 'v1');
+  const toggleUiVersion = () => {
+    localStorage.setItem('uiVersion_manual', 'true');
+    setUiVersion(prev => prev === 'v1' ? 'v2' : prev === 'v2' ? 'v3' : 'v1');
+  };
+
+  // Called from login flow to apply server default (only if user hasn't manually chosen)
+  const applyServerDefault = (serverUiVersion) => {
+    const hasManualUi = localStorage.getItem('uiVersion_manual');
+    if (!hasManualUi && serverUiVersion) {
+      setUiVersion(serverUiVersion);
+      localStorage.setItem('uiVersion', serverUiVersion);
+    }
+  };
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme, uiVersion, setUiVersion, toggleUiVersion }}>
+    <ThemeContext.Provider value={{ isDarkMode, toggleTheme, uiVersion, setUiVersion, toggleUiVersion, applyServerDefault }}>
       {children}
     </ThemeContext.Provider>
   );
 };
 
 export const useTheme = () => useContext(ThemeContext);
+

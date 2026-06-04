@@ -1,11 +1,13 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import api from '../services/api';
+import { useTheme } from './ThemeContext';
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
+  const { applyServerDefault } = useTheme();
   const [user, setUser] = useState(() => {
     try {
       const token = localStorage.getItem('token');
@@ -52,6 +54,10 @@ export const AuthProvider = ({ children }) => {
     // Returning users should NEVER see the tutorial again
     localStorage.setItem(`hasSeenTutorial_${res.data.user.id}`, 'true');
     setUser(res.data.user);
+    // Apply server default UI version if user hasn't set their own
+    if (res.data.default_ui_version) {
+      applyServerDefault(res.data.default_ui_version);
+    }
     return res.data;
   };
 

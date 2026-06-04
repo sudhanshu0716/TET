@@ -328,6 +328,979 @@ const scenarios = [
       }
     ]
   }
+,
+  {
+  "scenario_id": "scen_003",
+  "subject": "pedagogy",
+  "level": "primary",
+  "title_en": "Handling the Gifted Bored Student",
+  "title_hi": "प्रतिभाशाली ऊबे हुए छात्र को संभालना",
+  "steps": [
+    {
+      "step_number": 1,
+      "description_en": "During a math lesson on basic addition, a gifted student, Rohan, sighs loudly and says, \"This is too easy. I already know this.\" He then starts drawing on his desk.",
+      "description_hi": "बुनियादी जोड़ पर गणित के पाठ के दौरान, एक प्रतिभाशाली छात्र, रोहन, जोर से आह भरता है और कहता है, \"यह बहुत आसान है। मुझे यह पहले से ही पता है।\" फिर वह अपनी मेज पर चित्र बनाना शुरू कर देता है।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Tell him to stop complaining and do the work anyway.",
+          "text_hi": "उसे शिकायत बंद करने और वैसे भी काम करने के लिए कहें।",
+          "points": 2,
+          "theory_tag": "Authoritarian",
+          "explanation_en": "Does not address the student's learning needs.",
+          "explanation_hi": "छात्र की सीखने की जरूरतों को पूरा नहीं करता है।",
+          "reaction_modifier_en": "Rohan becomes defiant.",
+          "reaction_modifier_hi": "रोहन विद्रोही हो जाता है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Provide him with a more challenging math puzzle related to the topic.",
+          "text_hi": "उसे विषय से संबंधित अधिक चुनौतीपूर्ण गणित पहेली प्रदान करें।",
+          "points": 10,
+          "theory_tag": "Differentiated Instruction",
+          "explanation_en": "Meets his advanced cognitive level.",
+          "explanation_hi": "उसके उन्नत संज्ञानात्मक स्तर को पूरा करता है।",
+          "reaction_modifier_en": "Rohan eagerly solves the puzzle.",
+          "reaction_modifier_hi": "रोहन उत्सुकता से पहेली हल करता है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Ignore him as long as he is quiet.",
+          "text_hi": "जब तक वह चुप है तब तक उसे अनदेखा करें।",
+          "points": 4,
+          "theory_tag": "Neglect",
+          "explanation_en": "Wastes his potential and encourages bad habits.",
+          "explanation_hi": "उसकी क्षमता को बर्बाद करता है और बुरी आदतों को प्रोत्साहित करता है।",
+          "reaction_modifier_en": "Rohan loses interest in class.",
+          "reaction_modifier_hi": "रोहन की कक्षा में रुचि खत्म हो जाती है।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Ask him to teach the class.",
+          "text_hi": "उसे कक्षा को पढ़ाने के लिए कहें।",
+          "points": 5,
+          "theory_tag": "Peer Tutoring (Misapplied)",
+          "explanation_en": "Can cause resentment among peers if not managed well.",
+          "explanation_hi": "यदि अच्छी तरह से प्रबंधित नहीं किया गया तो साथियों के बीच नाराजगी पैदा कर सकता है।",
+          "reaction_modifier_en": "Peers feel intimidated.",
+          "reaction_modifier_hi": "साथी डरा हुआ महसूस करते हैं।"
+        }
+      ]
+    },
+    {
+      "step_number": 2,
+      "description_en": "Rohan finishes the advanced puzzle quickly and asks, \"What now?\"",
+      "description_hi": "रोहन उन्नत पहेली को जल्दी से पूरा करता है और पूछता है, \"अब क्या?\"",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Give him more of the same puzzles.",
+          "text_hi": "उसे उसी तरह की और पहेलियाँ दें।",
+          "points": 5,
+          "theory_tag": "Busy Work",
+          "explanation_en": "Repetitive tasks do not stimulate gifted minds.",
+          "explanation_hi": "दोहराए जाने वाले कार्य प्रतिभाशाली दिमाग को उत्तेजित नहीं करते हैं।",
+          "reaction_modifier_en": "Rohan gets bored again.",
+          "reaction_modifier_hi": "रोहन फिर बोर हो जाता है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Have him apply the math concept to a real-world problem (e.g., designing a simple building layout).",
+          "text_hi": "उससे गणित की अवधारणा को एक वास्तविक दुनिया की समस्या पर लागू करने के लिए कहें (जैसे, एक साधारण इमारत लेआउट डिजाइन करना)।",
+          "points": 10,
+          "theory_tag": "Constructivism",
+          "explanation_en": "Higher-order thinking application.",
+          "explanation_hi": "उच्च क्रम की सोच का अनुप्रयोग।",
+          "reaction_modifier_en": "Rohan is highly engaged.",
+          "reaction_modifier_hi": "रोहन अत्यधिक व्यस्त है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Tell him to read a book quietly.",
+          "text_hi": "उसे चुपचाप एक किताब पढ़ने के लिए कहें।",
+          "points": 4,
+          "theory_tag": "Passive Engagement",
+          "explanation_en": "Disconnected from the lesson objective.",
+          "explanation_hi": "पाठ के उद्देश्य से अलग।",
+          "reaction_modifier_en": "Rohan complies but seems unenthusiastic.",
+          "reaction_modifier_hi": "रोहन मान जाता है लेकिन निरुत्साहित लगता है।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Send him to a higher grade class.",
+          "text_hi": "उसे उच्च श्रेणी की कक्षा में भेजें।",
+          "points": 2,
+          "theory_tag": "Tracking",
+          "explanation_en": "Socially isolating and administrative overreach for a single lesson.",
+          "explanation_hi": "एक ही पाठ के लिए सामाजिक रूप से अलग-थलग करना और प्रशासनिक अतिरेक।",
+          "reaction_modifier_en": "Rohan feels out of place socially.",
+          "reaction_modifier_hi": "रोहन सामाजिक रूप से अलग-थलग महसूस करता है।"
+        }
+      ]
+    },
+    {
+      "step_number": 3,
+      "description_en": "Rohan creates a fantastic layout. How do you integrate his success with the rest of the class?",
+      "description_hi": "रोहन एक शानदार लेआउट बनाता है। आप उसकी सफलता को बाकी कक्षा के साथ कैसे एकीकृत करते हैं?",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Praise him loudly and tell others to be like him.",
+          "text_hi": "उसकी ज़ोर से प्रशंसा करें और दूसरों को उसके जैसा बनने के लिए कहें।",
+          "points": 2,
+          "theory_tag": "Negative Social Comparison",
+          "explanation_en": "Creates unhealthy competition and resentment.",
+          "explanation_hi": "अस्वस्थ प्रतिस्पर्धा और आक्रोश पैदा करता है।",
+          "reaction_modifier_en": "Classmates resent Rohan.",
+          "reaction_modifier_hi": "सहपाठी रोहन से नाराज होते हैं।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Display his work on the board without explanation.",
+          "text_hi": "बिना स्पष्टीकरण के उसका काम बोर्ड पर प्रदर्शित करें।",
+          "points": 5,
+          "theory_tag": "Passive Recognition",
+          "explanation_en": "Misses a learning opportunity for others.",
+          "explanation_hi": "दूसरों के लिए सीखने का अवसर चूक जाता है।",
+          "reaction_modifier_en": "Students are confused by the complex work.",
+          "reaction_modifier_hi": "छात्र जटिल कार्य से भ्रमित हैं।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Have Rohan briefly explain his project, focusing on the effort and process, not just his smarts.",
+          "text_hi": "रोहन से अपनी परियोजना को संक्षेप में समझाने के लिए कहें, केवल उसकी बुद्धिमत्ता पर नहीं, बल्कि प्रयास और प्रक्रिया पर ध्यान केंद्रित करें।",
+          "points": 10,
+          "theory_tag": "Growth Mindset (Dweck)",
+          "explanation_en": "Values process over innate ability, inspiring others.",
+          "explanation_hi": "जन्मजात क्षमता पर प्रक्रिया को महत्व देता है, दूसरों को प्रेरित करता है।",
+          "reaction_modifier_en": "Classmates are intrigued and ask questions.",
+          "reaction_modifier_hi": "सहपाठी चकित हैं और सवाल पूछते हैं।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Keep it a secret to avoid making others feel bad.",
+          "text_hi": "दूसरों को बुरा महसूस कराने से बचने के लिए इसे गुप्त रखें।",
+          "points": 3,
+          "theory_tag": "Overprotection",
+          "explanation_en": "Denies recognition and sharing of knowledge.",
+          "explanation_hi": "मान्यता और ज्ञान के बंटवारे से इनकार करता है।",
+          "reaction_modifier_en": "Rohan feels his extra effort is unvalued.",
+          "reaction_modifier_hi": "रोहन को लगता है कि उसके अतिरिक्त प्रयास का कोई महत्व नहीं है।"
+        }
+      ]
+    }
+  ]
+},
+  {
+  "scenario_id": "scen_004",
+  "subject": "pedagogy",
+  "level": "primary",
+  "title_en": "Managing Classroom Bullying",
+  "title_hi": "कक्षा में बदमाशी का प्रबंधन",
+  "steps": [
+    {
+      "step_number": 1,
+      "description_en": "You notice a group of students consistently teasing a new student, Maya, about her accent.",
+      "description_hi": "आप देखते हैं कि छात्रों का एक समूह लगातार एक नई छात्रा, माया, को उसके उच्चारण के लिए चिढ़ा रहा है।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Address the issue immediately with a classroom discussion on diversity and empathy.",
+          "text_hi": "विविधता और सहानुभूति पर कक्षा में चर्चा के साथ तुरंत इस मुद्दे को संबोधित करें।",
+          "points": 10,
+          "theory_tag": "Proactive Social-Emotional Learning",
+          "explanation_en": "Creates a culture of inclusion.",
+          "explanation_hi": "समावेश की संस्कृति बनाता है।",
+          "reaction_modifier_en": "Students reflect on their behavior.",
+          "reaction_modifier_hi": "छात्र अपने व्यवहार पर चिंतन करते हैं।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Wait to see if Maya defends herself.",
+          "text_hi": "यह देखने के लिए प्रतीक्षा करें कि क्या माया अपना बचाव करती है।",
+          "points": 2,
+          "theory_tag": "Negligence",
+          "explanation_en": "Allows bullying culture to take root.",
+          "explanation_hi": "बदमाशी संस्कृति को जड़ें जमाने देता है।",
+          "reaction_modifier_en": "Maya becomes withdrawn.",
+          "reaction_modifier_hi": "माया अंतर्मुखी हो जाती है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Punish the bullies privately without explaining why to the class.",
+          "text_hi": "कक्षा को कारण बताए बिना बदमाशों को निजी तौर पर दंडित करें।",
+          "points": 4,
+          "theory_tag": "Punitive without Restitution",
+          "explanation_en": "Stops the immediate behavior but doesn't teach empathy.",
+          "explanation_hi": "तत्काल व्यवहार को रोकता है लेकिन सहानुभूति नहीं सिखाता है।",
+          "reaction_modifier_en": "Teasing stops openly but continues in secret.",
+          "reaction_modifier_hi": "चिढ़ाना खुले तौर पर बंद हो जाता है लेकिन गुप्त रूप से जारी रहता है।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Tell Maya to ignore them.",
+          "text_hi": "माया से कहें कि वह उन्हें नजरअंदाज कर दे।",
+          "points": 3,
+          "theory_tag": "Victim Blaming",
+          "explanation_en": "Places the burden on the victim.",
+          "explanation_hi": "पीड़ित पर बोझ डालता है।",
+          "reaction_modifier_en": "Maya feels unsupported.",
+          "reaction_modifier_hi": "माया को लगता है कि उसे कोई समर्थन नहीं मिल रहा है।"
+        }
+      ]
+    },
+    {
+      "step_number": 2,
+      "description_en": "One of the bullies, Kabir, says he was \"just joking.\"",
+      "description_hi": "बदमाशों में से एक, कबीर, कहता है कि वह \"सिर्फ मजाक कर रहा था।\"",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Accept his excuse and let it go.",
+          "text_hi": "उसका बहाना स्वीकार करें और जाने दें।",
+          "points": 2,
+          "theory_tag": "Minimization",
+          "explanation_en": "Validates bullying disguised as humor.",
+          "explanation_hi": "हास्य के रूप में प्रच्छन्न बदमाशी को मान्य करता है।",
+          "reaction_modifier_en": "Kabir smirks.",
+          "reaction_modifier_hi": "कबीर मुस्कुराता है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Explain the difference between a joke (where everyone laughs) and bullying (where someone is hurt).",
+          "text_hi": "एक मजाक (जहां हर कोई हंसता है) और बदमाशी (जहां किसी को चोट लगती है) के बीच अंतर स्पष्ट करें।",
+          "points": 10,
+          "theory_tag": "Cognitive Restructuring",
+          "explanation_en": "Helps him understand the impact of his actions.",
+          "explanation_hi": "उसे अपने कार्यों के प्रभाव को समझने में मदद करता है।",
+          "reaction_modifier_en": "Kabir looks thoughtful and realizes his mistake.",
+          "reaction_modifier_hi": "कबीर विचारशील दिखता है और अपनी गलती का एहसास करता है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Yell at him for lying.",
+          "text_hi": "झूठ बोलने के लिए उस पर चिल्लाओ।",
+          "points": 3,
+          "theory_tag": "Aggressive Confrontation",
+          "explanation_en": "Models aggressive behavior.",
+          "explanation_hi": "आक्रामक व्यवहार का मॉडल।",
+          "reaction_modifier_en": "Kabir becomes defensive.",
+          "reaction_modifier_hi": "कबीर रक्षात्मक हो जाता है।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Make him write \"I will not joke\" 100 times.",
+          "text_hi": "उसे 100 बार \"मैं मजाक नहीं करूंगा\" लिखने को कहें।",
+          "points": 4,
+          "theory_tag": "Rote Punishment",
+          "explanation_en": "Ineffective for moral development.",
+          "explanation_hi": "नैतिक विकास के लिए अप्रभावी।",
+          "reaction_modifier_en": "Kabir resents the task.",
+          "reaction_modifier_hi": "कबीर कार्य से नाराज है।"
+        }
+      ]
+    },
+    {
+      "step_number": 3,
+      "description_en": "How do you support Maya moving forward?",
+      "description_hi": "आप माया को आगे बढ़ने में कैसे समर्थन करते हैं?",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Assign her a sympathetic \"buddy\" for the week.",
+          "text_hi": "सप्ताह के लिए उसे एक सहानुभूतिपूर्ण \"दोस्त\" सौंपें।",
+          "points": 10,
+          "theory_tag": "Peer Support Systems",
+          "explanation_en": "Fosters positive peer integration.",
+          "explanation_hi": "सकारात्मक सहकर्मी एकीकरण को बढ़ावा देता है।",
+          "reaction_modifier_en": "Maya smiles and makes a friend.",
+          "reaction_modifier_hi": "माया मुस्कुराती है और एक दोस्त बनाती है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Keep her close to your desk at all times.",
+          "text_hi": "उसे हर समय अपनी मेज के करीब रखें।",
+          "points": 5,
+          "theory_tag": "Over-scaffolding",
+          "explanation_en": "Prevents natural socialization.",
+          "explanation_hi": "प्राकृतिक समाजीकरण को रोकता है।",
+          "reaction_modifier_en": "Maya feels alienated from peers.",
+          "reaction_modifier_hi": "माया साथियों से अलग-थलग महसूस करती है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Tell her parents to toughen her up.",
+          "text_hi": "उसके माता-पिता से उसे कठोर बनाने के लिए कहें।",
+          "points": 2,
+          "theory_tag": "Dismissive",
+          "explanation_en": "Unprofessional and unhelpful.",
+          "explanation_hi": "अव्यावसायिक और अनुपयोगी।",
+          "reaction_modifier_en": "Parents are offended.",
+          "reaction_modifier_hi": "माता-पिता आहत हैं।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Do nothing, assuming the problem is solved.",
+          "text_hi": "यह मानकर कुछ न करें कि समस्या हल हो गई है।",
+          "points": 4,
+          "theory_tag": "Lack of Follow-through",
+          "explanation_en": "Fails to ensure long-term well-being.",
+          "explanation_hi": "दीर्घकालिक भलाई सुनिश्चित करने में विफल रहता है।",
+          "reaction_modifier_en": "Maya remains slightly anxious.",
+          "reaction_modifier_hi": "माया थोड़ी चिंतित रहती है।"
+        }
+      ]
+    }
+  ]
+},
+  {
+  "scenario_id": "scen_005",
+  "subject": "pedagogy",
+  "level": "primary",
+  "title_en": "Teaching a Child with Dyslexia",
+  "title_hi": "डिस्लेक्सिया वाले बच्चे को पढ़ाना",
+  "steps": [
+    {
+      "step_number": 1,
+      "description_en": "Ravi struggles to read aloud, mixing up letters like 'b' and 'd'. Peers snicker.",
+      "description_hi": "रवि जोर से पढ़ने में संघर्ष करता है, 'b' और 'd' जैसे अक्षरों को मिला देता है। सहपाठी हंसते हैं।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Provide him with text printed in a dyslexia-friendly font and use multisensory reading techniques (tracing letters in sand).",
+          "text_hi": "उसे डिस्लेक्सिया-अनुकूल फ़ॉन्ट में मुद्रित पाठ प्रदान करें और बहुसंवेदी पठन तकनीकों (रेत में अक्षरों का पता लगाना) का उपयोग करें।",
+          "points": 10,
+          "theory_tag": "Multisensory Orton-Gillingham Approach",
+          "explanation_en": "Evidence-based intervention for dyslexia.",
+          "explanation_hi": "डिस्लेक्सिया के लिए साक्ष्य-आधारित हस्तक्षेप।",
+          "reaction_modifier_en": "Ravi makes slow but confident progress.",
+          "reaction_modifier_hi": "रवि धीमी लेकिन आत्मविश्वासी प्रगति करता है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Force him to read aloud more often to \"practice\".",
+          "text_hi": "\"अभ्यास\" करने के लिए उसे अधिक बार जोर से पढ़ने के लिए मजबूर करें।",
+          "points": 2,
+          "theory_tag": "Forced Exposure",
+          "explanation_en": "Increases anxiety without providing tools.",
+          "explanation_hi": "उपकरण प्रदान किए बिना चिंता बढ़ाता है।",
+          "reaction_modifier_en": "Ravi develops severe reading anxiety.",
+          "reaction_modifier_hi": "रवि में पढ़ने की गंभीर चिंता विकसित हो जाती है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Exempt him from reading entirely.",
+          "text_hi": "उसे पूरी तरह से पढ़ने से छूट दें।",
+          "points": 4,
+          "theory_tag": "Low Expectations",
+          "explanation_en": "Denies him the right to learn to read.",
+          "explanation_hi": "उसे पढ़ना सीखने के अधिकार से वंचित करता है।",
+          "reaction_modifier_en": "Ravi falls further behind academically.",
+          "reaction_modifier_hi": "रवि अकादमिक रूप से और पिछड़ जाता है।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Tell the laughing peers to stop, but do nothing to help Ravi read.",
+          "text_hi": "हंसते हुए साथियों को रुकने के लिए कहें, लेकिन रवि को पढ़ने में मदद करने के लिए कुछ न करें।",
+          "points": 5,
+          "theory_tag": "Superficial Management",
+          "explanation_en": "Addresses symptom but not the root educational need.",
+          "explanation_hi": "लक्षण को संबोधित करता है लेकिन मूल शैक्षिक आवश्यकता को नहीं।",
+          "reaction_modifier_en": "Ravi feels defended but still helpless.",
+          "reaction_modifier_hi": "रवि को लगता है कि उसका बचाव किया गया है लेकिन वह अभी भी असहाय है।"
+        }
+      ]
+    },
+    {
+      "step_number": 2,
+      "description_en": "It's spelling test time. Ravi is extremely stressed.",
+      "description_hi": "यह वर्तनी परीक्षण (स्पेलिंग टेस्ट) का समय है। रवि बेहद तनाव में है।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Grade him only on phonetics and effort, not perfect standard spelling.",
+          "text_hi": "उसे केवल ध्वनिविज्ञान (फ़ोनेटिक्स) और प्रयास पर ग्रेड दें, सही मानक वर्तनी पर नहीं।",
+          "points": 10,
+          "theory_tag": "Alternative Assessment",
+          "explanation_en": "Focuses on the learning process over rigid outcomes.",
+          "explanation_hi": "कठोर परिणामों के बजाय सीखने की प्रक्रिया पर ध्यान केंद्रित करता है।",
+          "reaction_modifier_en": "Ravi tries his best without fear of a zero.",
+          "reaction_modifier_hi": "रवि बिना शून्य के डर के अपना सर्वश्रेष्ठ प्रयास करता है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Give him a zero for every reversed letter.",
+          "text_hi": "हर उल्टे अक्षर के लिए उसे शून्य दें।",
+          "points": 2,
+          "theory_tag": "Rigid Assessment",
+          "explanation_en": "Punishes a neurological difference.",
+          "explanation_hi": "एक तंत्रिका संबंधी अंतर को दंडित करता है।",
+          "reaction_modifier_en": "Ravi tears up his paper.",
+          "reaction_modifier_hi": "रवि अपना कागज फाड़ देता है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Let him copy from a friend.",
+          "text_hi": "उसे एक दोस्त से नकल करने दें।",
+          "points": 3,
+          "theory_tag": "Academic Dishonesty Facilitation",
+          "explanation_en": "Prevents accurate assessment.",
+          "explanation_hi": "सटीक मूल्यांकन को रोकता है।",
+          "reaction_modifier_en": "Ravi learns nothing.",
+          "reaction_modifier_hi": "रवि कुछ नहीं सीखता।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Give him fewer words to spell.",
+          "text_hi": "उसे स्पेलिंग के लिए कम शब्द दें।",
+          "points": 7,
+          "theory_tag": "Task Reduction",
+          "explanation_en": "A valid accommodation, but alternative grading is better.",
+          "explanation_hi": "एक वैध आवास, लेकिन वैकल्पिक ग्रेडिंग बेहतर है।",
+          "reaction_modifier_en": "Ravi is less stressed but still struggles with the format.",
+          "reaction_modifier_hi": "रवि कम तनावग्रस्त है लेकिन फिर भी प्रारूप के साथ संघर्ष करता है।"
+        }
+      ]
+    },
+    {
+      "step_number": 3,
+      "description_en": "Ravi expresses interest in storytelling despite his reading issues.",
+      "description_hi": "रवि अपनी पढ़ने की समस्याओं के बावजूद कहानी सुनाने में रुचि व्यक्त करता है।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Allow him to record his stories on an audio device or use speech-to-text software.",
+          "text_hi": "उसे अपनी कहानियों को एक ऑडियो डिवाइस पर रिकॉर्ड करने या स्पीच-टू-टेक्स्ट सॉफ़्टवेयर का उपयोग करने की अनुमति दें।",
+          "points": 10,
+          "theory_tag": "Assistive Technology Integration",
+          "explanation_en": "Bypasses the deficit to allow expression of strengths.",
+          "explanation_hi": "ताकत की अभिव्यक्ति की अनुमति देने के लिए कमी को दरकिनार करता है।",
+          "reaction_modifier_en": "Ravi creates amazing stories.",
+          "reaction_modifier_hi": "रवि अद्भुत कहानियाँ बनाता है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Tell him he must learn to write properly first.",
+          "text_hi": "उससे कहें कि उसे पहले ठीक से लिखना सीखना होगा।",
+          "points": 3,
+          "theory_tag": "Skill Gating",
+          "explanation_en": "Kills creativity by making it contingent on a weakness.",
+          "explanation_hi": "इसे कमजोरी पर निर्भर बनाकर रचनात्मकता को मारता है।",
+          "reaction_modifier_en": "Ravi stops inventing stories.",
+          "reaction_modifier_hi": "रवि कहानियाँ गढ़ना बंद कर देता है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Have another student write his stories for him permanently.",
+          "text_hi": "किसी अन्य छात्र से उसके लिए स्थायी रूप से उसकी कहानियाँ लिखवाएं।",
+          "points": 5,
+          "theory_tag": "Over-reliance",
+          "explanation_en": "Reduces his independence.",
+          "explanation_hi": "उसकी स्वतंत्रता को कम करता है।",
+          "reaction_modifier_en": "Ravi feels dependent on others.",
+          "reaction_modifier_hi": "रवि दूसरों पर निर्भर महसूस करता है।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Give him extra handwriting homework.",
+          "text_hi": "उसे अतिरिक्त हस्तलेखन होमवर्क दें।",
+          "points": 2,
+          "theory_tag": "Misaligned Intervention",
+          "explanation_en": "Handwriting drills don't cure dyslexia.",
+          "explanation_hi": "हस्तलेखन अभ्यास डिस्लेक्सिया का इलाज नहीं करते हैं।",
+          "reaction_modifier_en": "Ravi is exhausted and frustrated.",
+          "reaction_modifier_hi": "रवि थका हुआ और निराश है।"
+        }
+      ]
+    }
+  ]
+},
+  {
+  "scenario_id": "scen_006",
+  "subject": "pedagogy",
+  "level": "primary",
+  "title_en": "First Day of School Anxiety",
+  "title_hi": "स्कूल के पहले दिन की चिंता",
+  "steps": [
+    {
+      "step_number": 1,
+      "description_en": "A 5-year-old child, Sana, is crying uncontrollably and clinging to her mother on the first day of school.",
+      "description_hi": "5 साल की बच्ची, सना, स्कूल के पहले दिन बेतहाशा रो रही है और अपनी माँ से लिपटी हुई है।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Pry her away and tell the mother to leave immediately.",
+          "text_hi": "उसे दूर करें और माँ को तुरंत जाने के लिए कहें।",
+          "points": 2,
+          "theory_tag": "Traumatic Separation",
+          "explanation_en": "Damages trust (Erikson: Trust vs. Mistrust).",
+          "explanation_hi": "विश्वास को नुकसान पहुँचाता है (एरिकसन: विश्वास बनाम अविश्वास)।",
+          "reaction_modifier_en": "Sana cries for hours.",
+          "reaction_modifier_hi": "सना घंटों रोती है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Welcome them warmly, show Sana a fascinating toy, and suggest the mother stay for 5 minutes before saying a clear goodbye.",
+          "text_hi": "उनका गर्मजोशी से स्वागत करें, सना को एक आकर्षक खिलौना दिखाएं, और सुझाव दें कि माँ स्पष्ट अलविदा कहने से पहले 5 मिनट रुकें।",
+          "points": 10,
+          "theory_tag": "Attachment Theory (Transitional Object)",
+          "explanation_en": "Provides a secure base transition.",
+          "explanation_hi": "एक सुरक्षित आधार संक्रमण प्रदान करता है।",
+          "reaction_modifier_en": "Sana slowly engages with the toy as mom leaves.",
+          "reaction_modifier_hi": "माँ के जाने पर सना धीरे-धीरे खिलौने में व्यस्त हो जाती है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Tell Sana big girls don't cry.",
+          "text_hi": "सना से कहो कि बड़ी लड़कियां नहीं रोतीं।",
+          "points": 3,
+          "theory_tag": "Emotion Dismissal",
+          "explanation_en": "Invalidates her genuine fear.",
+          "explanation_hi": "उसके वास्तविक डर को अमान्य करता है।",
+          "reaction_modifier_en": "Sana suppresses her feelings but looks terrified.",
+          "reaction_modifier_hi": "सना अपनी भावनाओं को दबाती है लेकिन भयभीत दिखती है।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Ignore the crying and start the lesson loudly.",
+          "text_hi": "रोने को नज़रअंदाज़ करें और ज़ोर से पाठ शुरू करें।",
+          "points": 4,
+          "theory_tag": "Insensitive Instruction",
+          "explanation_en": "Shows lack of emotional intelligence.",
+          "explanation_hi": "भावनात्मक बुद्धिमत्ता की कमी को दर्शाता है।",
+          "reaction_modifier_en": "Sana feels neglected.",
+          "reaction_modifier_hi": "सना खुद को उपेक्षित महसूस करती है।"
+        }
+      ]
+    },
+    {
+      "step_number": 2,
+      "description_en": "Later, Sana refuses to join the circle time.",
+      "description_hi": "बाद में, सना सर्कल समय में शामिल होने से इनकार कर देती है।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Force her to sit in the circle.",
+          "text_hi": "उसे सर्कल में बैठने के लिए मजबूर करें।",
+          "points": 2,
+          "theory_tag": "Coercion",
+          "explanation_en": "Increases resistance.",
+          "explanation_hi": "प्रतिरोध बढ़ाता है।",
+          "reaction_modifier_en": "Sana throws a tantrum.",
+          "reaction_modifier_hi": "सना नखरे करती है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Allow her to watch from a short distance and invite her gently when she seems ready.",
+          "text_hi": "उसे थोड़ी दूरी से देखने दें और जब वह तैयार लगे तो उसे धीरे से आमंत्रित करें।",
+          "points": 10,
+          "theory_tag": "Gradual Exposure",
+          "explanation_en": "Respects her boundaries while encouraging participation.",
+          "explanation_hi": "भागीदारी को प्रोत्साहित करते हुए उसकी सीमाओं का सम्मान करता है।",
+          "reaction_modifier_en": "Sana eventually scoots closer to the group.",
+          "reaction_modifier_hi": "सना अंततः समूह के करीब आती है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Bribe her with a candy.",
+          "text_hi": "उसे कैंडी की रिश्वत दें।",
+          "points": 4,
+          "theory_tag": "Extrinsic Motivation",
+          "explanation_en": "Doesn't build intrinsic security.",
+          "explanation_hi": "आंतरिक सुरक्षा का निर्माण नहीं करता है।",
+          "reaction_modifier_en": "Sana joins for the candy but leaves after.",
+          "reaction_modifier_hi": "सना कैंडी के लिए जुड़ती है लेकिन उसके बाद चली जाती है।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Tell the class to chant her name.",
+          "text_hi": "कक्षा को उसका नाम जपने के लिए कहें।",
+          "points": 3,
+          "theory_tag": "Overwhelming Attention",
+          "explanation_en": "Can be terrifying for an anxious child.",
+          "explanation_hi": "एक चिंतित बच्चे के लिए भयानक हो सकता है।",
+          "reaction_modifier_en": "Sana hides under a desk.",
+          "reaction_modifier_hi": "सना एक डेस्क के नीचे छिप जाती है।"
+        }
+      ]
+    },
+    {
+      "step_number": 3,
+      "description_en": "By the end of the day, she is playing happily with blocks.",
+      "description_hi": "दिन के अंत तक, वह ब्लॉकों के साथ खुशी-खुशी खेल रही है।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Say nothing to avoid reminding her of the morning.",
+          "text_hi": "सुबह की याद दिलाने से बचने के लिए कुछ न कहें।",
+          "points": 5,
+          "theory_tag": "Missed Reinforcement",
+          "explanation_en": "Misses a chance to reinforce positive behavior.",
+          "explanation_hi": "सकारात्मक व्यवहार को सुदृढ़ करने का अवसर चूक जाता है।",
+          "reaction_modifier_en": "Sana leaves quietly.",
+          "reaction_modifier_hi": "सना चुपचाप चली जाती है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Praise her specifically: \"I loved seeing you build that tall tower today! You were very brave.\"",
+          "text_hi": "विशेष रूप से उसकी प्रशंसा करें: \"मुझे आज आपको वह ऊंचा टॉवर बनाते हुए देखना बहुत अच्छा लगा! आप बहुत बहादुर थे।\"",
+          "points": 10,
+          "theory_tag": "Specific Positive Reinforcement",
+          "explanation_en": "Builds self-efficacy.",
+          "explanation_hi": "आत्म-प्रभावकारिता का निर्माण करता है।",
+          "reaction_modifier_en": "Sana smiles proudly.",
+          "reaction_modifier_hi": "सना गर्व से मुस्कुराती है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Tell her mom she was a \"crybaby\" initially.",
+          "text_hi": "उसकी माँ को बताएं कि वह शुरू में एक \"रोतड़ू\" थी।",
+          "points": 2,
+          "theory_tag": "Negative Labeling",
+          "explanation_en": "Unprofessional and damaging.",
+          "explanation_hi": "अव्यावसायिक और हानिकारक।",
+          "reaction_modifier_en": "Mom looks upset.",
+          "reaction_modifier_hi": "माँ परेशान दिखती है।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Give her a sticker for surviving.",
+          "text_hi": "जीवित रहने के लिए उसे एक स्टिकर दें।",
+          "points": 6,
+          "theory_tag": "Generic Reward",
+          "explanation_en": "Okay, but less effective than specific verbal praise.",
+          "explanation_hi": "ठीक है, लेकिन विशिष्ट मौखिक प्रशंसा से कम प्रभावी है।",
+          "reaction_modifier_en": "Sana likes the sticker.",
+          "reaction_modifier_hi": "सना को स्टिकर पसंद आता है।"
+        }
+      ]
+    }
+  ]
+},
+  {
+  "scenario_id": "scen_007",
+  "subject": "pedagogy",
+  "level": "junior",
+  "title_en": "Student Caught Cheating on Test",
+  "title_hi": "टेस्ट में नकल करते पकड़ा गया छात्र",
+  "steps": [
+    {
+      "step_number": 1,
+      "description_en": "You catch a 7th grader, Aryan, looking at a cheat sheet during a mid-term exam.",
+      "description_hi": "आप 7वीं कक्षा के छात्र, आर्यन को मिड-टर्म परीक्षा के दौरान चीट शीट देखते हुए पकड़ते हैं।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Tear his paper in front of everyone and shout at him.",
+          "text_hi": "सबके सामने उसका पेपर फाड़ दें और उस पर चिल्लाएं।",
+          "points": 2,
+          "theory_tag": "Public Humiliation",
+          "explanation_en": "Violates dignity and creates a hostile environment.",
+          "explanation_hi": "गरिमा का उल्लंघन करता है और एक शत्रुतापूर्ण वातावरण बनाता है।",
+          "reaction_modifier_en": "Aryan is humiliated and angry.",
+          "reaction_modifier_hi": "आर्यन अपमानित और क्रोधित है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Quietly take the cheat sheet, tap his desk, and gesture for him to see you after class.",
+          "text_hi": "चुपचाप चीट शीट लें, उसकी डेस्क थपथपाएं, और उसे कक्षा के बाद आपसे मिलने का इशारा करें।",
+          "points": 10,
+          "theory_tag": "Private Correction (Dignity Retention)",
+          "explanation_en": "Stops the cheating immediately without public shaming.",
+          "explanation_hi": "सार्वजनिक रूप से शर्मिंदा किए बिना तुरंत नकल रोकता है।",
+          "reaction_modifier_en": "Aryan looks ashamed but finishes what he knows.",
+          "reaction_modifier_hi": "आर्यन शर्मिंदा दिखता है लेकिन जो जानता है उसे पूरा करता है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Ignore it so you don't disrupt the others taking the test.",
+          "text_hi": "इसे नज़रअंदाज़ करें ताकि आप परीक्षा देने वाले अन्य लोगों को परेशान न करें।",
+          "points": 3,
+          "theory_tag": "Permissive",
+          "explanation_en": "Invalidates the assessment for everyone.",
+          "explanation_hi": "सभी के लिए मूल्यांकन को अमान्य करता है।",
+          "reaction_modifier_en": "Other students see Aryan cheating and lose respect for you.",
+          "reaction_modifier_hi": "अन्य छात्र आर्यन को नकल करते हुए देखते हैं और आपके प्रति सम्मान खो देते हैं।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Announce to the class that someone is cheating without naming him.",
+          "text_hi": "कक्षा में घोषणा करें कि कोई नाम लिए बिना नकल कर रहा है।",
+          "points": 5,
+          "theory_tag": "Passive Aggressive Management",
+          "explanation_en": "Causes anxiety for innocent students and may not stop Aryan.",
+          "explanation_hi": "निर्दोष छात्रों के लिए चिंता का कारण बनता है और आर्यन को नहीं रोक सकता है।",
+          "reaction_modifier_en": "The whole class becomes tense.",
+          "reaction_modifier_hi": "पूरी कक्षा तनावग्रस्त हो जाती है।"
+        }
+      ]
+    },
+    {
+      "step_number": 2,
+      "description_en": "Aryan meets you after class and cries, saying his parents will punish him if he doesn't get an A.",
+      "description_hi": "आर्यन कक्षा के बाद आपसे मिलता है और रोते हुए कहता है कि अगर उसे 'A' नहीं मिला तो उसके माता-पिता उसे सजा देंगे।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Tell him rules are rules and give him a zero anyway.",
+          "text_hi": "उसे बताएं कि नियम नियम हैं और उसे वैसे भी शून्य दें।",
+          "points": 4,
+          "theory_tag": "Zero-Tolerance Policy",
+          "explanation_en": "Fails to address the underlying psychological pressure.",
+          "explanation_hi": "अंतर्निहित मनोवैज्ञानिक दबाव को दूर करने में विफल रहता है।",
+          "reaction_modifier_en": "Aryan feels hopeless.",
+          "reaction_modifier_hi": "आर्यन निराश महसूस करता है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Discuss the pressure with him, grade the portion he did honestly, and schedule a parent-teacher meeting regarding realistic expectations.",
+          "text_hi": "उसके साथ दबाव पर चर्चा करें, उस हिस्से को ग्रेड दें जो उसने ईमानदारी से किया था, और यथार्थवादी अपेक्षाओं के संबंध में माता-पिता-शिक्षक बैठक निर्धारित करें।",
+          "points": 10,
+          "theory_tag": "Restorative Justice & Root Cause Analysis",
+          "explanation_en": "Addresses the root cause (parental pressure) while maintaining academic integrity.",
+          "explanation_hi": "अकादमिक अखंडता बनाए रखते हुए मूल कारण (माता-पिता का दबाव) को संबोधित करता है।",
+          "reaction_modifier_en": "Aryan feels understood and agrees to the meeting.",
+          "reaction_modifier_hi": "आर्यन खुद को समझा हुआ महसूस करता है और बैठक के लिए सहमत होता है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Let him retake the test immediately.",
+          "text_hi": "उसे तुरंत परीक्षा फिर से देने दें।",
+          "points": 5,
+          "theory_tag": "Unearned Pardon",
+          "explanation_en": "Doesn't teach accountability for the initial action.",
+          "explanation_hi": "प्रारंभिक कार्रवाई के लिए जवाबदेही नहीं सिखाता है।",
+          "reaction_modifier_en": "Aryan learns cheating has no real consequences.",
+          "reaction_modifier_hi": "आर्यन सीखता है कि धोखाधड़ी के कोई वास्तविक परिणाम नहीं होते हैं।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Threaten to tell his parents he cheated to scare him straight.",
+          "text_hi": "उसे डराने के लिए उसके माता-पिता को बताने की धमकी दें कि उसने नकल की है।",
+          "points": 2,
+          "theory_tag": "Coercive Threat",
+          "explanation_en": "Exploits his existing fear and breaks teacher-student trust.",
+          "explanation_hi": "उसके मौजूदा डर का फायदा उठाता है और शिक्षक-छात्र के विश्वास को तोड़ता है।",
+          "reaction_modifier_en": "Aryan panics and begs you not to.",
+          "reaction_modifier_hi": "आर्यन घबरा जाता है और आपसे ऐसा न करने की भीख मांगता है।"
+        }
+      ]
+    },
+    {
+      "step_number": 3,
+      "description_en": "To prevent future cheating, what structural change do you implement?",
+      "description_hi": "भविष्य में होने वाली धोखाधड़ी को रोकने के लिए, आप कौन सा संरचनात्मक परिवर्तन लागू करते हैं?",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Make tests 100% multiple choice so it's harder to cheat.",
+          "text_hi": "परीक्षणों को 100% बहुविकल्पीय बनाएं ताकि नकल करना कठिन हो।",
+          "points": 3,
+          "theory_tag": "Lower-order Assessment",
+          "explanation_en": "Multiple choice can actually be easier to cheat on (copying letters).",
+          "explanation_hi": "बहुविकल्पीय पर नकल करना वास्तव में आसान हो सकता है (अक्षरों की नकल करना)।",
+          "reaction_modifier_en": "Students still find ways to cheat.",
+          "reaction_modifier_hi": "छात्र अभी भी नकल करने के तरीके खोज लेते हैं।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Shift towards open-book tests and project-based assessments focusing on application.",
+          "text_hi": "ओपन-बुक परीक्षणों और अनुप्रयोग पर ध्यान केंद्रित करने वाले प्रोजेक्ट-आधारित आकलनों की ओर शिफ्ट करें।",
+          "points": 10,
+          "theory_tag": "Authentic Assessment",
+          "explanation_en": "Tests higher-order thinking where rote cheating is impossible.",
+          "explanation_hi": "उच्च क्रम की सोच का परीक्षण करता है जहां रट कर धोखाधड़ी करना असंभव है।",
+          "reaction_modifier_en": "Students focus on understanding rather than memorizing.",
+          "reaction_modifier_hi": "छात्र रटने के बजाय समझने पर ध्यान केंद्रित करते हैं।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Install cameras in the classroom.",
+          "text_hi": "कक्षा में कैमरे लगाएं।",
+          "points": 2,
+          "theory_tag": "Surveillance Culture",
+          "explanation_en": "Creates an atmosphere of distrust.",
+          "explanation_hi": "अविश्वास का माहौल बनाता है।",
+          "reaction_modifier_en": "Students feel anxious and untrusted.",
+          "reaction_modifier_hi": "छात्र चिंतित और अविश्वास महसूस करते हैं।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Make the tests incredibly difficult so even with a cheat sheet, they fail.",
+          "text_hi": "परीक्षणों को अविश्वसनीय रूप से कठिन बनाएं ताकि चीट शीट के साथ भी वे विफल हो जाएं।",
+          "points": 2,
+          "theory_tag": "Punitive Assessment Design",
+          "explanation_en": "Destroys academic motivation for all students.",
+          "explanation_hi": "सभी छात्रों के लिए शैक्षणिक प्रेरणा को नष्ट कर देता है।",
+          "reaction_modifier_en": "Class average plummets; morale hits rock bottom.",
+          "reaction_modifier_hi": "कक्षा का औसत गिरता है; मनोबल रसातल में चला जाता है।"
+        }
+      ]
+    }
+  ]
+},
+  {
+  "scenario_id": "scen_008",
+  "subject": "pedagogy",
+  "level": "junior",
+  "title_en": "Multilingual Classroom Communication",
+  "title_hi": "बहुभाषी कक्षा संचार",
+  "steps": [
+    {
+      "step_number": 1,
+      "description_en": "You are teaching science. A student from a rural background asks a question in a regional dialect. Other students laugh.",
+      "description_hi": "आप विज्ञान पढ़ा रहे हैं। ग्रामीण पृष्ठभूमि का एक छात्र क्षेत्रीय बोली में एक प्रश्न पूछता है। अन्य छात्र हंसते हैं।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Tell the student to only speak in standard English or Hindi.",
+          "text_hi": "छात्र से केवल मानक अंग्रेजी या हिंदी में बोलने के लिए कहें।",
+          "points": 3,
+          "theory_tag": "Linguistic Imperialism",
+          "explanation_en": "Violates NCF guidelines on mother tongue use.",
+          "explanation_hi": "मातृभाषा के उपयोग पर NCF दिशानिर्देशों का उल्लंघन करता है।",
+          "reaction_modifier_en": "The student stops asking questions entirely.",
+          "reaction_modifier_hi": "छात्र पूरी तरह से सवाल पूछना बंद कर देता है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Silence the laughter, validate the student's question, and translate it smoothly for the class.",
+          "text_hi": "हंसी को शांत करें, छात्र के प्रश्न को मान्य करें, और कक्षा के लिए इसका सुचारू रूप से अनुवाद करें।",
+          "points": 10,
+          "theory_tag": "Translanguaging & Inclusive Pedagogy",
+          "explanation_en": "Respects linguistic diversity and ensures comprehension.",
+          "explanation_hi": "भाषाई विविधता का सम्मान करता है और समझ सुनिश्चित करता है।",
+          "reaction_modifier_en": "The student feels respected and continues participating.",
+          "reaction_modifier_hi": "छात्र सम्मानित महसूस करता है और भाग लेना जारी रखता है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Laugh along with the class to keep the mood light.",
+          "text_hi": "माहौल को हल्का रखने के लिए कक्षा के साथ हंसें।",
+          "points": 1,
+          "theory_tag": "Teacher Complicity in Bullying",
+          "explanation_en": "Deeply damaging to the student's self-esteem.",
+          "explanation_hi": "छात्र के आत्मसम्मान को गहरा नुकसान पहुंचाता है।",
+          "reaction_modifier_en": "The student feels humiliated.",
+          "reaction_modifier_hi": "छात्र अपमानित महसूस करता है।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Ignore the student's question completely.",
+          "text_hi": "छात्र के प्रश्न को पूरी तरह से नजरअंदाज करें।",
+          "points": 2,
+          "theory_tag": "Exclusion",
+          "explanation_en": "Denies the student access to learning.",
+          "explanation_hi": "छात्र को सीखने की पहुँच से वंचित करता है।",
+          "reaction_modifier_en": "The student feels invisible.",
+          "reaction_modifier_hi": "छात्र अदृश्य महसूस करता है।"
+        }
+      ]
+    },
+    {
+      "step_number": 2,
+      "description_en": "To make the lesson more inclusive for diverse language speakers, you decide to:",
+      "description_hi": "विभिन्न भाषा बोलने वालों के लिए पाठ को अधिक समावेशी बनाने के लिए, आप यह निर्णय लेते हैं:",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Use only the textbook and read verbatim.",
+          "text_hi": "केवल पाठ्यपुस्तक का प्रयोग करें और शब्दशः पढ़ें।",
+          "points": 2,
+          "theory_tag": "Teacher-Centered Rote Method",
+          "explanation_en": "Boring and hard to comprehend for ESL learners.",
+          "explanation_hi": "ESL शिक्षार्थियों के लिए उबाऊ और समझने में कठिन।",
+          "reaction_modifier_en": "Students tune out.",
+          "reaction_modifier_hi": "छात्र ध्यान हटा लेते हैं।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Use visual aids, diagrams, and physical models to explain concepts alongside verbal explanations.",
+          "text_hi": "मौखिक स्पष्टीकरण के साथ अवधारणाओं को समझाने के लिए दृश्य सहायक सामग्री, आरेख और भौतिक मॉडल का उपयोग करें।",
+          "points": 10,
+          "theory_tag": "Multimodal Learning (VARK)",
+          "explanation_en": "Visuals transcend language barriers.",
+          "explanation_hi": "दृश्य भाषा की बाधाओं को पार करते हैं।",
+          "reaction_modifier_en": "Comprehension improves across the board.",
+          "reaction_modifier_hi": "बोर्ड भर में समझ में सुधार होता है।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Give them extra homework to learn the language faster.",
+          "text_hi": "भाषा को तेजी से सीखने के लिए उन्हें अतिरिक्त होमवर्क दें।",
+          "points": 4,
+          "theory_tag": "Unreasonable Workload",
+          "explanation_en": "Punishes them for their linguistic background.",
+          "explanation_hi": "उन्हें उनकी भाषाई पृष्ठभूमि के लिए दंडित करता है।",
+          "reaction_modifier_en": "Students are overwhelmed and stressed.",
+          "reaction_modifier_hi": "छात्र अभिभूत और तनावग्रस्त हैं।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Pair them only with students who speak their exact dialect.",
+          "text_hi": "उन्हें केवल उन छात्रों के साथ जोड़ें जो उनकी सटीक बोली बोलते हैं।",
+          "points": 6,
+          "theory_tag": "Segregation",
+          "explanation_en": "Helps short term but prevents integration with the wider class.",
+          "explanation_hi": "अल्पावधि में मदद करता है लेकिन व्यापक कक्षा के साथ एकीकरण को रोकता है।",
+          "reaction_modifier_en": "Cliques form based on language.",
+          "reaction_modifier_hi": "भाषा के आधार पर गुट बन जाते हैं।"
+        }
+      ]
+    },
+    {
+      "step_number": 3,
+      "description_en": "A parent complains that using regional languages in class is ruining the standard of English/Hindi.",
+      "description_hi": "एक अभिभावक शिकायत करता है कि कक्षा में क्षेत्रीय भाषाओं का उपयोग करने से अंग्रेजी/हिंदी का स्तर खराब हो रहा है।",
+      "choices": [
+        {
+          "choice_index": 0,
+          "text_en": "Agree and promise to ban regional languages.",
+          "text_hi": "सहमत हों और क्षेत्रीय भाषाओं पर प्रतिबंध लगाने का वादा करें।",
+          "points": 2,
+          "theory_tag": "Appeasement over Pedagogy",
+          "explanation_en": "Disregards modern linguistic pedagogy.",
+          "explanation_hi": "आधुनिक भाषाई शिक्षाशास्त्र की उपेक्षा करता है।",
+          "reaction_modifier_en": "Classroom becomes less inclusive.",
+          "reaction_modifier_hi": "कक्षा कम समावेशी हो जाती है।"
+        },
+        {
+          "choice_index": 1,
+          "text_en": "Politely explain that using a child's mother tongue as a bridge (scaffolding) actually improves their acquisition of the target standard language (as per NCF).",
+          "text_hi": "विनम्रतापूर्वक समझाएं कि बच्चे की मातृभाषा को एक पुल (मचान) के रूप में उपयोग करने से वास्तव में लक्ष्य मानक भाषा (NCF के अनुसार) के उनके अधिग्रहण में सुधार होता है।",
+          "points": 10,
+          "theory_tag": "Bilingual Transition Theory",
+          "explanation_en": "Educates parents using sound pedagogical reasoning.",
+          "explanation_hi": "ठोस शैक्षणिक तर्क का उपयोग करके माता-पिता को शिक्षित करता है।",
+          "reaction_modifier_en": "The parent understands and supports the approach.",
+          "reaction_modifier_hi": "अभिभावक इस दृष्टिकोण को समझते हैं और उसका समर्थन करते हैं।"
+        },
+        {
+          "choice_index": 2,
+          "text_en": "Tell the parent to move their child to a different school if they don't like it.",
+          "text_hi": "यदि उन्हें यह पसंद नहीं है तो माता-पिता से अपने बच्चे को दूसरे स्कूल में ले जाने के लिए कहें।",
+          "points": 1,
+          "theory_tag": "Hostile Defensiveness",
+          "explanation_en": "Highly unprofessional.",
+          "explanation_hi": "अत्यधिक अव्यावसायिक।",
+          "reaction_modifier_en": "The parent files a formal complaint.",
+          "reaction_modifier_hi": "अभिभावक औपचारिक शिकायत दर्ज करता है।"
+        },
+        {
+          "choice_index": 3,
+          "text_en": "Ignore the parent's comment and walk away.",
+          "text_hi": "माता-पिता की टिप्पणी को अनसुना करें और चले जाएं।",
+          "points": 3,
+          "theory_tag": "Avoidance of Communication",
+          "explanation_en": "Fails to build a teacher-parent partnership.",
+          "explanation_hi": "शिक्षक-माता-पिता की साझेदारी बनाने में विफल रहता है।",
+          "reaction_modifier_en": "The parent remains frustrated.",
+          "reaction_modifier_hi": "अभिभावक निराश रहता है।"
+        }
+      ]
+    }
+  ]
+}
 ];
 
 async function seed() {

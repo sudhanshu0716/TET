@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const User = require('../models/User');
+const GlobalSettings = require('../models/GlobalSettings');
 const auth = require('../middleware/auth');
 
 // Register
@@ -104,6 +105,10 @@ router.post('/login', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    // Fetch global settings for default UI version
+    const globalSettings = await GlobalSettings.findOne();
+    const default_ui_version = globalSettings?.default_ui_version || 'v1';
+
     res.json({
       token,
       user: {
@@ -112,7 +117,8 @@ router.post('/login', async (req, res) => {
         email: user.email,
         level: user.level,
         role: user.role
-      }
+      },
+      default_ui_version
     });
 
   } catch (err) {

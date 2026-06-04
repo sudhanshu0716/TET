@@ -53,6 +53,10 @@ const AdminDashboard = () => {
   const [resetResult, setResetResult] = useState(null); // { tempPassword, message }
   const [resetting, setResetting] = useState(false);
 
+  // Default UI Version State
+  const [defaultUiVersion, setDefaultUiVersion] = useState('v1');
+  const [settingDefaultUi, setSettingDefaultUi] = useState(false);
+
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -79,6 +83,11 @@ const AdminDashboard = () => {
         setSystemMessage(premiumRes.data.system_message || '');
         setMaintenanceEnabled(premiumRes.data.is_maintenance_mode || false);
         setUsersList(usersRes.data);
+        // Fetch default UI version
+        try {
+          const uiRes = await api.get('/api/admin/global-settings-public', { headers: { 'x-auth-token': token } });
+          setDefaultUiVersion(uiRes.data.default_ui_version || 'v1');
+        } catch (e) { /* silent */ }
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -247,10 +256,27 @@ const AdminDashboard = () => {
   const handleToggleMaintenance = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await api.post('/api/admin/toggle-maintenance', { enabled: !maintenanceEnabled }, { headers: { 'x-auth-token': token } });
-      setMaintenanceEnabled(res.data.is_maintenance_mode);
-      alert(`Maintenance Mode is now ${res.data.is_maintenance_mode ? 'ON' : 'OFF'}`);
-    } catch (err) { alert('Toggle failed'); }
+      await api.post('/api/admin/toggle-maintenance', { enabled: !maintenanceEnabled }, { headers: { 'x-auth-token': token } });
+      setMaintenanceEnabled(!maintenanceEnabled);
+      alert(`Maintenance mode has been ${!maintenanceEnabled ? 'ENABLED' : 'DISABLED'}`);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to toggle maintenance mode');
+    }
+  };
+
+  const handleSetDefaultUi = async (version) => {
+    if (settingDefaultUi) return;
+    setSettingDefaultUi(true);
+    try {
+      const token = localStorage.getItem('token');
+      await api.post('/api/admin/set-default-ui', { ui_version: version }, { headers: { 'x-auth-token': token } });
+      setDefaultUiVersion(version);
+      alert(`Default UI version successfully set to ${version}`);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to set default UI version');
+    } finally {
+      setSettingDefaultUi(false);
+    }
   };
 
   const handleResetSubjectStats = async () => {
@@ -515,6 +541,48 @@ const AdminDashboard = () => {
                 <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${maintenanceEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
               </button>
             </div>
+          </div>
+
+          {/* Default UI Version Selector */}
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1 flex items-center gap-2 mt-4">
+            🎨 Default App UI Version
+          </h3>
+          <p className="text-[9px] text-slate-500 font-bold ml-1 -mt-1">
+            Set the default UI for all users. Users with a personal preference override are not affected.
+          </p>
+          <div className="grid grid-cols-3 gap-2.5">
+            {[
+              { id: 'v1', label: 'Classic', emoji: '📋', gradient: 'from-slate-600 to-slate-800', border: 'border-slate-500/30' },
+              { id: 'v2', label: 'Modern', emoji: '✨', gradient: 'from-sky-600 to-indigo-700', border: 'border-sky-500/30' },
+              { id: 'v3', label: 'Chalkboard', emoji: '✏️', gradient: 'from-purple-600 to-pink-600', border: 'border-purple-500/30' },
+            ].map((uiOpt) => {
+              const isCurrentDefault = defaultUiVersion === uiOpt.id;
+              return (
+                <button
+                  key={uiOpt.id}
+                  onClick={() => handleSetDefaultUi(uiOpt.id)}
+                  disabled={settingDefaultUi}
+                  className={`relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all duration-300 active:scale-95 ${
+                    isCurrentDefault
+                      ? `bg-gradient-to-br ${uiOpt.gradient} ${uiOpt.border} shadow-lg ring-2 ring-white/20 scale-[1.03]`
+                      : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/8'
+                  }`}
+                >
+                  <span className="text-2xl">{uiOpt.emoji}</span>
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${
+                    isCurrentDefault ? 'text-white' : 'text-slate-400'
+                  }`}>{uiOpt.label}</span>
+                  <span className={`text-[8px] font-black uppercase tracking-wider ${
+                    isCurrentDefault ? 'text-white/80' : 'text-slate-500'
+                  }`}>{uiOpt.id}</span>
+                  {isCurrentDefault && (
+                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] flex items-center justify-center font-black shadow-lg">
+                      ✓
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
