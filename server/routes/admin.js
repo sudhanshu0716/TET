@@ -598,11 +598,12 @@ router.get('/automation/workflows', [auth, adminAuth], async (req, res) => {
 // @route   POST api/admin/automation/workflows/:workflowId/trigger
 // @desc    Trigger GitHub workflow dispatch
 router.post('/automation/workflows/:workflowId/trigger', [auth, adminAuth], async (req, res) => {
-  const { ref } = req.body;
+  const { ref, inputs } = req.body;
   try {
     const { client } = await getGithubClient();
     await client.post(`/actions/workflows/${req.params.workflowId}/dispatches`, {
-      ref: ref || 'main'
+      ref: ref || 'main',
+      inputs: inputs || {}
     });
     res.json({ message: 'Workflow trigger request sent successfully!' });
   } catch (err) {

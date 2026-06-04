@@ -38,6 +38,11 @@ const AutomationPanel = () => {
   // Load Test Report States
   const [reportHtml, setReportHtml] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
+  const [loadTestInputs, setLoadTestInputs] = useState({
+    target_url: 'https://tet-exam-lake.vercel.app',
+    vus: '50',
+    duration: '30s'
+  });
 
   // General Notification Alert
   const [toast, setToast] = useState(null);
@@ -131,13 +136,18 @@ const AutomationPanel = () => {
   };
 
   // 4. Trigger Workflow Run
-  const handleTriggerWorkflow = async (workflowId) => {
+  const handleTriggerWorkflow = async (workflowId, path) => {
     const branchName = targetBranches[workflowId] || 'main';
     setTriggeringId(workflowId);
+    
+    const isLoadTest = path && path.endsWith('load-test.yml');
+    const inputs = isLoadTest ? loadTestInputs : {};
+
     try {
       const token = localStorage.getItem('token');
       await api.post(`/api/admin/automation/workflows/${workflowId}/trigger`, {
-        ref: branchName
+        ref: branchName,
+        inputs
       }, {
         headers: { 'x-auth-token': token }
       });
@@ -480,7 +490,7 @@ const AutomationPanel = () => {
                           </div>
                           
                           <button
-                            onClick={() => handleTriggerWorkflow(workflow.id)}
+                            onClick={() => handleTriggerWorkflow(workflow.id, workflow.path)}
                             disabled={triggeringId === workflow.id}
                             className="px-4.5 py-2.5 rounded-xl bg-purple-600 text-white font-black text-xs shadow-lg shadow-purple-600/20 active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50 shrink-0"
                           >
@@ -493,38 +503,90 @@ const AutomationPanel = () => {
                           </button>
                         </div>
                         
-                        <div className="flex items-center gap-3 bg-white/5 px-3 py-2 rounded-xl border border-white/5 w-full">
-                          <GitBranch className="text-purple-400 shrink-0" size={14} />
-                          <div className="flex-1 min-w-0">
-                            <label className="text-[7px] font-black text-slate-500 uppercase tracking-widest block">Branch Ref</label>
-                            {branches.length > 0 ? (
-                              <select
-                                value={targetBranches[workflow.id] || 'main'}
-                                onChange={(e) => setTargetBranches({
-                                  ...targetBranches,
-                                  [workflow.id]: e.target.value
-                                })}
-                                className="w-full bg-transparent text-[11px] font-bold text-slate-200 outline-none mt-0.5 border-none p-0 focus:ring-0 cursor-pointer appearance-none"
-                              >
-                                {branches.map(branchName => (
-                                  <option key={branchName} value={branchName} className="bg-[#0B0F19] text-white">
-                                    {branchName}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <input
-                                type="text"
-                                value={targetBranches[workflow.id] || 'main'}
-                                onChange={(e) => setTargetBranches({
-                                  ...targetBranches,
-                                  [workflow.id]: e.target.value
-                                })}
-                                className="w-full bg-transparent text-[11px] font-bold text-slate-200 outline-none mt-0.5 border-none p-0 focus:ring-0"
-                                placeholder="e.g. main"
-                              />
-                            )}
+                        <div className="flex flex-col gap-2.5">
+                          <div className="flex items-center gap-3 bg-white/5 px-3 py-2 rounded-xl border border-white/5 w-full">
+                            <GitBranch className="text-purple-400 shrink-0" size={14} />
+                            <div className="flex-1 min-w-0">
+                              <label className="text-[7px] font-black text-slate-500 uppercase tracking-widest block">Branch Ref</label>
+                              {branches.length > 0 ? (
+                                <select
+                                  value={targetBranches[workflow.id] || 'main'}
+                                  onChange={(e) => setTargetBranches({
+                                    ...targetBranches,
+                                    [workflow.id]: e.target.value
+                                  })}
+                                  className="w-full bg-transparent text-[11px] font-bold text-slate-200 outline-none mt-0.5 border-none p-0 focus:ring-0 cursor-pointer appearance-none animate-none"
+                                >
+                                  {branches.map(branchName => (
+                                    <option key={branchName} value={branchName} className="bg-[#0B0F19] text-white">
+                                      {branchName}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <input
+                                  type="text"
+                                  value={targetBranches[workflow.id] || 'main'}
+                                  onChange={(e) => setTargetBranches({
+                                    ...targetBranches,
+                                    [workflow.id]: e.target.value
+                                  })}
+                                  className="w-full bg-transparent text-[11px] font-bold text-slate-200 outline-none mt-0.5 border-none p-0 focus:ring-0"
+                                  placeholder="e.g. main"
+                                />
+                              )}
+                            </div>
                           </div>
+
+                          {workflow.path.endsWith('load-test.yml') && (
+                            <div className="space-y-3 bg-white/5 border border-white/5 p-3 rounded-xl">
+                              <span className="text-[9px] font-black uppercase text-purple-400 tracking-wider flex items-center gap-1.5">
+                                <Settings size={12} /> Load Test Parameters
+                              </span>
+                              
+                              <div className="space-y-2">
+                                <div className="space-y-1">
+                                  <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Target URL</label>
+                                  <input 
+                                    type="text" 
+                                    value={loadTestInputs.target_url}
+                                    onChange={e => setLoadTestInputs({...loadTestInputs, target_url: e.target.value})}
+                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-purple-500/50"
+                                    placeholder="e.g. https://tet-exam-lake.vercel.app"
+                                  />
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="space-y-1">
+                                    <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Virtual Users (VUs)</label>
+                                    <input 
+                                      type="number" 
+                                      value={loadTestInputs.vus}
+                                      onChange={e => setLoadTestInputs({...loadTestInputs, vus: e.target.value})}
+                                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-purple-500/50"
+                                      placeholder="50"
+                                      min="1"
+                                      max="500"
+                                    />
+                                  </div>
+                                  <div className="space-y-1">
+                                    <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Duration</label>
+                                    <select 
+                                      value={loadTestInputs.duration}
+                                      onChange={e => setLoadTestInputs({...loadTestInputs, duration: e.target.value})}
+                                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-purple-500/50 cursor-pointer"
+                                    >
+                                      <option value="15s" className="bg-[#0B0F19]">15 seconds</option>
+                                      <option value="30s" className="bg-[#0B0F19]">30 seconds</option>
+                                      <option value="1m" className="bg-[#0B0F19]">1 minute</option>
+                                      <option value="3m" className="bg-[#0B0F19]">3 minutes</option>
+                                      <option value="5m" className="bg-[#0B0F19]">5 minutes</option>
+                                    </select>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
