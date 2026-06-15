@@ -412,6 +412,135 @@ try {
       border-top: 1px solid rgba(255, 255, 255, 0.05);
       padding-top: 1.5rem;
     }
+    /* MOBILE RESPONSIVENESS */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem 0.75rem;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .brand {
+        width: 100%;
+      }
+
+      .meta-badge {
+        width: fit-content;
+        font-size: 0.75rem;
+        padding: 0.4rem 0.75rem;
+      }
+
+      .title-area h1 {
+        font-size: 1.25rem;
+      }
+
+      .title-area p {
+        font-size: 0.75rem;
+      }
+
+      .logo-glow {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
+
+      .kpi-card {
+        padding: 1rem;
+      }
+
+      .kpi-value {
+        font-size: 1.5rem;
+      }
+
+      .kpi-label {
+        font-size: 0.75rem;
+      }
+
+      .kpi-subtext {
+        font-size: 0.7rem;
+      }
+
+      .layout-sections {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .panel {
+        padding: 1.25rem;
+        border-radius: 16px;
+      }
+
+      .panel h2 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      /* Make table responsive */
+      table {
+        font-size: 0.8rem;
+      }
+
+      th, td {
+        padding: 0.5rem;
+      }
+
+      /* Enable horizontal scroll for table on mobile */
+      .panel {
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 500px;
+      }
+
+      .sla-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .sla-status {
+        text-align: left;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .system-logs {
+        font-size: 0.7rem;
+        padding: 0.75rem;
+        max-height: 200px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .title-area h1 {
+        font-size: 1.1rem;
+      }
+
+      .kpi-value {
+        font-size: 1.75rem;
+      }
+
+      .panel h2 {
+        font-size: 0.95rem;
+      }
+    }
   </style>
 </head>
 <body>
