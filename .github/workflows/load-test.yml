@@ -22,6 +22,9 @@ jobs:
     # Execute only on manual trigger
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./TET
 
     steps:
       - name: Checkout repository
@@ -43,10 +46,17 @@ jobs:
 
       - name: Check generated summary
         run: |
+          echo "Current directory:"
+          pwd
+          echo "Files in current directory:"
+          ls -la
           if [ -f summary.json ]; then
+            echo "✅ summary.json found"
             ls -lh summary.json
           else
             echo "❌ Error: summary.json was not created!"
+            echo "Searching for summary.json in subdirectories:"
+            find . -name "summary.json" 2>/dev/null || echo "No summary.json found anywhere"
             exit 1
           fi
 
@@ -57,10 +67,17 @@ jobs:
       - name: Check generated report HTML
         if: always()
         run: |
+          echo "Current directory:"
+          pwd
+          echo "Files in current directory:"
+          ls -la
           if [ -f load-test-report.html ]; then
+            echo "✅ load-test-report.html found"
             ls -lh load-test-report.html
           else
             echo "❌ Error: load-test-report.html was not created!"
+            echo "Searching for load-test-report.html in subdirectories:"
+            find . -name "load-test-report.html" 2>/dev/null || echo "No load-test-report.html found anywhere"
           fi
 
       - name: Upload Performance Reports
